@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.17 (TeX Live 2016) (preloaded format=pdflatex 2016.9.18)  18 MAY 2017 17:22
+This is pdfTeX, Version 3.14159265-2.6-1.40.17 (TeX Live 2016) (preloaded format=pdflatex 2016.9.18)  18 MAY 2017 17:37
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -466,19 +466,19 @@ File: lstlang1.sty 2015/06/04 1.6 listings language file
 (./lucas_pelloni_thesis.aux)
 \openout1 = `lucas_pelloni_thesis.aux'.
 
-LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 18.
-LaTeX Font Info:    ... okay on input line 18.
-LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 18.
-LaTeX Font Info:    ... okay on input line 18.
-LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 18.
-LaTeX Font Info:    ... okay on input line 18.
-LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 18.
-LaTeX Font Info:    ... okay on input line 18.
-LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 18.
-LaTeX Font Info:    ... okay on input line 18.
-LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 18.
-LaTeX Font Info:    ... okay on input line 18.
-LaTeX Font Info:    Try loading font information for T1+ppl on input line 18.
+LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 17.
+LaTeX Font Info:    ... okay on input line 17.
+LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 17.
+LaTeX Font Info:    ... okay on input line 17.
+LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 17.
+LaTeX Font Info:    ... okay on input line 17.
+LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 17.
+LaTeX Font Info:    ... okay on input line 17.
+LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 17.
+LaTeX Font Info:    ... okay on input line 17.
+LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 17.
+LaTeX Font Info:    ... okay on input line 17.
+LaTeX Font Info:    Try loading font information for T1+ppl on input line 17.
 
 (/usr/local/texlive/2016/texmf-dist/tex/latex/psnfss/t1ppl.fd
 File: t1ppl.fd 2001/06/04 font definitions for T1/ppl.
@@ -544,21 +544,21 @@ File: epstopdf-sys.cfg 2010/07/13 v1.3 Configuration of (r)epstopdf for TeX Liv
 e
 ))
 \c@lstlisting=\count104
-LaTeX Font Info:    Try loading font information for T1+phv on input line 19.
+LaTeX Font Info:    Try loading font information for T1+phv on input line 18.
 
 (/usr/local/texlive/2016/texmf-dist/tex/latex/psnfss/t1phv.fd
 File: t1phv.fd 2001/06/04 scalable font definitions for T1/phv.
 )
 LaTeX Font Info:    Font shape `T1/phv/bx/n' in size <40> not available
-(Font)              Font shape `T1/phv/b/n' tried instead on input line 19.
+(Font)              Font shape `T1/phv/b/n' tried instead on input line 18.
 LaTeX Font Info:    External font `cmex10' loaded for size
-(Font)              <7> on input line 19.
+(Font)              <7> on input line 18.
 LaTeX Font Info:    External font `cmex10' loaded for size
-(Font)              <5> on input line 19.
+(Font)              <5> on input line 18.
 LaTeX Font Info:    Font shape `T1/phv/bx/n' in size <20> not available
-(Font)              Font shape `T1/phv/b/n' tried instead on input line 19.
+(Font)              Font shape `T1/phv/b/n' tried instead on input line 18.
 LaTeX Font Info:    Font shape `T1/phv/bx/n' in size <10> not available
-(Font)              Font shape `T1/phv/b/n' tried instead on input line 19.
+(Font)              Font shape `T1/phv/b/n' tried instead on input line 18.
 Package epstopdf Info: Source file: <imgs/logo_uzh.eps>
 (epstopdf)                    date: 2017-03-25 11:45:13
 (epstopdf)                    size: 509333 bytes
@@ -567,7 +567,7 @@ Package epstopdf Info: Source file: <imgs/logo_uzh.eps>
 (epstopdf)                    size: 42528 bytes
 (epstopdf)             Command: <repstopdf --outfile=imgs/logo_uzh-eps-converte
 d-to.pdf imgs/logo_uzh.eps>
-(epstopdf)             \includegraphics on input line 19.
+(epstopdf)             \includegraphics on input line 18.
 Package epstopdf Info: Output file is already uptodate.
 
 <imgs/logo_uzh-eps-converted-to.pdf, id=1, 154.5775pt x 49.18375pt>
@@ -575,7 +575,7 @@ File: imgs/logo_uzh-eps-converted-to.pdf Graphic file (type pdf)
 
 <use imgs/logo_uzh-eps-converted-to.pdf>
 Package pdftex.def Info: imgs/logo_uzh-eps-converted-to.pdf used on input line 
-19.
+18.
 (pdftex.def)             Requested size: 128.0374pt x 40.74292pt.
 Package epstopdf Info: Source file: <imgs/seal_bw.eps>
 (epstopdf)                    date: 2017-03-25 11:45:13
@@ -585,7 +585,7 @@ Package epstopdf Info: Source file: <imgs/seal_bw.eps>
 (epstopdf)                    size: 14981 bytes
 (epstopdf)             Command: <repstopdf --outfile=imgs/seal_bw-eps-converted
 -to.pdf imgs/seal_bw.eps>
-(epstopdf)             \includegraphics on input line 19.
+(epstopdf)             \includegraphics on input line 18.
 Package epstopdf Info: Output file is already uptodate.
 
 <imgs/seal_bw-eps-converted-to.pdf, id=2, 161.60374pt x 67.25125pt>
@@ -593,7 +593,7 @@ File: imgs/seal_bw-eps-converted-to.pdf Graphic file (type pdf)
 
 <use imgs/seal_bw-eps-converted-to.pdf>
 Package pdftex.def Info: imgs/seal_bw-eps-converted-to.pdf used on input line 1
-9.
+8.
 (pdftex.def)             Requested size: 99.58464pt x 41.44186pt.
  [1
 
@@ -610,12 +610,12 @@ Package epstopdf Info: Source file: <imgs/logo_uzh.eps>
 (epstopdf)                    size: 42528 bytes
 (epstopdf)             Command: <repstopdf --outfile=imgs/logo_uzh-eps-converte
 d-to.pdf imgs/logo_uzh.eps>
-(epstopdf)             \includegraphics on input line 19.
+(epstopdf)             \includegraphics on input line 18.
 Package epstopdf Info: Output file is already uptodate.
 File: imgs/logo_uzh-eps-converted-to.pdf Graphic file (type pdf)
  <use imgs/logo_uzh-eps-converted-to.pdf>
 Package pdftex.def Info: imgs/logo_uzh-eps-converted-to.pdf used on input line 
-19.
+18.
 (pdftex.def)             Requested size: 128.0374pt x 40.74292pt.
 Package epstopdf Info: Source file: <imgs/seal_bw.eps>
 (epstopdf)                    date: 2017-03-25 11:45:13
@@ -625,22 +625,22 @@ Package epstopdf Info: Source file: <imgs/seal_bw.eps>
 (epstopdf)                    size: 14981 bytes
 (epstopdf)             Command: <repstopdf --outfile=imgs/seal_bw-eps-converted
 -to.pdf imgs/seal_bw.eps>
-(epstopdf)             \includegraphics on input line 19.
+(epstopdf)             \includegraphics on input line 18.
 Package epstopdf Info: Output file is already uptodate.
 File: imgs/seal_bw-eps-converted-to.pdf Graphic file (type pdf)
 
 <use imgs/seal_bw-eps-converted-to.pdf>
 Package pdftex.def Info: imgs/seal_bw-eps-converted-to.pdf used on input line 1
-9.
+8.
 (pdftex.def)             Requested size: 99.58464pt x 41.44186pt.
  [3]
 LaTeX Font Info:    Font shape `T1/ppl/bx/n' in size <10> not available
-(Font)              Font shape `T1/ppl/b/n' tried instead on input line 19.
+(Font)              Font shape `T1/ppl/b/n' tried instead on input line 18.
  [4
 
 ]
 LaTeX Font Info:    Font shape `T1/phv/bx/n' in size <32> not available
-(Font)              Font shape `T1/phv/b/n' tried instead on input line 23.
+(Font)              Font shape `T1/phv/b/n' tried instead on input line 22.
  [1
 
 
@@ -661,7 +661,7 @@ LaTeX Font Info:    Font shape `T1/phv/bx/n' in size <32> not available
 
  [7]
 LaTeX Font Info:    Font shape `T1/phv/bx/n' in size <17.28> not available
-(Font)              Font shape `T1/phv/b/n' tried instead on input line 33.
+(Font)              Font shape `T1/phv/b/n' tried instead on input line 32.
  (./lucas_pelloni_thesis.lof)
 \tf@lof=\write4
 \openout4 = `lucas_pelloni_thesis.lof'.
@@ -676,15 +676,15 @@ LaTeX Font Info:    Font shape `T1/phv/bx/n' in size <17.28> not available
 \openout6 = `lucas_pelloni_thesis.lol'.
 
 LaTeX Font Info:    Font shape `T1/phv/bx/n' in size <9> not available
-(Font)              Font shape `T1/phv/b/n' tried instead on input line 37.
+(Font)              Font shape `T1/phv/b/n' tried instead on input line 36.
  [8]
 Chapter 1.
 LaTeX Font Info:    Font shape `T1/phv/bx/n' in size <18> not available
-(Font)              Font shape `T1/phv/b/n' tried instead on input line 38.
+(Font)              Font shape `T1/phv/b/n' tried instead on input line 37.
 LaTeX Font Info:    Font shape `T1/phv/bx/n' in size <28> not available
-(Font)              Font shape `T1/phv/b/n' tried instead on input line 38.
+(Font)              Font shape `T1/phv/b/n' tried instead on input line 37.
 LaTeX Font Info:    Font shape `T1/phv/bx/n' in size <12> not available
-(Font)              Font shape `T1/phv/b/n' tried instead on input line 44.
+(Font)              Font shape `T1/phv/b/n' tried instead on input line 43.
 Package epstopdf Info: Source file: <imgs/seal_blue.eps>
 (epstopdf)                    date: 2017-03-25 11:45:13
 (epstopdf)                    size: 406041 bytes
@@ -693,63 +693,59 @@ Package epstopdf Info: Source file: <imgs/seal_blue.eps>
 (epstopdf)                    size: 18070 bytes
 (epstopdf)             Command: <repstopdf --outfile=imgs/seal_blue-eps-convert
 ed-to.pdf imgs/seal_blue.eps>
-(epstopdf)             \includegraphics on input line 45.
+(epstopdf)             \includegraphics on input line 44.
 Package epstopdf Info: Output file is already uptodate.
 <imgs/seal_blue-eps-converted-to.pdf, id=61, 161.60374pt x 67.25125pt>
 File: imgs/seal_blue-eps-converted-to.pdf Graphic file (type pdf)
 
 <use imgs/seal_blue-eps-converted-to.pdf>
 Package pdftex.def Info: imgs/seal_blue-eps-converted-to.pdf used on input line
- 45.
+ 44.
 (pdftex.def)             Requested size: 213.39566pt x 88.80884pt.
 LaTeX Font Info:    Font shape `T1/phv/bx/n' in size <14.4> not available
-(Font)              Font shape `T1/phv/b/n' tried instead on input line 47.
-LaTeX Font Info:    Try loading font information for T1+pcr on input line 51.
+(Font)              Font shape `T1/phv/b/n' tried instead on input line 46.
+LaTeX Font Info:    Try loading font information for T1+pcr on input line 50.
 
 (/usr/local/texlive/2016/texmf-dist/tex/latex/psnfss/t1pcr.fd
 File: t1pcr.fd 2001/06/04 font definitions for T1/pcr.
 )
 LaTeX Font Info:    Font shape `T1/pcr/bx/n' in size <9> not available
-(Font)              Font shape `T1/pcr/b/n' tried instead on input line 55.
+(Font)              Font shape `T1/pcr/b/n' tried instead on input line 54.
  [1
 
 
 
  <./imgs/seal_blue-eps-converted-to.pdf>] [2]
 Chapter 2.
-(./related.tex)
-Overfull \hbox (7.34735pt too wide) in paragraph at lines 72--72
+(./related_1.tex)
+Overfull \hbox (7.34735pt too wide) in paragraph at lines 70--70
 []\T1/phv/b/n/17.28 Usage of users re-views in Soft-ware main-te-nance
  []
 
-[3
+(./related_2.tex) [3
 
 
 ] [4
 
 ]
 No file lucas_pelloni_thesis.bbl.
-(./lucas_pelloni_thesis.aux)
-
-LaTeX Warning: Label(s) may have changed. Rerun to get cross-references right.
-
- ) 
+(./lucas_pelloni_thesis.aux) ) 
 Here is how much of TeX's memory you used:
- 4683 strings out of 493014
- 60676 string characters out of 6133351
+ 4687 strings out of 493014
+ 60736 string characters out of 6133351
  140131 words of memory out of 5000000
- 8106 multiletter control sequences out of 15000+600000
+ 8107 multiletter control sequences out of 15000+600000
  58647 words of font info for 59 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 40i,11n,45p,262b,1697s stack positions out of 5000i,500n,10000p,200000b,80000s
-{/usr/local/texlive/2016/texmf-dist/fonts/enc/dvips/base/8r.enc}</usr/local/t
-exlive/2016/texmf-dist/fonts/type1/urw/courier/ucrb8a.pfb></usr/local/texlive/2
-016/texmf-dist/fonts/type1/urw/courier/ucrr8a.pfb></usr/local/texlive/2016/texm
-f-dist/fonts/type1/urw/helvetic/uhvb8a.pfb></usr/local/texlive/2016/texmf-dist/
-fonts/type1/urw/helvetic/uhvr8a.pfb></usr/local/texlive/2016/texmf-dist/fonts/t
-ype1/urw/palatino/uplb8a.pfb></usr/local/texlive/2016/texmf-dist/fonts/type1/ur
-w/palatino/uplr8a.pfb>
-Output written on lucas_pelloni_thesis.pdf (16 pages, 146649 bytes).
+ 40i,11n,45p,290b,1697s stack positions out of 5000i,500n,10000p,200000b,80000s
+{/usr/local/texlive/2016/texmf-dist/fonts/enc/dvi
+ps/base/8r.enc}</usr/local/texlive/2016/texmf-dist/fonts/type1/urw/courier/ucrb
+8a.pfb></usr/local/texlive/2016/texmf-dist/fonts/type1/urw/courier/ucrr8a.pfb><
+/usr/local/texlive/2016/texmf-dist/fonts/type1/urw/helvetic/uhvb8a.pfb></usr/lo
+cal/texlive/2016/texmf-dist/fonts/type1/urw/helvetic/uhvr8a.pfb></usr/local/tex
+live/2016/texmf-dist/fonts/type1/urw/palatino/uplb8a.pfb></usr/local/texlive/20
+16/texmf-dist/fonts/type1/urw/palatino/uplr8a.pfb>
+Output written on lucas_pelloni_thesis.pdf (16 pages, 147024 bytes).
 PDF statistics:
  111 PDF objects out of 1000 (max. 8388607)
  75 compressed objects within 1 object stream
