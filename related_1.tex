@@ -4,13 +4,21 @@ In the mobile world, an exremely valid approach to ensure the realiability of th
 In particular, in this kind of testing, each test case is designed and run in the form of sequences of GUI interaction events.  \\
 Depending on their exploration strategy, there are in general three approaches for creating a generation of user inputs on a mobile device \cite{dynodroid, areWeThereYet}: \textit{random testing} \cite{dynodroid, monkey}, \textit{systematic testing} \cite{evodroid} and \textit{model-based testing} \cite{mobiguitar, guidedgui, mining}. 
 \subsubsection{Fuzz testing}
-The most widely used tool in practice for testing Android apps with a random approach is \textit{Monkey} \cite{monkey}, the official Android testing command-line tool directly provided by Google. \\
-This tool simply generates, for the specified attached devices, pseudo-random streams of user events into the system, with the goal to stress the \textit{AUT\footnote{Application Under Test}}\cite{monkey}. \\ 
-The kind of testing implemented by Monkey follows a black-box approach. 
-Despite the robustness, the user friendliness \cite{dynodroid} and the capacity of find out new bugs outside the stated scenarios  \cite{monkey_2}, this tool may be inefficient if the \textit{AUT} would require some human intelligence (\textit{e.g.} a login field) for providing sensible inputs \cite{dynodroid}. \\
-For instance, \textit{Monkey} may cause highly redundant and senseless user events, which may be very  time consuming. \\
-Even though it would find out a new bug for a given app, the steps to reproduce the bug may be very difficult to recreate, due also of the randomness of the executed tests. 
 
+\textbf{Monkey}, is the most widely used tool in practice for testing Android applications with a random strategy \cite{monkey}. It is the official Android testing command-line tool directly provided by Google. \\
+This tool simply generates, for the specified Android applications, pseudo-random streams of user events into the system, with the goal to stress the \textit{AUT\footnote{Application Under Test}}\cite{monkey}. \\ 
+The effort required for using \textit{Monkey} is very low \cite{areWeThereYet}. Users have to specify in the command-line the type and the number of the UI events they want to generate and in addition they can establish the verbosity level of the \textit{Monkey log}. \\
+The set of possible \textit{Monkey parameters} can be found in the official \textit{User Guide} for Monkey \cite{monkey}. \\
+The kind of testing implemented by Monkey follows a black-box approach. 
+Despite the robustness, the user friendliness \cite{areWeThereYet, dynodroid} and the capacity to find out new bugs outside the stated scenarios  \cite{monkey_2}, this tool may be inefficient if the \textit{AUT} would require some human intelligence (\textit{e.g.} a login field) for providing sensible inputs \cite{dynodroid}. \\
+For instance, \textit{Monkey} may cause highly redundant and senseless user events. Even though it would find out a new bug for a given app, the steps for reproducing the bug may be very difficult to follow, due also to the randomness in the testing strategy implemented by \textit{Monkey}\cite{monkey_2}. \\
+\textbf{Dynodroid} \cite{dynodroid} is also a random-based testing approach. However, this tool has been discovered being more efficient than \textit{Monkey} in the exploration process  \cite{areWeThereYet}. \\
+One of the reasons behind a better efficacy has been that \textit{Dynodroid} is able to generate both \textit{UI inputs} and \textit{system events} (unlike \textit{Monkey}, which can only generate UI events) \cite{areWeThereYet}. \\  
+Indeed, \textit{Dynodroid} views the \textit{AUT} as an event-driven program and follows a cyclical mechanism, also known as the \textit{observe-select-execute} cycle \cite{dynodroid}. First of all, it \textit{observes} which events are relevant to the \textit{AUT} in the current state grouping they together (an event must be considered relevant if it triggers a part of code which is part of the \textit{AUT}). After that, it \textit{selects} one of the previously observed events with a randomized algorithm \cite{dynodroid, areWeThereYet} and finally \textit{executes} it. After the execution of that event it reaches a new state and can start the cycle again. \\
+Another advantage of \textit{Dynodroid} compared to \textit{Monkey} is that it allows users to interact in the testing process providing UI inputs. In doing so, \textit{Dynodroid} is able to exploit the advantage of combining automated with manual testing \cite{dynodroid}.
+
+\subsubsection{Systematic testing}
+The tools using a systematic explorations strategy rely on more sophisticated techniques, such as symbolic execution and evolutionary algorithms \cite{areWeThereYet}. 
 
 
 
