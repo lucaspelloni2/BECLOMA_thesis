@@ -1,4 +1,8 @@
 % !TEX root =  ./lucas_thesis.tex
+In the following two sections, I summarize the main related works on \textit{automated testing tools for Android apps} and on \textit{the broadly usage of user reviews from app store in Software maintenance activities}. 
+An overview of the recent research in the field can be found in the survey by Martin \etal \cite{Martin:tse2017}. 
+\section{Automated tools for Android Testing}
+
 Unlike traditional software, mobile applications are mainly exercised by user inputs. \\ 
 In the mobile world, an exremely valid approach to ensure the realiability of these applications is the GUI\footnote{Graphical User Interface} Testing. \\ 
 In particular, in this kind of testing, each test case is designed and run in the form of sequences of GUI interaction events.  \\
@@ -20,8 +24,16 @@ Another advantage of \textit{Dynodroid} compared to \textit{Monkey} is that it a
 
 \subsubsection{Systematic testing}
 The tools using a systematic explorations strategy rely on more sophisticated techniques, such as symbolic execution and evolutionary algorithms \cite{areWeThereYet}. \\
-\textbf{Sapienz} \cite{sapienz} introduced a multi-objective search-based technique to simultaneously maximize coverage and fault revelation, while minimizing the sequence lengths. \\ It combines the above mentioned random-based approach with a new systematic exploration and according to the experimental results published on \cite{sapienz}, \textit{Sapienz} is an outperformer in the automated mobile testing area.
+\textbf{Sapienz} \cite{sapienz} introduced a Pareto multi-objective search-based technique to simultaneously maximize coverage and fault revelation, while minimizing the sequence lengths. \\ It combines the above mentioned random-based approach with a new systematic exploration and as mentioned in the experimental results published on \cite{sapienz}, \textit{Sapienz} is an outperformer in the automated mobile testing area. \\
+Indeed, in an empirical study described on \cite{sapienz}, \textit{Sapienz} has illustrated the strength of its approach. It found from a set of 68 benchmark apps, 104 unique crashes (while \textit{Monkey} 41 and \textit{Dynodroid} 13).
 
+\subsubsection{Model-based testing}
+Model-based tools for testing Android applications are quite popular \cite{sapienz}. Most of these tools \cite{mobiguitar,guiripper, swifthand, guidedgui, mining} generate UI events from models, which are either manually designed or created from XML configuration files \cite{sapienz}. \\
+For example, \textit{SwiftHand}\footnote{https://github.com/wtchoi/SwiftHand} uses a machine learning algorithm to learn a model of the current \textit{AUT}. This final state machine model \cite{areWeThereYet} generates UI events and due their execution the app reaches new unexplored states. After that, it exploits the execution of these events to adapt and refine the model \cite{swifthand}. \textit{SwiftHand}, in a similar way to \textit{Monkey} generates only touching and scrolling UI events and is not able to generate System events \cite{areWeThereYet}.
+
+\section{Usage of users reviews in Software maintenance activities}
+The concept of app store mining was first introduced by \textit{Harman} \etal
+\cite{appstoremining}. In this context, many researchers focused on the analysis of user reviews to support the maintenance and evolution of mobile applications \cite{surveyappstore}.
 
 
 %monkey (va con random testing)
