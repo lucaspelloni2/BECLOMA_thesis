@@ -8,8 +8,7 @@ In the mobile world, an exremely valid approach to ensure the realiability of th
 In particular, in this kind of testing, each test case is designed and run in the form of sequences of GUI interaction events.  \\
 Depending on their exploration strategy, there are in general three approaches for creating a generation of user inputs on a mobile device \cite{dynodroid, areWeThereYet}: \textit{random testing} \cite{dynodroid, monkey}, \textit{systematic testing} \cite{evodroid} and \textit{model-based testing} \cite{mobiguitar, guidedgui, mining}. 
 \subsubsection{Fuzz testing}
-
-\textbf{Monkey}, is the most widely used tool in practice for testing Android applications with a random strategy \cite{monkey}. It is the official Android testing command-line tool directly provided by Google. \\
+When test automation does occur, it typically relies on Google's Android \textit{Monkey} command-line \cite{monkey}. Since it comes directly integrated in Android Studio, the standard IDE for Android Development, it is regarded as the current state-of-practice \cite{Mahmood2014}.\\
 This tool simply generates, for the specified Android applications, pseudo-random streams of user events into the system, with the goal to stress the \textit{AUT\footnote{Application Under Test}}\cite{monkey}. \\ 
 The effort required for using \textit{Monkey} is very low \cite{areWeThereYet}. Users have to specify in the command-line the type and the number of the UI events they want to generate and in addition they can establish the verbosity level of the \textit{Monkey log}. \\
 The set of possible \textit{Monkey parameters} can be found in the official \textit{User Guide} for Monkey \cite{monkey}. \\
