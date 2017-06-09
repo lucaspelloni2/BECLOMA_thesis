@@ -4,9 +4,9 @@ An overview of the recent research in the field can be found in the survey by Ma
 \section{Automated tools for Android Testing}
 
 Unlike traditional software, mobile applications are mainly exercised by user inputs. \\ 
-In the mobile world, an exremely valid approach to ensure the realiability of these applications is the GUI\footnote{Graphical User Interface} Testing. \\ 
+In the mobile world, an extremely valid approach to ensure the realiability of these applications is the GUI\footnote{Graphical User Interface} Testing. \\ 
 In particular, in this kind of testing, each test case is designed and run in the form of sequences of GUI interaction events.  \\
-Depending on their exploration strategy, there are in general three approaches for creating a generation of user inputs on a mobile device \cite{dynodroid, areWeThereYet}: \textit{random testing} \cite{dynodroid, monkey}, \textit{systematic testing} \cite{evodroid} and \textit{model-based testing} \cite{mobiguitar, guidedgui, mining}. 
+Depending on their exploration strategy, there are in general three approaches for creating a generation of user inputs on a mobile device \cite{dynodroid, areWeThereYet}: \textit{random testing} \cite{dynodroid, monkey}, \textit{systematic testing} \cite{evodroid} and \textit{model-based testing} \cite{mobiguitar, SwiftHand, mining}. 
 \subsubsection{Fuzz testing}
 When test automation does occur, it typically relies on Google's Android \textit{Monkey} command-line \cite{monkey}. Since it comes directly integrated in Android Studio, the standard IDE for Android Development, it is regarded as the current state-of-practice \cite{Mahmood2014}.\\
 This tool simply generates, for the specified Android applications, pseudo-random streams of user events into the system, with the goal to stress the \textit{AUT\footnote{Application Under Test}}\cite{monkey}. \\ 
@@ -27,12 +27,12 @@ The tools using a systematic explorations strategy rely on more sophisticated te
 Indeed, in an empirical study described on \cite{sapienz}, \textit{Sapienz} has illustrated the strength of its approach. It found from a set of 68 benchmark apps, 104 unique crashes (while \textit{Monkey} 41 and \textit{Dynodroid} 13).
 
 \subsubsection{Model-based testing}
-Model-based tools for testing Android applications are quite popular \cite{sapienz}. Most of these tools \cite{mobiguitar,guiripper, swifthand, guidedgui, mining} generate UI events from models, which are either manually designed or created from XML configuration files \cite{sapienz}. \\
+Model-based tools for testing Android applications are quite popular \cite{sapienz}. Most of these tools \cite{mobiguitar,guiripper, swifthand, SwiftHand, mining} generate UI events from models, which are either manually designed or created from XML configuration files \cite{sapienz}. \\
 For example, \textit{SwiftHand}\footnote{https://github.com/wtchoi/SwiftHand} uses a machine learning algorithm to learn a model of the current \textit{AUT}. This final state machine model \cite{areWeThereYet} generates UI events and due their execution the app reaches new unexplored states. After that, it exploits the execution of these events to adapt and refine the model \cite{swifthand}. \textit{SwiftHand}, in a similar way to \textit{Monkey} generates only touching and scrolling UI events and is not able to generate System events \cite{areWeThereYet}.
 
 \section{Usage of users reviews in Software maintenance activities}
 The concept of app store mining was first introduced by \textit{Harman} \etal
-\cite{appstoremining}. In this context, many researchers focused on the analysis of user reviews to support the maintenance and evolution of mobile applications \cite{surveyappstore}.
+\cite{appstoremining}. In this context, many researchers focused on the analysis of user reviews to support the maintenance and evolution of mobile applications \cite{Martin:tse2017}.
 
 
 %monkey (va con random testing)
