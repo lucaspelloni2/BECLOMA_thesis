@@ -3,10 +3,10 @@
 Testing is the action of inspecting the behaviour of a program, with the intention of finding anomalies or errors \cite{testing}.
 The goal behind Software testing is to reach the highest testing coverage finding the largest number of errors with the smallest number of \textit{test cases} (a set of test inputs associated with an expected result when they are processed by a program).
 
-Software testing is widely recognised as an essential part of any software development process, presenting however an extremely expensive activity. This because, trying to test all combinations of all possible input values for an application \cite{glinz} requires a lot of workforce and it is almost always unthinkable to reach a testing-coverage of 100\%, since testing needs to be performed under time and budget constraints \cite{grano}. In fact, as observed by \textit{Dijkstra} \cite{dijkstra}, testing a software does not imply a demonstration of the right behaviour of the program, but it only aims to demonstrate the presence of faults, not their absence. Even though a full testing coverage normally cannot be reached, a program that would be carefully tested (and all bugs found would have been corrected), would increase the probability that it would behave as expected in the untested cases  \cite{glinz}. 
-\\
+Nowadays, software testing is widely recognised as an essential part of any software development process, presenting however an extremely expensive activity. This because, trying to test all combinations of all possible input values for an application \cite{glinz} requires a lot of workforce and it is almost always unthinkable to reach a testing-coverage of 100\%. The reason is that, testing needs to be performed under time and budget constraints \cite{grano} and big and complex applications might have a very large number of potential test scenarios, many of which are really difficult to be predicted.  \textit{Dijkstra} \cite{dijkstra} observed, that testing a software does not imply a demonstration of the right behaviour of the program, but it only aims to demonstrate the presence of faults, not their absence. But then, why try to test a program even knowing that a full coverage (and so a complete validation of the software) cannot be reached? Well, the answer is quite simple. 
+A program, that would be carefully tested and all bugs found would be consequently fixed, increase the probability that this software would behave as expected in the untested cases \cite{glinz}. 
 
-In general, there are four testing levels: 
+In general, there are four testing levels a tester should perform in order to investigate the behaviour of a traditional software: 
 \begin{enumerate}
 \item Unit testing; 
 \item Integration testing; 
@@ -16,41 +16,45 @@ In general, there are four testing levels:
 
 With \textit{unit testing}, the application components are viewed and split into  individual \textit{units} of source code, which are normally functions or small methods. Intuitively, one can view a unit as the smallest testable part of an application. This kind of testing is usually associated with a \textit{white-box} approach (\textit{see later}).  \textit{Integration testing} is the activity of finding faults after testing the previous individually tested units combined and tested as a group together. \textit{System testing} is conducted on a complete, integrated system to evaluate the compliance with its requirements. You can imagine system testing as the last checkpoint before the end customer. Indeed, \textit{acceptance testing} (or \textit{customer testing}) is the last level of the testing process, which states whether the application meets the user needs and whether the implemented system works for the user. This kind of testing is usually associated with a \textit{black-box} approach. 
 \\
-These mentioned testing levels represent the main steps a tester should perform in order to validate a software. They shall be sequentially executed and are combined with two testing methodologies \cite{white-box, black-box}: 
+These mentioned testing levels shall be sequentially executed and are drived by two testing methodologies \cite{white-box, black-box}: 
 \begin{itemize}
 \item black-box testing;
 \item white-box testing.
 \end{itemize} 
-With \textit{Black-box} testing, also called functional testing, the tester doesn't need to have any prior knowledge of the interior structure of the application. He tests only the functionalities provided by the software without any access to the source code. Typically, when performing a black box test, a tester will interact with the system's user interface by providing inputs and examining outputs without knowing how and where the inputs are worked upon. On the other side, with \textit{white-box} testing, also \textit{glass testing} or \textit{open box testing} \cite{grano}, the test cases are extrapolated from the internal software's structure. Indeed, the tester writes the test cases defining a paths through the code, which has to provide a sensible output.
+With \textit{black-box} testing, also called functional testing, the tester doesn't need to have any prior knowledge of the interior structure of the application. He tests only the functionalities provided by the software without any access to the source code. Typically, when performing a black box test, a tester will interact with the system's user interface by providing inputs and examining outputs without knowing how and where the inputs are worked upon. On the other side, with \textit{white-box} testing, also \textit{glass testing} or \textit{open box testing} \cite{grano}, the test cases are extrapolated from the internal software's structure. Indeed, the tester writes the test cases defining a paths through the code, which has to provide a sensible output. \\
+In practice, the whole testing process is strictly structured and it is applied through the use of different testing models. Usually, the selection of one model rather than another has a huge impact on the final testing result is carried out. The most popular and applied testing process models in practice are the \textit{V-model} \cite{vmodel}, the \textit{Waterfall model}\cite{waterfallmodel} and the \textit{Spiral model} \cite{spiralmodel}. \\
+As shown, there exist few levels, methodologies and different models to accompany a testing process of a traditional software. However, when a tester is intent to define and choose the right pieces for testing a software in a careful manner, the common goal behind the testing stays always the same, i.e. generate a \textit{test suite} (a set of \textit{test cases}), with the smallest number of test cases causing the largest number of failures in the system \cite{grano}, in order to increase the reliability of the system. 
+However as mentioned before, the process of finding the correct test scenarios, execute them, report their results and compare them to the previously written expected results might be time-consuming and cost-intensive. In fact, testing costs have been estimated at being at least half of the entire development cost \cite{Beizer:1990:STT:79060}. For this reason, it is necessary to reduce them, trying to improve the effectiveness of the whole testing process, with the aim to automate it. \\
 
-The testing process and its testing methodologies described above represent a crucial part of the traditional software testing. 
-However, with the advent of mobile devices, traditional testing has been complemented by a new kind of testing: mobile testing.
-Indeed, nowadays, application running on mobile devices are becoming so widely adopted, so that they have represented a remarkable revolution in the IT sector. In fact, in three years, over 300,000 mobile applications have been developed, \cite{muccini}, 149 billions downloaded only in 2016 \cite{statista} and 12 million mobile app developers (expected to reach up 14 million in 2020) maintaining them \cite{DevRelate}. 
-
-
-
-
-
-The growing competition characterizing mobile application marketplaces, like Google Play and the Apple App Store, ensures that only high quality apps stay on the market and gain users. This forces developers to pay par- ticular attention to the quality of the apps they are developing and maintaining through adequate software testing activities [16], [19]. However, mobile applications differ from traditional software: they are structured around Graphical User Interface (GUI) events and activities, thus exposing them to new kinds of bugs and leading to a higher defect density compared to traditional desktop and server applications [12].
-
-
-
-
-
-
-Since, testing costs has been estimated at being at least half of the entire development cost \cite{Beizer:1990:STT:79060}, it is necessary to reduce them, trying to improve the effectiveness of testing with the goal to automate the testing process.
+%------------- PASSAGGIO DAL TESTING TRADIZIONALE AL MOBILE -------------
+With the advent of the \textit{mobile age}, the traditional software market has been always more complemented with a new point of view. Indeed, nowadays, application running on mobile devices are becoming so widely adopted, so that they have represented a remarkable revolution in the IT sector. In fact, in three years, over 300,000 mobile applications have been developed, \cite{muccini}, 149 billions downloaded only in 2016 \cite{statista} and 12 million mobile app developers (expected to reach up 14 million in 2020) maintaining them \cite{DevRelate}. \\
+This majestic revolution in the IT sector has had also a huge impact on the software testing area. This because, mobile applications differ from traditional software and so differ also their testing techniques. 
+In fact, mobile applications are structured around Graphical User Interface (GUI) events and activities, thus exposing them to new kinds of bugs and leading to a higher defect density compared to traditional desktop and server applications \cite{Hu:2011:AGT:1982595.1982612}. Furthermore, they are context-aware \cite{muccini}. 
+Therefore, each mobile application is aware of the environment in which it is running and provides inputs according to its current context. This has some implications for the testing, because a test case running on a specific context may lead to its expected results, while the same test case running on another environment may be error-prone. In fact, bugs related to contextual inputs are quite frequent \cite{muccini}. \\
+For this reason, mobile applications require new specialized and different testing techniques \cite{muccini} in order to ensure their reliability. In this sense, an extremely valid approach has been the GUI testing. In particular, in this kind of testing, each test case is designed and run in the form of sequences of GUI interaction events, with the aim to state whether an application meets its written requirements. 
+% ------------- LE SFIDE DEL MOBILE TESTING -----------------
+As traditional testing, GUI testing can be performed either manual or automatic. If it would processed in a manual manner, it may be very time-consuming and may require a lot of programming.  
+For this purpose, with the aim to support developers in building high-quality applications, the research community has recently developed novel techniques and tools to automate their testing process \cite{sapienz, dynodroid ,muccini,Hu:2011:AGT:1982595.1982612}. \\
+%The most famous automated GUI testing tools and their properties are discussed in the chapter \textit{Related Work}. \\
+Despite a strong evidence for automated testing approaches in verifying GUI application and revealing bugs, these state-of-art tools cannot always achieve a high code coverage \cite{Nagappan2015}. One reason is that an automated event-test-generation tool is not suited for generating inputs that require human intelligence (e.g., inputs to text boxes that expect valid passwords, or playing and winning a game with a strategy, etc.).
+For this reason, sometimes a time-consuming manual approach can be needed for testing an application \cite{Nagappan2015}. \\
+However, GUI testing could not be the only approach to help developers find bugs in a mobile application. Nowadays, the exponential growth of the mobile stores offers an enormous amount of informations and feedbacks from users. Therefore, another different strategy is to incorporate opinions and reviews of the end-users during the software's evolution process. \newline
+In this direction, in a recent work Panichella \etal introduced a tool called SURF (Summarizer of User Reviews Feedback), that is able to analyse the useful informations contained in app reviews and to performs a systematic summarisation of thousands of user reviews through the generation of an interactive agenda of recommended software changes \cite{DBLP:conf/sigsoft/SorboPASVCG16}.
 \section{Context}
 
 
 
 
-While mobile applications are becoming so widely adopted, it is still unclear if they deserve any specific testing approach for their verification and validation \cite{Amalfitano2013}.\\
-Since, unlike traditional software, applications are mainly exercised by user inputs, an extremely valid approach to ensure the reliability of these applications is the GUI\footnote{Graphical User Interface} testing. In particular, in this kind of testing, each test case is designed and run in the form of sequences of GUI interaction events. \\
-The most famous automated GUI testing tools and their properties are discussed in the chapter \textit{Related Work}. \\
-Despite a strong evidence for automated testing approaches in verifying GUI application and revealing bugs, these state-of-art tools cannot always achieve a high code coverage \cite{Nagappan2015}. One reason is that an automated event-test-generation tool is not suited for generating inputs that require human intelligence (e.g., inputs to text boxes that expect valid passwords, or playing and winning a game with a strategy, etc.).
-For this reason, sometimes a time-consuming manual approach can be needed for testing an application \cite{Nagappan2015}. \\
-However, GUI testing could not be the only approach to help developers find bugs in a mobile application. Nowadays, the exponential growth of the mobile stores offers an enormous amount of informations and feedbacks from users. Therefore, another different strategy is to incorporate opinions and reviews of the end-users during the software's evolution process. \newline
-In this direction, in a recent work Panichella \etal introduced a tool called SURF (Summarizer of User Reviews Feedback), that is able to analyse the useful informations contained in app reviews and to performs a systematic summarisation of thousands of user reviews through the generation of an interactive agenda of recommended software changes \cite{DBLP:conf/sigsoft/SorboPASVCG16}.
+
+Therefore, since the growing competition characterizing mobile application marketplaces, like Google Play and the Apple App Store, ensures that only high quality apps stay on the market and gain users, developers have to pay particular attention to the quality of the apps they are developing and maintaining through adequate software testing activities.
+\cite{Martin:tse2017,dynodroid}. 
+
+
+
+
+
+
+D
 
 \section{Motivation}
 \section{Motivation Example}
