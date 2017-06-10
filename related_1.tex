@@ -3,36 +3,58 @@ In the following two sections, I summarize the main related works on \textit{aut
 An overview of the recent research in the field can be found in the survey by Martin \etal \cite{Martin:tse2017}. 
 \section{Automated tools for Android Testing}
 
-Unlike traditional software, mobile applications are mainly exercised by user inputs. \\ 
-In the mobile world, an extremely valid approach to ensure the realiability of these applications is the GUI\footnote{Graphical User Interface} Testing. \\ 
-In particular, in this kind of testing, each test case is designed and run in the form of sequences of GUI interaction events.  \\
+%Unlike traditional software, mobile applications are mainly exercised by user inputs. \\ 
+%In the mobile world, an extremely valid approach to ensure the reliability of these applications is the GUI\footnote{Graphical User Interface} Testing. \\ 
+%In particular, in this kind of testing, each test case is designed and run in the form of sequences of GUI interaction events.  \\
 Depending on their exploration strategy, there are in general three approaches for creating a generation of user inputs on a mobile device \cite{dynodroid, areWeThereYet}: \textit{random testing} \cite{dynodroid, monkey}, \textit{systematic testing} \cite{evodroid} and \textit{model-based testing} \cite{mobiguitar, SwiftHand, mining}. 
 \subsubsection{Fuzz testing}
-When test automation does occur, it typically relies on Google's Android \textit{Monkey} command-line \cite{monkey}. Since it comes directly integrated in Android Studio, the standard IDE for Android Development, it is regarded as the current state-of-practice \cite{Mahmood2014}.\\
-This tool simply generates, for the specified Android applications, pseudo-random streams of user events into the system, with the goal to stress the \textit{AUT\footnote{Application Under Test}}\cite{monkey}. \\ 
-The effort required for using \textit{Monkey} is very low \cite{areWeThereYet}. Users have to specify in the command-line the type and the number of the UI events they want to generate and in addition they can establish the verbosity level of the \textit{Monkey log}. \\
-The set of possible \textit{Monkey parameters} can be found in the official \textit{User Guide} for Monkey \cite{monkey}. \\
-The kind of testing implemented by Monkey follows a black-box approach. 
+When test automation does occur, it typically relies on Google's Android \monkey command-line \cite{monkey}. Since it comes directly integrated in Android Studio, the standard IDE for Android Development, it is regarded as the current state-of-practice \cite{Mahmood2014}.
+This tool simply generates, for the specified Android applications, pseudo-random streams of user events into the system, with the goal to stress the \textit{AUT\footnote{Application Under Test}} \cite{monkey}.  
+The effort required for using \monkey is very low \cite{areWeThereYet}. Users have to specify in the command-line the type and the number of the UI events they want to generate and in addition they can establish the verbosity level of the \monkey log. 
+The set of possible \monkey parameters can be found in the official \textit{User Guide} for \monkey \cite{monkey}. \\
+The kind of testing implemented by \monkey follows a black-box approach. 
 Despite the robustness, the user friendliness \cite{areWeThereYet, dynodroid} and the capacity to find out new bugs outside the stated scenarios  \cite{monkey_2}, this tool may be inefficient if the \textit{AUT} would require some human intelligence (\textit{e.g.} a login field) for providing sensible inputs \cite{dynodroid}. \\
-For this reason, \textit{Monkey} may cause highly redundant and senseless user events. Even though it would find out a new bug for a given app, the steps for reproducing it may be very difficult to follow, due also to the randomness in the testing strategy implemented by \textit{Monkey}\cite{monkey_2}. \\
-\textbf{Dynodroid} \cite{dynodroid} is also a random-based testing approach. However, this tool has been discovered being more efficient than \textit{Monkey} in the exploration process  \cite{areWeThereYet}. \\
-One of the reasons behind a better efficacy has been that \textit{Dynodroid} is able to generate both \textit{UI inputs} and \textit{system events} (unlike \textit{Monkey}, which can only generate UI events) \cite{areWeThereYet}. \\  
-Indeed, \textit{Dynodroid} can simulate an incoming SMS message on a mobile device, a notification of another app or an request of use for available wifi networks in the neighborhood \cite{dynodroid}. All these events represent \textit{non-UI events} and they are often unpredictable and therefore difficult to simulate in a suitable context (cita?). \\
-\textit{Dynodroid }views the \textit{AUT} as an event-driven program and follows a cyclical mechanism, also known as the \textit{observe-select-execute} cycle \cite{dynodroid}. First of all, it \textit{observes} which events are relevant to the \textit{AUT} in the current state, grouping they together (an event must be considered relevant if it triggers a part of code which is part of the \textit{AUT}). After that, it \textit{selects} one of the previously observed events with a randomized algorithm \cite{dynodroid, areWeThereYet} and finally \textit{executes} it. After the execution of that event it reaches a new state and can start the cycle again. \\
-Another advantage of \textit{Dynodroid} compared to \textit{Monkey} is that it allows users to interact in the testing process providing UI inputs. In doing so, \textit{Dynodroid} is able to exploit the benefits of combining automated with manual testing \cite{dynodroid}.
+For this reason, \monkey may cause highly redundant and senseless user events. Even though it would find out a new bug for a given app, the steps for reproducing it may be very difficult to follow, due also to the randomness in the testing strategy implemented by \monkey \cite{monkey_2}. 
+
+
+\textbf{Dynodroid} \cite{dynodroid} is also a random-based testing approach. However, this tool has been discovered being more efficient than \monkey in the exploration process  \cite{areWeThereYet}. \\
+One of the reasons behind a better efficacy has been that \dynodroid is able to generate both \textit{UI inputs} and \textit{system events} (unlike \monkey, which can only generate UI events) \cite{areWeThereYet}. \\  
+Indeed, \dynodroid can simulate an incoming SMS message on a mobile device, a notification of another app or an request of use for available wifi networks in the neighborhood \cite{dynodroid}. All these events represent \textit{non-UI events} and they are often unpredictable and therefore difficult to simulate in a suitable context. 
+\dynodroid views the \textit{AUT} as an event-driven program and follows a cyclical mechanism, also known as the \textit{observe-select-execute} cycle \cite{dynodroid}. First of all, it \textit{observes} which events are relevant to the AUT in the current state, grouping they together (an event must be considered relevant if it triggers a part of code which is part of the AUT). After that, it \textit{selects} one of the previously observed events with a randomized algorithm \cite{dynodroid, areWeThereYet} and finally \textit{executes} it. After the execution of that event it reaches a new state and can start the cycle again. \\
+Another advantage of \dynodroid compared to \monkey is that it allows users to interact in the testing process providing UI inputs. In doing so, \dynodroid is able to exploit the benefits of combining automated with manual testing \cite{dynodroid}.
 
 \subsubsection{Systematic testing}
-The tools using a systematic explorations strategy rely on more sophisticated techniques, such as symbolic execution and evolutionary algorithms \cite{areWeThereYet}. \\
-\textbf{Sapienz} \cite{sapienz} introduced a Pareto multi-objective search-based technique to simultaneously maximize coverage and fault revelation, while minimizing the sequence lengths. \\ It combines the above mentioned random-based approach with a new systematic exploration and as mentioned in the experimental results published on \cite{sapienz}, \textit{Sapienz} is an outperformer in the automated mobile testing area. \\
-Indeed, in an empirical study described on \cite{sapienz}, \textit{Sapienz} has illustrated the strength of its approach. It found from a set of 68 benchmark apps, 104 unique crashes (while \textit{Monkey} 41 and \textit{Dynodroid} 13).
+The tools using a systematic explorations strategy rely on more sophisticated techniques, such as symbolic execution and evolutionary algorithms \cite{areWeThereYet}. 
+
+
+\sapienz \cite{sapienz} introduced a new Pareto multi-objective search-based technique (the first one to Android testing) to simultaneously maximize coverage and fault revelation, while minimizing the sequence lengths. Its approach combines the above mentioned random-based techniques with a new systematic exploration. \sapienz starts its work-flow by instrumenting the AUT, which can be achieved using a \textit{white-box} approach, whether the source code is available. Otherwise the "instrumenting-process" follows a \textit{black-box} approach whether only the APK\footnote{Android Package Kit, extension used by Android OS for installing a mobile app on an android device} is given.  
+Afterwards, \sapienz extracts string constants after an accurate analysis of the APK. These strings are used as inputs for inserting realistic strings into the AUT, which has been demonstrated to improve the testing efficiency \cite{sapienz}. After that, UI events are generated and executed by a internal component called \textit{MotifCore}. This component, as highlighted before, combines random-based testing approaches with systematic exploration strategies. In fact, when it gets invoked, it initialises an \textit{initial population} via \textit{MotifCore's Test Generator} and starts the genetic evolution process. During this process, another component called \textit{Test Replayer} takes genetic individuals during the evaluation process of the individual fitness. After that, the individual test cases are translated into Android events by the \textit{Gene Interpreter}, which is in charge of communicate with the mobile device. Another component called \textit{States Logger} checks whether the tests cases find some faults and produces statistics for another component, called \textit{Fitness Extractor}, which compute the fitness. Finally, reports are generated at the end of the process.  
+
+
+The experiment results published on \cite{sapienz} show that \sapienz is an out-performer in the automated mobile testing area. The table below compares the above mentioned tools \monkey and \dynodroid with \sapienz, illustrating the strength of the \sapienz's approach. 
+
+\begin{table}[htb]
+\centering
+\caption{Statistics on found crashes from the \sapienz experiment published on \cite{sapienz}}
+\label{sapienz experiment results}
+\begin{tabular}{|c|c|c|c|l}
+\cline{1-4}
+\textbf{App crashes} & \textbf{Monkey} & \textbf{Dynodroid} & \textbf{Sapienz} &  \\ \cline{1-4}
+Nr. App crashes      & 24              & 13                 & 41               &  \\ \cline{1-4}
+Nr. Unique crashes   & 41              & 13                 & 104              &  \\ \cline{1-4}
+Nr. Total crashes    & 1'196           & 125                & 6866             &  \\ \cline{1-4}
+\end{tabular}
+\end{table}
+As represented in the table above, \sapienz found from a set of 68 benchmark apps, 104 unique crashes (while \monkey 41 and \dynodroid 13).
 
 \subsubsection{Model-based testing}
 Model-based tools for testing Android applications are quite popular \cite{sapienz}. Most of these tools \cite{mobiguitar,guiripper, swifthand, SwiftHand, mining} generate UI events from models, which are either manually designed or created from XML configuration files \cite{sapienz}. \\
-For example, \textit{SwiftHand}\footnote{https://github.com/wtchoi/SwiftHand} uses a machine learning algorithm to learn a model of the current \textit{AUT}. This final state machine model \cite{areWeThereYet} generates UI events and due their execution the app reaches new unexplored states. After that, it exploits the execution of these events to adapt and refine the model \cite{swifthand}. \textit{SwiftHand}, in a similar way to \textit{Monkey} generates only touching and scrolling UI events and is not able to generate System events \cite{areWeThereYet}.
+For example, \textit{SwiftHand}\footnote{https://github.com/wtchoi/SwiftHand} uses a machine learning algorithm to learn a model of the current \textit{AUT}. This final state machine model \cite{areWeThereYet} generates UI events and due their execution the app reaches new unexplored states. After that, it exploits the execution of these events to adapt and refine the model \cite{swifthand}. \textit{SwiftHand}, in a similar way to \monkey generates only touching and scrolling UI events and is not able to generate System events \cite{areWeThereYet}.
 
 \section{Usage of users reviews in Software maintenance activities}
 The concept of app store mining was first introduced by \textit{Harman} \etal
 \cite{appstoremining}. In this context, many researchers focused on the analysis of user reviews to support the maintenance and evolution of mobile applications \cite{Martin:tse2017}.
+In this direction, in a recent work Panichella \etal introduced a tool called SURF (Summarizer of User Reviews Feedback), that is able to analyse the useful informations contained in app reviews and to performs a systematic summarisation of thousands of user reviews through the generation of an interactive agenda of recommended software changes \cite{DBLP:conf/sigsoft/SorboPASVCG16}. \\
 
 
 %monkey (va con random testing)
