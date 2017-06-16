@@ -1,5 +1,20 @@
 % !TEX root =  ./lucas_thesis.tex
-%Software Testing: what is that
+%------------------------- THESIS OVERVIEW ------------------------
+The following sections in this chapter give an overview about the context in which the thesis is placed, the motivation behind it and a brief introduction of the research questions prepared for it. 
+
+Afterwards, chapter 2 surveys the literature in the field of automated mobile testing, presenting the main approaches in this field and their exploration strategies. After that, it presents the literature available about the usage of users reviews in software maintenance activities. 
+
+Chapter 3 gives a general overview about the approaches and methodologies available in the literature, implemented in the presented tool. 
+
+Chapter 4 presents \toolname, a tool which firstly tests and reports a set of android mobile apps using either \monkey or \textit{Sapienz}.  Secondly, creates a cluster with the in the previous testing phase generated crash logs. Finally, uses a linking procedure for combing a set of user reviews with the stack trace that have been grouped together in the previous step. The tool enables developers to link natural language contained inside user feedbacks and pieces of source code, such as names of classes, methods, functions, etc. 
+
+Chapter 5 describes the obtained results after an experiment conducted on a set of mobile apps (available on \textit{FDroid \footnote{https://f-droid.org}}) with their correspondent reviews. 
+
+Finally, chapter 6 closes the main body of the thesis with concluding comments and proposals for future work.
+
+
+%------------------------- CONTEXT: TESTING IN GENERAL -------------------
+\section{Context}
 Testing is the action of inspecting the behaviour of a program, with the intention of finding anomalies or errors \cite{testing}.
 The goal behind software testing is to reach the highest \textit{test coverage} finding the largest number of \textit{errors} with the smallest number of \textit{test cases}. A test case can be viewed as a set of program inputs, each of them gets associated with an expected result when they are executed. 
 
@@ -25,8 +40,9 @@ These mentioned testing levels shall be sequentially executed and are drived by 
 With \textit{black-box} testing, also called functional testing, the tester doesn't need to have any prior knowledge of the interior structure of the application. He tests only the functionalities provided by the software without any access to the source code. Typically, when performing a black box test, a tester will interact with the system's user interface by providing inputs and examining outputs without knowing how and where the inputs are worked upon. On the other side, with \textit{white-box} testing, also \textit{glass testing} or \textit{open box testing} \cite{grano}, the test cases are extrapolated from the internal software's structure. Indeed, the tester writes the test cases defining a paths through the code, which has to provide a sensible output. \\
 In practice, the whole testing process is strictly structured and it gets implemented through the use of different testing models. Usually, the selection of one model rather than another has a huge impact on the final testing result is carried out. The most popular and applied testing process models in practice are the \textit{V-model} \cite{vmodel}, the \textit{Waterfall model}\cite{waterfallmodel} and the \textit{Spiral model} \cite{spiralmodel}. \\
 As shown, there exist few testing steps, methodologies and different models to accompany a testing process of a traditional software. However, when a tester is intent to define and choose the right pieces for testing a software in a careful manner, the common goal behind the testing stays always the same, i.e. generate a \textit{test suite} (a set of \textit{test cases}), with the smallest number of test cases causing the largest number of failures in the system \cite{grano}, in order to increase the reliability of the system. 
-However as mentioned before, the process of finding the correct test scenarios, afterwards execute them and finally report their results and compare them to the previously written specifications, might be time-consuming and cost-intensive. In fact, testing costs have been estimated at being at least half of the entire development cost \cite{Beizer:1990:STT:79060}. For this reason, it is necessary to reduce them, trying to improve the effectiveness of the whole testing process, with the aim to automate it. \\
+However as mentioned before, the process of finding the correct test scenarios, afterwards execute them and finally report their results and compare them to the previously written specifications, might be time-consuming and cost-intensive. In fact, testing costs have been estimated at being at least half of the entire development cost \cite{Beizer:1990:STT:79060}. For this reason, it is necessary to reduce them, trying to improve the effectiveness of the whole testing process, with the aim to automate it. 
 
+\section{Motivation}
 %------------- PASSAGGIO DAL TESTING TRADIZIONALE AL MOBILE -------------
 With the advent of the \textit{mobile age}, the traditional software market has been always more complemented with a new point of view. Indeed, nowadays, application running on mobile devices are becoming so widely adopted, so that they have represented a remarkable revolution in the IT sector. In fact, in three years, over 300,000 mobile applications have been developed, \cite{muccini}, 149 billions downloaded only in 2016 \cite{statista} and 12 million mobile app developers (expected to reach up 14 million in 2020) maintaining them \cite{DevRelate}. \\
 This majestic revolution in the IT sector has had also a huge impact on the software testing area. This because, mobile applications differ from traditional software and so differ also their testing techniques. 
@@ -52,30 +68,47 @@ Indeed, information contained within \textit{user review}s can be exploited to o
 \item they can be used to prioritize bug resolution activities based on the users' requests, possibly helping developers in increasing the ratings of their apps.
 \end{enumerate} 
 
-
-The aim behind my thesis is to investigate the correlation between these \textit{user reviews} and the \textit{crash logs} generated from the automated state-of-art tools described above. I combine these two sources of information implementing a linking procedure to add contextual details to the logs generated by automated mobile testing tools. In addition, I plan to analyse which are the reviews and reports that cannot be linked. I argue that this investigation might improve the automated testing process. \newpage
-
-
-\section{Overview of the thesis}
-The following sections in this chapter give an overview about the context in which the thesis is placed, the motivation behind it and a brief introduction of the research questions prepared for it. 
-
-Afterwards, chapter 2 surveys the literature in the field of automated mobile testing, presenting the main approaches in this field and their exploration strategies. After that, it presents the literature available about the usage of users reviews in software maintenance activities. 
-
-Chapter 3 gives a general overview about the approaches and methodologies available in the literature, implemented in the presented tool. 
-
-Chapter 4 presents \toolname, a tool which firstly tests and reports a set of android mobile apps using either \monkey or \textit{Sapienz}.  Secondly, creates a cluster with the in the previous testing phase generated crash logs. Finally, uses a linking procedure for combing a set of user reviews with the stack trace that have been grouped together in the previous step. The tool enables developers to link natural language contained inside user feedbacks and pieces of source code, such as names of classes, methods, functions, etc. 
-
-Chapter 5 describes the obtained results after an experiment conducted on a set of mobile apps (available on \textit{FDroid \footnote{https://f-droid.org}}) with their correspondent reviews. 
-
-Finally, chapter 6 closes the main body of the thesis with concluding comments and proposals for future work.
-
-
-
-
-
-\section{Context}
-This work is placed in the context of automated testing tools and the usage of user reviews for helping furthermore developers in their testing phase. 
-
-\section{Motivation}
 \section{Motivation Example}
+Following, I provide a concrete example of how we plan to compare and analyse the two sources of information: user reviews and reports generated by automated mobile applications testing tools. Given app reviews, we first plan to automatically select the ones describing crashes and bugs in features or in UI elements.
+%\textit{Feature \& UI Bugs} and \textit{Crashes}. 
+One such example is the following: 
+\smallbreak
+\emph{\small``Barely works I only installed this for the android sharing function but it usually loads a white screen when I try to use this feature. It's no better than using a browser to view Facebook otherwise.''}. 
+\smallbreak
+The user complains about the app sharing function that shows a white screen when activated. A report generated by one of available automated testing tools, \textsc{Sapienz} \cite{sapienz}, includes the stack trace below, where \textsc{Sapienz} is able to find a \texttt{NullPointerException} while exercising the sharing functionality. 
+\begin{lstlisting}[basicstyle=\fontsize{6}{8}\ttfamily]
+java.lang.NullPointerException
+  at com.danvelazco.fbwrapper.activity.BaseFacebookWebViewActivity.shareCurrentPage(BaseFacebookWebViewActivity.java:418)
+  at com.danvelazco.fbwrapper.FbWrapper.access$700(FbWrapper.java:26)
+  at com.danvelazco.fbwrapper.FbWrapper$MenuDrawerButtonListener.onClick(FbWrapper.java:376)
+  at android.view.View.performClick(View.java:4438)
+  at android.view.View.onKeyUp(View.java:8241)
+  ....
+  ....
+  at com.android.internal.os.ZygoteInit.main(ZygoteInit.java:611)
+  at dalvik.system.NativeStart.main(Native Method)
+\end{lstlisting}
+
+The aim behind my thesis is to investigate the correlation between these \textit{user reviews} and the \textit{crash logs} generated from the automated state-of-art tools described in the previous sections. 
+I combine these two sources of information implementing a linking procedure to add contextual details to the logs generated by automated mobile testing tools. I argue that this approach can be fruitfully used to support developers in determining which bugs should be addressed first, prioritizing the arose failures. It is worth to notice that such prioritization is directly guided by the user feedback with the aim to maximize their satisfaction and consequentially, the app rating.
+I argue that this investigation might improve the automated testing process and might help other developers in validating their mobile applications, using \toolname, the implemented tool described in the \textit{Chapter 4}.
+
+
+
 \section{Research questions}
+In this thesis, I conduct a preliminary study to investigate the first and most important point from the previous list: \textit{the complementarity between user feedback and the outcomes of automated testing tools}. This research represents a first fundamental step toward the integration of user feedback into the testing process of mobile apps. Thus, I conducted my thesis to answer the following research questions:
+
+\begin{itemize}
+ %\vspace{-1.5mm}
+	\item \RQ{1}: \textit{Which are the most important tools for automatic testing of Android applications?} %I want to investigate 
+	
+	\item \RQ{2}: \textit{To what extent can we link the defects arose from automated testing tools with user reviews?}  
+	
+	\item \RQ{3}: \textit{What kind of defects are detected by state-of-art tools proposed for GUI testing? How these defects are effectively perceived by users?} 
+
+\end{itemize}
+For answering the \RQ{1}, I want to investigate which are the most important automated testing tools used for testing Android mobile applications. For this purpose, I present in the Chapter ~\ref{sec:related} the main research in this field, giving an accurate overview about the testing tools in general, their pros and cons and their exploration strategies. 
+
+For the \RQ{2}, I implement a linking procedure which uses a experimental-based threshold in order to state whether a review refers to a specific \textit{crash log}. Based on the result of this linking approach I am able to discuss and answer the second research question. 
+
+For the \RQ{3}, TODO!
