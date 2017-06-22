@@ -1,31 +1,31 @@
 The tool I implemented, called \toolname, is a \textit{java-based} tool aimed at helping further developers during the testing process of their Android mobile applications. \\
 For giving a cleaner and more understandable explanation of how \toolname\ works, I would like to split its key features into three main categories (which should also be executed in a sequential way, in order to exploit the whole \toolname's potentiality): 
 \begin{enumerate}
-\item the \textsc{testing} part is in charge of testing a given set of \textit{APKs}, reporting their testing results and extracting possible \textit{crashes} from the before generated testing logs; 
+\item the \textsc{Testing} part is in charge of testing a given set of \textit{APKs}, reporting their testing results and extracting possible \textit{crashes} from the before generated test logs; 
 
-\item the \textsc{clustering} part investigates the similarity between the previous extracted crash logs, using different metrics and strategies, in order to collect they together and create a crash log \textit{bucket}; 
+\item the \textsc{Clustering} part investigates the similarity between the previous extracted crash logs, using different metrics and strategies, in order to collect they together and create a crash log \textit{bucket}; 
 
-\item the \textsc{linking} part represents the core feature of \toolname. It pre-processes a set of given \textit{user reviews} as well as the set of the previously created crash logs, in order to prepare and "clean" them for the linking procedure.  Afterwards, it investigates whether it exists a correlation between the stack traces and the user feedbacks, with the aim to link, whether possible, the reviews with the crash logs. 
+\item the \textsc{Linking} part represents the core feature of \toolname. It pre-processes a set of given \textit{user reviews} as well as the set of the previously created crash logs, in order to prepare and "clean" them for the linking procedure.  Afterwards, it investigates whether it exists a correlation between the stack traces and the user feedbacks, with the aim to link, whether possible, the reviews with the crash logs. 
 \end{enumerate}
 
 \section{Testing}
 %----------------- FDROID CRAWLER --------------
-First of all, if there is no a set of \textit{APKs} yet, \toolname\ can be exploited for downloading the needed mobile applications from the \textit{F-Droid API\footnote{LINK API}}. In this direction, as shown in the picture \ref{testing}, the component \textsc{fdroid crawler}, is first in charge of  parsing a static structured file, which contains a set of android packages names. 
+First of all, if no set of \textit{APKs} is available yet, \toolname\ can be exploited for downloading the needed mobile applications from the \textit{F-Droid API\footnote{LINK API}}. In this direction, as shown in the picture \ref{testing}, the component \FDroidCrawler, is first in charge of  parsing a static structured file (\textit{e.g.} a \textit{csv}-file format), which contains a set of android packages names. 
 The path of this file is given in the \textsc{configuration manager}, which contains a set of static properties that get elaborated by \toolname. Second, \textsc{fdroid crawler} searches and then extracts a set of \textit{HTTP links} for those android packages that have been found on the API. Afterwards, it builds the correct \textit{HTTP requests} and finally starts the downloading process, saving the returned \textit{APKs} in a given directory.
 
 %-------------- CONFIGURATION ENVIRONMENT--------------
-The first step was to build a set of \textit{APKs}, with which to perform the testing process. As said, this can be achieved using either \textsc{fdroid crawler} or can also be manually set. Now, the second step is to prepare and configure the testing environment. 
+The first step of the testing part was to build a set of \textit{APKs}, with which to perform the testing process. As said, this can be achieved using either \textsc{fdroid crawler} or can also be manually created. Now, the second step is to prepare and configure the testing environment. 
 All the parameters needed for starting a testing session have to be specified in the \textsc{configuration manager}. Figure \ref{config}, shows an example of a simplified set of parameters which must be given a priori in order to launch a testing session. \newpage
 \label{config}
-\begin{lstlisting}[caption=A set of needed properties which get elaborated during the testing session]
+\begin{lstlisting}[caption=Properties which get elaborated during the testing sessions]
 /**
  * Testing session specifications
  */
 MINUTES_PER_APP = 30
-NR_OF_ITERATIONS
+NR_OF_ITERATIONS = 5
  
 /**
-* Testing logs directories
+* Test logs directories
 */
 MONKEY_DIR = Reports/MonkeyReports
 SAPIENZ_DIR = Reports/SapienzReports
@@ -55,41 +55,361 @@ CXPB = 0.7
 MUTPB = 0.3
 \end{lstlisting}
 The figure above represents a part of the \textsc{configuration manager}, where all the testing parameters for \monkey and \sapienz are specified. An in-depth explanation about these parameters concering \monkey and \sapienz can be found on \cite{monkey}, respectively on \cite{sapienz}.\\
-In addition to them, the directories on which the generated testing logs are going to be stored must be given and
+In addition to them, the directories on which the generated test logs are going to be stored must be given as well as the specifications about the testing session. The properties about the testing session consist of two values: 
+\begin{itemize}
+\item \textsc{minutes\_per\_app}, specifies how many minutes an app will be tested. After that time frame, a time-out occurs and the testing process gets restarted with the next app. 
+\item \textsc{nr\_of\_iterations}, specifies how many times the whole dataset will be tested.
+\end{itemize}
+
+According to the example \ref{config} above and assuming that the \textit{APKs} set consists in 10 apps, the total estimated testing time for an entire testing session would be: 
+\begin{center}
+30 min p/a * 10 apps * 5 iterations = 1500 min. (25 hours). 
+\end{center}
+Once the environment testing variables have been configured, the automated tool with whom the testing is going to be performed must be made explicit. Indeed, it has to be specified as parameter in \textsc{main} \textit{args} (as mentioned before in the section \ref{sec:choicetool}, the tools which can be selected are either \monkey or \sapienz). \\
+The last configuration step is to define on which kind of device (\textit{i.e}, a real device, such as a \textit{tablet} or a virtual device, such as an \textit{emulator}) the testing is going to be performed. In addition to them, an additional argument that starts a timer for a better overview during the testing process can also be passed as main argument. \toolname\ supports different types of emulators or real devices running on different android API levels. However, in order to correctly execute \sapienz, the API level shall be the \textit{Android 4.4, KitKat}. \\
+The listing below shows an example of a combination of possible parameters that could be given as main arguments. 
 
 
-% TOODOOO
-the automated tool with whom the testing is going to be performed must be made explicit. Indeed, it has to be specified as parameter in \textsc{main} \textit{args} (as mentioned before in the section \ref{sec:choicetool}, the tools which can be selected are either \monkey or \sapienz). \\
-The last configuration step is to define on which kind of device (\textit{i.e}, a real device, such as a \textit{tablet} or a virtual device, such as an \textit{emulator}) the testing is going to be performed. \toolname\ supports different types of emulators or real devices running on different android API levels. However, in order to correctly execute \sapienz, the API level shall be the \textit{Android 4.4, KitKat}. 
-
+\begin{lstlisting}[caption=\toolname\ command line, language=bash]
+$ java -\toolname.jar -device -monkey -timer
+\end{lstlisting}
 
 %-----------LAUNCH A TESTING SESSION -----------
-
-
-
-
 Once the configuration phase is terminated, \toolname\ is able to start the testing process. 
-As shown in the picture \ref{testing},  
+As shown in the picture \ref{testing}, it manages the component \SessionLauncher, which is in charge of translating the previously specified testing properties into "java readable code" and initializing the testing session. 
+Concretely, after \toolname\ invokes \SessionLauncher\ all the attached devices respectively the chosen emulators get initialized, \ie they get rebooted and restarted as root, so that some important write-read-permissions are enabled during the testing session. 
+Whether the timer has been given as main argument, it gets also started. \\
+Once the initialization step has been completed, \SessionLauncher\  invokes the \AppTester\ component which finally starts the testing session. The Listing~\ref{lst:startsession} gives a simplified code snippet about the beginning of the testing process. 
 
- %and installs them one by one during the testing phase. It installs them on one or more attached mobile devices and starts the automated testing phase. It stress the AUT using the automated testing tool specified as parameter in the \textit{Main} body  
+\begin{lstlisting}[caption=\SessionLauncher\ Code snippet for starting a testing session, ,label={lst:startsession}]
+private appTester; 
+public void startTestingSession() throws Exception {
+        final int NUMBER_ITERATIONS = ConfigurationManager.getNumberOfIterations();
+        if (IS_EMULATOR) {
+        	   SessionLauncher.initialiseEmulator();
+        }
+        else {
+       	   SessionLauncher.initialiseDevices();
+        }
+       
+        if (isTimer) {
+            SessionLauncher.initializeTimer();
+        }
+        for (int i = 0; i < NUMBER_ITERATIONS; i++) {
+            System.out.println("Iteration number " + (i+1));
+            this.appTester = new AppTester();
+            this.appTester.testAllApp();
+        }
+}
+\end{lstlisting}
+First of all, the total number of iterations specified in the \Config\ is read and stored into a constant of type int. After that, all the attached devices (or the chosen emulators) gets statically initialized. According to the boolean variable \textit{isTimer}, a timer may also be started.
+Afterwards, a for-loop starts where at each iteration the method \textit{testAllApp()} gets invoked. 
+The idea behind this, is that at each iteration a new object of type \AppTester\ is created, so that each created object represents one testing loop of the dataset. 
+For this reason, as shown in the figure~\ref{testing}, the \SessionLauncher\ would be able to instantiate infinite times the class \AppTester. However, it must create at least one object of that type in order to start a testing session. 
+
+\AppTester\ and \Cmd\ represent the core components of the whole testing process. Indeed, \AppTester\ can be viewed as brain of the process, since it tells step-by-step to the body, \ie the \Cmd\ component, which commands it has to execute and at what stage of the process it has to perform it. \\
+Listing~\ref{lst:apptester} shows a very simplified code snippet of the relation between the two above mentioned components. 
+\begin{lstlisting}[caption=Testing mechanism between \AppTester\ and \Cmd\, ,label={lst:apptester}]
+/**
+* @class: AppTester
+*/
+public void testAllApp() {
+        for (File apk : this.apksDirectory) {
+            if (apk.getName().endsWith(".apk") && !apk.isDirectory()) {
+                    uninstallApp(apk.getName());
+                    installApp(apk.getName());
+                    if (IS_MONKEY) {
+                        testAppWithMonkey(config.getMonkeyRepDir(), apk.getName());
+                    } else if (IS_SAPIENZ) {
+                        testAppWithSapienz(config.getSapienzRepDir(), apk.getName());
+                    }
+            }
+        } 
+        // waiting to threads to finish 
+        File testLog = CmdExecutor.getCurrentLog();
+        if (hasCrash(testLog)) {
+            generateCrashLog(testLog);
+        }
+} 
+private void testAppWithSapienz(String dest, final String APK_NAME) {
+	CmdExecutor.generateReport(dest, CommandLines.SAPIENZ_CMD_LINE(APK_NAME)); 
+}
+
+private void testAppWithMonkey(String dest, final String APK_NAME) {
+	CmdExecutor.generateReport(dest, CommandLines.MONKEY_CMD_LINE(APK_NAME)); 
+}
+
+/**
+* @class: CmdExectutor
+*/
+public static void generateReport(String dest, String cmd){
+        Runtime runtime = Runtime.getRuntime();
+        Process p = runtime.exec(cmd);
+        StreamGobbler output = new StreamGobbler(p.getInputStream(), cmd, dest); 
+        output.start();
+        writeTestingEndTime(dest);
+    }
+    
+public static File getCurrentLog() {
+    return lastGeneratedLog();
+}
+    
+\end{lstlisting}
+
+
+First of all, \AppTester\ creates a for-loop in which it iterates each \textit{APK} file contained in the \textit{APKs} directory. Once again, this directory is specified in the \Config. 
+The first if statement checks whether the file in question has an adequate extension, \ie it is able to be installed on a android mobile device. After that, \AppTester\ uninstalls the concerned \textit{APK}, so that at each iteration of the testing it get reinstalled. This beacause, it may be that an \textit{APK} gets affected by previously generated sequences (\eg a sequence of random events that led the app to an external website). \\
+Afterwards, \AppTester\ checks which automated tool has been chosen by the tester, so that it can tell to the \Cmd\ component, which command-line it has to execute. As stated before, \AppTester\ prepares the single testing components such as which \textit{APK}, which tool, which testing parameters, etc., while \Cmd\ executes them without any prior knowledge. \\
+After the automated tool has been detected, \Cmd\ is able to concretely start the testing, executing the passed command-line. This is represented in listing \ref{lst:apptester} by the method \textit{generateReport}. Indeed, \Cmd\ uses a single instance of the java-class \textit{Runtime} that allows the application to interact with the environment in which the app is running \cite{runtime}. This is actually achieved by the \textit{Runtime.getRuntime()}. The next line executes with the previously created object the given command-line. Since this method returns a new Process object, the result of the execution is assigned to a separate process. \\
+Assigning the execution of each single command-line to a new single separate process brings with it many advantages: 
+\begin{itemize}
+\item Processes are independent of each other. If the execution of a command-line fails, it can be interrupted without affecting the entire testing process; 
+\item Multithreading can be easily supported; Indeed, the component \Stream\ extends the \textit{Thread} java-class which implements the \textit{Runnable} java-interface. Each time a new process comes in, it starts a new thread in this class.
+\item Each process has it own timeout. It may be that some command-lines cannot properly terminate and need to be interrupted during their execution.  
+\end{itemize}
+\Stream, in turn, is in charge of writing the test report. Each time its construct get instantiated in the \textit{generateReport()} method of the \Cmd\ class, it starts a new thread and begins in parallel the writing phase of the log. 
+As shown in listing~\ref{lst:gobbler}, the method \textit{run()} overridden from the \textit{Runnable} interface gets automatically per-default invoked when in the \textit{generateReport} method an object of type \textit{StreamGobbler} calls the \textit{start()} method. 
+Once the \textit{start()} method is called, the writing phase starts. This phase uses a \textit{PrintWriter} as well as classic \textit{Reader} for writing text on a file.
+Before the test log is written, the metadata about the testing environments are appended to the writer. At the end of the process the writer is closed and the thread can terminate. Once the thread is finished, the method \textit{writeTestingEndTime()} in the method \textit{generateReport()} can start. This method complement the metadata writing the testing end time, so that the total testing time can be computed. 
 
 
 
 
 
+\begin{lstlisting}[caption=\Stream\ code snippet writing a test log, ,label={lst:gobbler}]
+/**
+* @class: StreamGobbler
+*/
+@Override
+public void run() {
+        try {
+            Writer writer = new PrintWriter(outputPath, "UTF-8");
+            InputStreamReader isr = new InputStreamReader(is);
+            BufferedReader br = new BufferedReader(isr);
+            String line;
+            writer.append(TesterData.getMetaData()); // insert metadata
+            while ((line = br.readLine()) != null) {
+                System.out.println(" > " + line); // console overview
+                writer.append(line).append("\n"); // test log 
+            }
+            closeWriter();
+        } catch (IOException ioe) {
+            ioe.printStackTrace();
+        }
+}
+\end{lstlisting}
+
+Listing~\ref{lst:testinglog} shows a short version of a test log of the app \textit{com.danvelazsco.fbwrapper} that has been generated after the execution of \monkey. 
+
+\begin{lstlisting}[caption=Test log of com.danvelazco.fbwrapper, basicstyle=\fontsize{7}{8}\ttfamily,label={lst:testinglog}]
+/**
+ * Meta-data
+ */
+Tester Name: Lucas Pelloni
+Testing Start Time: 05/04/2017 11:18:29
+Testing End Time: 05/04/2017 11:48:30
+Total Testing Time: 30 minutes (0.5 hours)
+Type of testing: testing on a physical device
+Device name: c0808bf731ab321
+Percentage of motion events: 2.0% (number of motion events: 60 of 3000 events)
+Percentage of system events: 6.0% (number of system events: 180 of 3000 events)
+Percentage of touch events: 1.0% (number of touch events: 30 of 3000 events)
+
+/**
+ * Test log 
+ **/
+:Monkey: seed=1495075565065 count=3000
+:AllowPackage: com.danvelazco.fbwrapper
+:IncludeCategory: android.intent.category.LAUNCHER
+:IncludeCategory: android.intent.category.MONKEY
+// Event percentages:
+//   0: 1.0%
+//   1: 2.0%
+//   2: 2.4931507%
+//   3: 18.698631%
+//   4: -0.0%
+//   5: 31.164383%
+//   6: 18.698631%
+//   7: 6.0%
+//   8: 2.4931507%
+//   9: 1.2465754%
+//   10: 16.205479%
+:Switch: #Intent;action=android.intent.action.MAIN;category=android.intent.category.LAUNCHER;end
+    // Allowing start of Intent { act=android.intent.action.MAIN cat=[android.intent.category.LAUNCHER]
+:Sending Trackball (ACTION_MOVE): 0:(4.0,4.0)
+:Sending Trackball (ACTION_MOVE): 0:(4.0,-3.0)
+:Sending Trackball (ACTION_MOVE): 0:(2.0,-1.0)
+:Sending Trackball (ACTION_MOVE): 0:(-5.0,2.0)
+:Sending Trackball (ACTION_MOVE): 0:(-5.0,3.0)
+    //[calendar_time:2017-05-05 09:48:23.894  system_uptime:717348]
+    // Sending event #100
+...
+\end{lstlisting}
+
+As shown in the figure above, the test logs do not only contain the test results of the tested app, but also the above mentioned meta-data for documenting and retracing the whole testing session.
+
+The testing phase in the "strict sense", \ie the stage where the \textit{APK} gets stressed with an automated tool is over. At this point, the logs must be investigated about the possibility that some apps have generated a crash during its testing time frame. In this sense, the last part of the method \textit{testAllApp()} illustrated in the listing ~\ref{lst:apptester}, is in charge of stating whether a test log contains a crash or not. The method for checking whether a test log has collected a crash inside it is quite intuitive. This because, the syntax used by \monkey and \sapienz in their report for indicating the presence of a crash is the same. As illustrated in the listing~\ref{lst:crashlog}, a crash can be delimited using the following two \textit{Strings}: 
+\begin{itemize}
+\item Crash beginning: \texttt{"// CRASH: "}
+\item Crash end: \texttt{"// "}
+\end{itemize}
+
+\begin{lstlisting}[caption=Crash log of com.danvelazco.fbwrapper illustrated within its test log, basicstyle=\fontsize{6}{8}\ttfamily,label={lst:crashlog}]
+...
+:Sending Trackball (ACTION_MOVE): 0:(3.0,3.0)
+:Sending Trackball (ACTION_MOVE): 0:(-4.0,-3.0)
+:Sending Trackball (ACTION_MOVE): 0:(3.0,-1.0)
+// CRASH: com.danvelazco.fbwrapper (pid 4302)
+// Short Msg: java.lang.NullPointerException
+// Long Msg: java.lang.NullPointerException
+// Build Label: samsung/espressowifixx/espressowifi:4.2.2/JDQ39/P3110XXDMH1:user/release-keys
+// Build Changelist: 8291
+// Build Time: 1419156873000
+// java.lang.NullPointerException
+// 	at com.danvelazco.fbwrapper.activity.BaseFacebookWebViewActivity.onKeyDown(BaseFacebookWebViewActivity.java:649)
+// 	at com.danvelazco.fbwrapper.FbWrapper.onKeyDown(FbWrapper.java:429)
+// 	at android.view.KeyEvent.dispatch(KeyEvent.java:2640)
+// 	at android.app.Activity.dispatchKeyEvent(Activity.java:2433)
+// 	at com.android.internal.policy.impl.PhoneWindow$DecorView.dispatchKeyEvent(PhoneWindow.java:2021)
+// 	at android.view.ViewRootImpl$ViewPostImeInputStage.processKeyEvent(ViewRootImpl.java:3845)
+// 	at android.view.ViewRootImpl$ViewPostImeInputStage.onProcess(ViewRootImpl.java:3819)
+// 	at android.view.ViewRootImpl$InputStage.deliver(ViewRootImpl.java:3392)
+// 	at android.view.ViewRootImpl$InputStage.onDeliverToNext(ViewRootImpl.java:3442)
+//     ...
+//
+:Sending Touch (ACTION_DOWN): 0:(215.0,683.0)
+:Sending Touch (ACTION_UP): 0:(163.15541,597.4464)
+:Sending Touch (ACTION_DOWN): 0:(243.0,812.0)
+...
+
+\end{lstlisting} 
+Indeed, the method \textit{generateCrashLog()} (~\ref{lst:generatecrash} in the \textit{testAllApp()} is in charge of extracting the crash(es) from its test log. The parsing technique used by this method is to individuate the beginning of the crash using the \texttt{"START\_CRASH"}  string. Once the start has been individuated, the loop continues to add lines of the log	until it finds the \texttt{"END\_CRASH"} string. Once the end has been reached the loop terminates and \Cmd\ writes the results into an external file, in order to extract the crash. 
+
+\begin{lstlisting}[caption=\AppTester's method for extracting a crash log from its test log,label={lst:generatecrash}]
+/**
+* @class: AppTester
+*/
+public void generateCrashLog(File testLog) {
+        ...
+        ArrayList<String> crashLog = new ArrayList<>();
+        Pattern start = Pattern.compile(START_CRASH);
+        String line;
+        while ((line = in.readLine()) != null) {
+            Matcher matcher = start.matcher(line);
+            if (matcher.find()) {  // crash start
+                while (!line.contains(END_CRASH)) { // crash end
+                    crashLog.add(line);
+                    line = in.readLine();
+                }
+            }
+        }
+        CmdExecutor.writeToFile(crashLog, dest);
+    }
+\end{lstlisting} 
 
 
-Afterwards, \toolname\ stores the from these automated testing tools generated reports, it scans them and whether a bug occurred, it extracts the \textit{crash} from the documented \textit{stack trace} and accurately writes it on a new file, in order to differentiate stack traces without crashes
+At this point, the \textit{APK} has been tested, reported, its test logs have been investigated and possible crashes have been extracted. Figure~\ref{fig: apkprocess} summarizes the four components which characterizes the testing process of one application. 
+\begin{figure}[htb]
+\centering 
+\includegraphics[width=\columnwidth]{imgs/apkprocess} 
+\caption{Four test steps performed by \toolname\ of an application}
+\label{fig: apkprocess}
+\end{figure}
+
+
+
+Now, \toolname\ is able to start testing the next application (\ie the next iteration of the loop inside the method \textit{testAllApp())}. 
+Once all the applications specified in the dataset have been tested exactly one time, \SessionLauncher\ can begin with the next iteration of its loop (listing ~\ref{lst:startsession}) and so start testing the whole dataset another time. 
+This loop ends when the number of iterations reaches the one specified by the user. \\
+In addition, during each test iteration and at the end of the whole testing session useful statistics are computed and written into external excel files, using the components \textsc{OnGoingCalculator} and \textsc{FinalCalculator}. They use the pure Java library \textit{Apache POI}, for reading and writing files in Microsoft Office formats \cite{apachepoi}. 
+
+
+
 
 \section{Clustering}
+%--------------CLUSTERING AIM-------------
+Once the testing phase is finished, all the generated crash logs are stored in a given directory. After this phase, the only way to differentiate them inside this directory is the name of the package for which these crashes occurred. However, among these crash logs there may be a lot of redundancy, since more of them may refer to the same bug. The aim behind the Clustering phase is to create a bucket of unique crash logs. This means, that each crash log has to be compared with the others	 of the same package and according to some metrics that will be explained below, they must be smartly group together. Figure~\ref{fig: clustering} shows the idea behind the Clustering process. 
+\begin{figure}[htb]
+\centering 
+\includegraphics[width=\columnwidth]{imgs/clusteringidea} 
+\caption{The idea behind the Clustering process}
+\label{fig: clustering}
+\end{figure}
+
+Some groups of crash logs may be overlapping. Despite the trigger method, \ie the method that raised to the exception, may be the same, there may be different sequences of function calls in the stack trace, the more the analysis goes deep. However, they are hardly detectable and is difficult to affirm that two stack traces which have the same trigger method refer to different bugs. 
+
+In order to understand better the Clustering approach, a clarification of how a crash log is structured must be done. In order to do this, another example of a crash log is given in the listing~\ref{lst: ringdroid}. 
+\begin{lstlisting}[caption=Structure of a crash log, basicstyle=\fontsize{6}{8}\ttfamily,label={lst: ringdroid}]
+1.		// CRASH: com.ringdroid (pid 6207)
+2.		// Short Msg: android.database.StaleDataException
+3.		// Long Msg: android.database.StaleDataException: Attempted to access a cursor after it has been closed.
+4.		// android.database.StaleDataException: Attempted to access a cursor after it has been closed.
+5.		// 	at android.database.BulkCursorToCursorAdaptor.throwIfCursorIsClosed(BulkCursorToCursorAdaptor.java:64)
+6. 		// 	at android.database.BulkCursorToCursorAdaptor.getCount(BulkCursorToCursorAdaptor.java:70)
+7.		...
+\end{lstlisting}
+A crash log is usually structured as follows: 
+\begin{itemize}
+\item \textit{Line 1} represents the top of the crash log, where the concerned package name is made explicit;
+\item \textit{Line 2} tells in few words the cause of the exception; 
+\item \textit{Line 3} complements the cause of the exception giving a long explanation about the exception itself;
+\item \textit{Line 4} represents the first line of the stack trace. From this point, all the function calls underlying are part of the stack trace;
+\item \textit{Line 5} is considered the exact reason for the exception, \ie the trigger method that caused the crash;
+\item From \textit{line 6} moving gradually down until the end of the stack trace, there are other nested function calls which contain additional information about the cause of the exception. Usually, the most important ones for identifying the cause are in the first few lines. 
+\end{itemize}
+Before the explanation of the Clustering process, a premise must be made. All the classes that will be discussed below, refer to the class diagram represented in the figure~\ref{clustering}. 
+%TODO aggiungere construttore in crash log passandogli gli argomenti
+First of all, \toolname\ individuates the directory in which all the previously generated crash logs have been stored. This directory is indicated again in the \Config.\\  
+As shown in the listing~\ref{lst: extractor}, \toolname\ loops all the crashes contained inside it and for each of them it calls the method \textit{extractCrashLog()}, in the \Extractor\ component. 
+
+\begin{lstlisting}[caption=\Extractor\ code snippet converting crash files into CrashLog objects,label={lst: extractor}]
+/**
+* @class: Main
+*/
+CrashLogExtractor extractor = new CrashLogExtractor();
+final String CRASH_CONTAINER = ConfigurationManager.getCrashContainerDirectory();
+File[] crash_container = new File(CRASH_CONTAINER).listFiles();
+for (File crash : crash_container) {
+	extractor.extractCrashLog(crash);
+}
+\end{lstlisting} 
+The method \textit{extractCrashLog()} converts simple crash log files stored inside a folder into \Crash\ Java-objects. 
+Indeed, for each crash log file found inside the directory, the constructor of the \Crash\ class get instantiated and so a new object of this type gets created. Each time the constructor of the \Crash\ class gets invoked, it automatically creates the structure of the \textit{CrashLog objects} analogously to the structure of the real crash log file. \\
+For instance, the crash log described in the listing \ref{lst: ringdroid} is converted into the following \Crash-object: 
+
+\begin{lstlisting}[caption=\Crash-object,basicstyle=\fontsize{6}{8}\ttfamily, label={lst: crashobject}]
+Crash {
+	crash_path = /Users/Lucas/Desktop/UZH/BA/CrashLogCollector/crash_log_com.ringdroid.txt
+	packageName = com.ringdroid
+	Short = android.database.StaleDataException
+	Long = android.database.StaleDataException: Attempted to access a cursor after it has been closed.
+	first_java_trace_line = android.database.StaleDataException: Attempted to access a cursor after it has been closed.
+	trigger_method = [android.database.BulkCursorToCursorAdaptor.getCount(BulkCursorToCursorAdaptor.java:70)]
+	trigger_class = BulkCursorToCursorAdaptor
+	all_stack_trace_methods = [BulkCursorToCursorAdaptor, CursorWrapper, MergeCursor,
+	 						  CursorAdapter, AdapterView, AbsListView, ViewGroup, Handler, Looper, ActivityThread, 
+	 						  Method, ZygoteInit]
+	augmented_stack_traces = android database stale attempted access cursor 
+						     closed bulk adaptor count wrapper merge widget adapter 
+}
+\end{lstlisting}
+
+
+
+%tf–idf is a way to normalize a token based on both on its occurrence in a particular document (in our case, crash reports), and inversely proportional to its appearance in all documents \cite{campbell}. 
+
+
 
 \section{Linking}
+
 
 \section{How to start \toolname}
 First of all, a set of parameters and directories have to inserted in the static \textit{Configuration Manager} file.
 % qui inserire la command-line
 
-\begin{figure}[t]
+
+
+\begin{figure}[htb]
 \centering 
 %	\vspace{-1.5mm} 
 \includegraphics[width=\columnwidth]{diagrams/testing.pdf} 
@@ -97,7 +417,6 @@ First of all, a set of parameters and directories have to inserted in the static
 \label{testing}
 \vspace{-3mm} 
 \end{figure}
-
 
 
 \begin{figure}[t]
