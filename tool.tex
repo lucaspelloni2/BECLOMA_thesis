@@ -1,4 +1,4 @@
-The tool I implemented, called \toolname, is a \textit{java-based} tool aimed at helping further developers during the testing process of their Android mobile applications. \\
+This section presents \toolname, a \textit{java-based} tool aimed at helping further developers during the testing process of their Android mobile applications. \\
 For giving a cleaner and more understandable explanation of how \toolname\ works, I would like to split its key features into three main categories (which should also be executed in a sequential way, in order to exploit the whole \toolname's potentiality): 
 \begin{enumerate}
 \item the \textsc{Testing} part is in charge of testing a given set of \textit{APKs}, reporting their testing results and extracting possible \textit{crashes} from the before generated test logs; 
@@ -376,7 +376,7 @@ for (File crash : crash_container) {
 }
 \end{lstlisting} 
 The method \textit{extractCrashLog()} converts simple crash log files stored inside a folder into \Crash\ Java-objects. 
-Indeed, for each crash log file found inside the directory, the constructor of the \Crash\ class get instantiated and so a new object of this type gets created. Each time the constructor of the \Crash\ class gets invoked, it automatically creates the structure of the \textit{CrashLog objects} analogously to the structure of the real crash log file. \\
+Indeed, for each crash log file found inside the directory, the constructor of the \Crash\ class get instantiated and so a new object of this type gets created. Each time the constructor of the \Crash\ class gets invoked, it automatically creates the structure of the \Crash-object analogously to the structure of the real crash log file. \\
 For instance, the crash log described in the listing \ref{lst: ringdroid} is converted into the \Crash-object represented in the listing~\ref{lst: crashobject}.
 It is printed out using the trivial Java method \textit{toString()}, which  per default gives a string representation of the object in question.  
 
@@ -743,16 +743,15 @@ The \textit{BPMN}\footnote{Business Process Model and Notation} diagram \ref{buc
 \label{bucketing}
 \end{figure}
 
-At the end of the bucketing process, \toolname\ saves the bucket and print it out. The clustering process is now completed. 
+%At the end of the bucketing process, \toolname\ saves the bucket and print it out. The clustering process is now completed. 
 %conclusioni fare meglio
-\section{Linking}
 
+\section{Linking}
+aaaaaaa
 
 \section{How to start \toolname}
 First of all, a set of parameters and directories have to inserted in the static \textit{Configuration Manager} file.
 % qui inserire la command-line
- 
-
 
 \begin{figure}[htb]
 \centering 
