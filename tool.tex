@@ -633,7 +633,7 @@ private void createIndex (List<CrashLog> crashLogs) throws IOException {
                 doc.add(new Field(LConstants.FIELD_ID, crash.getPath(), fieldType));
                 // document are added to the index using an IndexWriter object
                 writer.addDocument(doc);
-            }
+   			}
                 writer.close();
 }
     
@@ -647,15 +647,14 @@ Once an \textit{IndexWriter} is created, all Lucene documents can be added to th
 In this direction, \toolname\ invokes the \textit{computeScoreMap()} method in the \TFIDF\ class, which returns a hash map object. 
 This hash map has as keys the unique locations of the crash logs, each one of them is associated with another hash map which contains the term vector.
 Table ~\ref{tbl: scoremap} shows the structure of the hash map, taking as a reference the crash log presented in the listing ~\ref{lst: ringdroid}. 
-
 \begin{table}[htb]
 \centering
 \caption{Structure of the hash map containing its term vector}
 \label{tbl: scoremap}
 \begin{tabular}{l|c|c|}
 \hline
-\multicolumn{1}{|c|}{{\color[HTML]{000000} \textit{\textbf{Key (String)}}}}                                 & \multicolumn{2}{c|}{{\color[HTML]{000000} \textit{\textbf{Value (HashMap)}}}} \\ \hline
-\multicolumn{1}{|l|}{\textit{../Desktop/BA/CrashLogCollector/crash\_log1\_com.ringdroid.txt}} & {\ul \textit{term}}                   & {\ul \textit{tfidf}}                  \\ \hline
+\multicolumn{1}{|c|}{{\color[HTML]{000000} \textit{\textbf{Crash log path (key)}}}}                                 & \multicolumn{2}{c|}{{\color[HTML]{000000} \textit{\textbf{HashMap (value)}}}} \\ \hline
+\multicolumn{1}{|l|}{\textit{../Desktop/BA/CrashLogCollector/crash\_log1\_com.ringdroid.txt}} & {\textit{term (key)}}                   & { \textit{tfidf (value)}}                  \\ \hline
                                                                                                             & \hspace{0.7cm}exception\hspace{0.7cm}                             & \hspace{0.2cm}1.73\hspace{0.2cm}                                      \\ \cline{2-3} 
                                                                                                             & view                               & 5.12                                  \\ \cline{2-3} 
                                                                                                             & accessibility                         & 4.77                                  \\ \cline{2-3} 
@@ -666,17 +665,93 @@ Table ~\ref{tbl: scoremap} shows the structure of the hash map, taking as a refe
                                                                                                             & ...                             & ...                                  
 \end{tabular}
 \end{table}
+
 As shown in the table above, the terms which have the highest tf-idf relevance are \textit{accessibility} and \textit{view}. Indeed, they have a high term frequency in the currently scored crash log and a low document frequency of the term in the entire collection. 
-Terms such as \textit{crash} or \textit{ringdroid} have a low tf-idf weight. In fact, they are generic and irrelevant terms, since they don't give any useful information about the topic of the document. 
+Terms such as \textit{crash} or \textit{ringdroid} have a low tf-idf weight. In fact, they are generic and irrelevant terms, since they don't give any useful information about the topic of the document. \\
+\toolname\ computes tf-idf scores for all vector terms of all crash logs. Once this processed is completed, the similarity between the set of crash logs stored inside the hash map can be computed.
+\paragraph{Cosine similarity.} 
+In order to state whether two crash logs refer to the same bug, \ie they can belong to the same group in the bucket, \toolname\ computes cosine similarity between the previously generated vectors terms. 
+The cosine similarity is just a measure of similarity between two vectors \cite{cosine} (in our case, two normalized weighted vectors consisting of their tf-idf scores).
+Usually, the resulting similarity ranges from -1 to 1, but in the case of information retrieval, since the frequency of the terms are always positive, the returned values range from 0 to 1, where 0 indicates that two documents are completely decorrelated, while 1 means that the words contained inside them are exactly the same.  
+The equation describing the cosine similarity between two vectors is as follows: 
+\begin{align*}
+cosine\:similarity = \cos({\theta}) = \frac{A\cdot{B}}{||A||\:||B||}
+\end{align*}
+where, in our case $A$ and $B$ are two normalized weighted term vectors consisting of tf-idf values. 
+With the term "normalized" is understood that when two weighted vectors are used to compute cosine similarity among them, for each time a word is contained within a vector but not in the other, the vector that does not contain the term gets complemented with it by associating a tf-idf score of 0. In doing so furthermore, the two vectors have the same length so that their dot product can be computed.
+Figure below shows how the normalization process works. 
 
+\begin{table}[htb]
+\centering
+\caption{Vector terms $A$ and $B$ before normalization}
+\label{tbl: beforenormal}
+\begin{tabular}{ccllcc}
+\cline{1-2} \cline{5-6}
+\multicolumn{2}{|c|}{{\color[HTML]{000000} \textit{\textbf{Vector A}}}}     &  & \multicolumn{1}{l|}{} & \multicolumn{1}{c|}{{\color[HTML]{000000} \textit{\textbf{Vector B}}}} & \multicolumn{1}{c|}{}                \\ \cline{1-2} \cline{5-6} 
+\multicolumn{1}{|c|}{\textbf{terms}} & \multicolumn{1}{c|}{\textbf{tf-idf}} &  & \multicolumn{1}{l|}{} & \multicolumn{1}{c|}{\textbf{terms}}                                    & \multicolumn{1}{c|}{\textbf{tf-idf}} \\ \cline{1-2} \cline{5-6} 
+\multicolumn{1}{|c|}{handler}        & \multicolumn{1}{c|}{3.15}            &  & \multicolumn{1}{l|}{} & \multicolumn{1}{c|}{exception}                                         & \multicolumn{1}{c|}{1.73}            \\ \cline{1-2} \cline{5-6} 
+\multicolumn{1}{|c|}{accessibility}  & \multicolumn{1}{c|}{1.7}             &  & \multicolumn{1}{l|}{} & \multicolumn{1}{c|}{handler}                                           & \multicolumn{1}{c|}{2.01}            \\ \cline{1-2} \cline{5-6} 
+\multicolumn{1}{|c|}{crash}          & \multicolumn{1}{c|}{1.13}            &  & \multicolumn{1}{l|}{} & \multicolumn{1}{c|}{accessibility}                                     & \multicolumn{1}{c|}{4.77}            \\ \cline{1-2} \cline{5-6} 
+\multicolumn{1}{|c|}{invoke}         & \multicolumn{1}{c|}{1.41}            &  & \multicolumn{1}{l|}{} & \multicolumn{1}{c|}{crash}                                             & \multicolumn{1}{c|}{1.00}            \\ \cline{1-2} \cline{5-6} 
+\multicolumn{1}{|c|}{ringdroid}      & \multicolumn{1}{c|}{1.00}            &  & \multicolumn{1}{l|}{} & \multicolumn{1}{c|}{scrollable}                                        & \multicolumn{1}{c|}{1.92}            \\ \cline{1-2} \cline{5-6} 
+                                     & \textbf{}                            &  & \multicolumn{1}{l|}{} & \multicolumn{1}{c|}{adapter}                                           & \multicolumn{1}{c|}{2.44}            \\ \cline{5-6} 
+                                     &                                      &  & \multicolumn{1}{l|}{} & \multicolumn{1}{c|}{ringdroid}                                         & \multicolumn{1}{c|}{1.00}   \\ \cline{5-6} 
+                                     &                                      &  &                       &                                                                        &                                     
+\end{tabular}
+\end{table}
 
+\begin{table}[htb]
+\centering
+\caption{Normalized weighted vector terms $A$ and $B$}
+\label{tbl: afternormal}
+\begin{tabular}{|c|c|c|c|}
+\hline
+\multicolumn{2}{|c|}{{\color[HTML]{000000} \textit{\textbf{Vector A}}}} & \multicolumn{2}{c|}{{\color[HTML]{000000} \textit{\textbf{Vector B}}}} \\ \hline
+\textbf{terms}                     & \textbf{tf-idf}                    & \textbf{terms}                    & \textbf{tf-idf}                    \\ \hline
+\textbf{exception}                          & \textbf{0}                         & exception                         & 1.73                               \\ \hline
+handler                            & 3.15                               & handler                           & 2.01                               \\ \hline
+accessibility                      & 1.7                                & accessibility                     & 4.77                               \\ \hline
+crash                              & 1.13                               & crash                             & 1.00                               \\ \hline
+\textbf{scrollable}                         & \textbf{0}                         & scrollable                        & 1.92                               \\ \hline
+\textbf{adapter}                            & \textbf{0}                         & adapter                           & 2.44                               \\ \hline
+invoke                             & 1.41                               & \textbf{invoke}                            & \textbf{0}                         \\ \hline
+ringdroid                          & 1.00                               & ringdroid                         & 1.00                               \\ \hline
+\end{tabular}
+\end{table}
+As shown in the tables above, the vectors $A$ and $B$ after the normalization process have the same length and have been complemented with their missing words. 
+
+\paragraph{Computing Cosine Similarity to create the bucket.}
+Once the vector terms have been normalized, the cosine similarity among crash reports can be computed. \\
+In this direction, \toolname\ defines a threshold in the class \Oracle\,  which represents the tolerance for evaluating the similarity between two crash reports. Indeed, if the calculated cosine similarity among them is greater than the given limit, the two crash logs are considered to describe the same bug, \ie they will belong to the same bug group in the bucket. \\
+Concretely, \toolname\ invokes the method \textit{fillCrashLogBucket()}, which is in charge of comparing the crash logs, classifying them with the aim of filling the bucket. 
+The bucket consists of a hash map, which has as keys a set of strings which act as a labels for the entire bug group they represent. Each label, in turn, has its own list of \Crash-objects\, which have been considered by the \Oracle\ referring to the same bug.  \\
+The bucketing process iterates all crash reports and it concretely works as follows: 
+\begin{enumerate}
+\item The method \textit{fillCrashLogBucket()} firstly extracts the first crash log in the list and insert it into the bucket, assigning to it the label of the first bug group. 
+\item Starting from the second iteration, \toolname\ computes the cosine similarity between the current crash log and all crash logs which are placed at the first position in the list of the other bug groups. 
+\item Whether all computed similarities are smaller than the threshold provided by the \Oracle\, means that there is no crash logs in the bucket already which can be considered the same as the current one. For this reason, \toolname\ creates a new bug group with a new label and insert into it the current crash log. \\
+Otherwise, in the event that there is at least one computed similarity which is greater than the threshold, \toolname\ extracts the group inside the bucket which shows the highest similarity with the crash log and insert it into it.
+In doing so, it gets added into the group which "resemble it more". 
+\end{enumerate}
+The \textit{BPMN}\footnote{Business Process Model and Notation} diagram \ref{bucketing} explains and summarizes the above mentioned bucketing process provided by \toolname. \\
+
+\begin{figure}[htb]
+\centering 
+%	\vspace{-1.5mm} 
+\includegraphics[width=\columnwidth]{diagrams/bucketingprocess.pdf} 
+\caption{BPMN diagram describing the bucketing process}
+\label{bucketing}
+\end{figure}
+
+At the end of the bucketing process, \toolname\ saves the bucket and print it out. The clustering process is now completed. 
+%conclusioni fare meglio
 \section{Linking}
 
 
 \section{How to start \toolname}
 First of all, a set of parameters and directories have to inserted in the static \textit{Configuration Manager} file.
 % qui inserire la command-line
-
+ 
 
 
 \begin{figure}[htb]
