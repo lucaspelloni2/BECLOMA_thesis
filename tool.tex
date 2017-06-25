@@ -357,7 +357,9 @@ A crash log is usually structured as follows:
 \item \textit{Line 5} is considered the exact reason for the exception, \ie the trigger method that caused the crash;
 \item From \textit{line 6} moving gradually down until the end of the stack trace, there are other nested function calls which contain additional information about the cause of the exception. Usually, the most important ones for identifying the cause are in the first few lines. 
 \end{itemize}
-Before the explanation of the Clustering process, a premise must be made. All the classes that will be discussed below, refer to the class diagram represented in the figure~\ref{clustering}. 
+Before the explanation of the Clustering process can start, a premise must be made. All the classes that will be discussed below, refer to the class diagram represented in the figure~\ref{clustering}. 
+
+
 %TODO aggiungere construttore in crash log passandogli gli argomenti
 First of all, \toolname\ individuates the directory in which all the previously generated crash logs have been stored. This directory is indicated again in the \Config.\\  
 As shown in the listing~\ref{lst: extractor}, \toolname\ loops all the crashes contained inside it and for each of them it calls the method \textit{extractCrashLog()}, in the \Extractor\ component. 
@@ -375,7 +377,8 @@ for (File crash : crash_container) {
 \end{lstlisting} 
 The method \textit{extractCrashLog()} converts simple crash log files stored inside a folder into \Crash\ Java-objects. 
 Indeed, for each crash log file found inside the directory, the constructor of the \Crash\ class get instantiated and so a new object of this type gets created. Each time the constructor of the \Crash\ class gets invoked, it automatically creates the structure of the \textit{CrashLog objects} analogously to the structure of the real crash log file. \\
-For instance, the crash log described in the listing \ref{lst: ringdroid} is converted into the following \Crash-object: 
+For instance, the crash log described in the listing \ref{lst: ringdroid} is converted into the \Crash-object represented in the listing~\ref{lst: crashobject}.
+It is printed out using the trivial Java method \textit{toString()}, which  per default gives a string representation of the object in question.  
 
 \begin{lstlisting}[caption=\Crash-object,basicstyle=\fontsize{6}{8}\ttfamily, label={lst: crashobject}]
 Crash {
@@ -386,18 +389,285 @@ Crash {
 	first_java_trace_line = android.database.StaleDataException: Attempted to access a cursor after it has been closed.
 	trigger_method = [android.database.BulkCursorToCursorAdaptor.getCount(BulkCursorToCursorAdaptor.java:70)]
 	trigger_class = BulkCursorToCursorAdaptor
-	all_stack_trace_methods = [BulkCursorToCursorAdaptor, CursorWrapper, MergeCursor,
-	 						  CursorAdapter, AdapterView, AbsListView, ViewGroup, Handler, Looper, ActivityThread, 
-	 						  Method, ZygoteInit]
-	augmented_stack_traces = android database stale attempted access cursor 
-						     closed bulk adaptor count wrapper merge widget adapter 
+	log_lines = [// CRASH: com.ringdroid (pid 20442), // Short Msg: android.database.StaleDataException, ...]
+	
 }
 \end{lstlisting}
+%	all_stack_trace_methods = [BulkCursorToCursorAdaptor, CursorWrapper, MergeCursor,
+	 						  %CursorAdapter, AdapterView, AbsListView, ViewGroup, Handler, Looper, ActivityThread, 
+	 						  %Method, ZygoteInit]
+%augmented_stack_traces = [android, database, stale, attempted, access, cursor, closed, bulk, adaptor, count, wrapper , merge, widget, adapter]  
+As you can see in the listing above, the \Crash-object has assumed the same structure as the crash log file. Indeed, it analogously describes the \textit{package name} to which the crash belongs, the \textit{short} and the \textit{long} explanations about the exception, the \textit{trigger method}, etc.
+In addition to them, the \Crash-object stores a list of strings containing the log words, where each position of the array is occupied by a different line. 
+%-----------LUCENE------------
+\paragraph{Preprocessing.}
+The second step of the clustering process is to \textit{preprocess} the crash reports in order to prepare them to be compared to each other. 
+To achieve this, all the words contained in the crash reports are preprocessed using \textbf{Apache Lucene} \cite{lucene} well-known tokenization techniques.  
+Indeed, the \Crash\ class statically invokes for each line the method \textit{tokenizeLine()} in the \Lucene\ class. Listing~\ref{lst: tokenizeline} shows how it concretely works. 
+\begin{lstlisting}[caption=Each line inside the crash report is tokenized using \Lucene,label={lst: tokenizeline}]
+/**
+* @class: CrashLog
+*/
+private List<String> logLines;
+for (String line : this.logLines) {
+	LuceneTokenizer.tokenizeLine(line);
+}
+\end{lstlisting} 
+For the tokenization process, \toolname\ uses a well known grammar-based  Lucene-tokenizer, called \textit{StandardTokenizer}. This tokenizer simply split the word fields into lexical units using punctuation and whitespaces as split points. In addition, it removes unnecessary symbols (\eg \texttt{"//"}).
+\toolname\ converts all the strings to lowercase and extends the tokenizer with a further regular expression. This because, it's a worldwide convention that developers use CamelCase notation for writing programming words such as names of classes, names of functions or names of variables.
+Since most of the words included in the crash logs are programming language keywords, \toolname\ complements the StandardTokenizer of Lucene, so that CamelCase text fields can be also split at the upper-case letters into separate words. 
+\clearpage
 
 
 
-%tf–idf is a way to normalize a token based on both on its occurrence in a particular document (in our case, crash reports), and inversely proportional to its appearance in all documents \cite{campbell}. 
 
+Consider the following line in the crash report (listing~\ref{lst: ringdroid}) that is passed as argument to the method \textit{tokenizeLine()}: \vspace{-0.8cm}
+\begin{center}
+\framebox[1\width]{{\fontsize{6.5}{6}{ \texttt{
+//\hspace*{0.6cm}at android.database.BulkCursorToCursorAdaptor.throwIfCursorIsClosed(BulkCursorToCursorAdaptor.java:64)}
+}}} \par
+\end{center}
+The following two boxes show the various tokenization steps that are performed by \toolname.
+\begin{enumerate}
+\item \textbf{Lucene StandardTokenizer}\\ \vspace{0.3em}
+\framebox[1\width]{{\fontsize{6.5}{6}{ \texttt{at}
+}}}
+\framebox[1\width]{{\fontsize{6.5}{6}{ \texttt{android}
+}}}
+\framebox[1\width]{{\fontsize{6.5}{6}{ \texttt{database}
+}}}
+\framebox[1\width]{{\fontsize{6.5}{6}{ \texttt{BulkCursorToCursorAdaptor}
+}}}
+\framebox[1\width]{{\fontsize{6.5}{6}{ \texttt{throwIfCursorIsClosed}
+}}}
+\framebox[1\width]{{\fontsize{6.5}{6}{ \texttt{BulkCursorToCursorAdaptor}
+}}}
+\framebox[1\width]{{\fontsize{6.5}{6}{ \texttt{java}
+}}}
+\framebox[1\width]{{\fontsize{6.5}{6}{ \texttt{64}
+}}}
+\item \textbf{\toolname\ CamelCase Tokenizer} \\ \vspace{0.3em}
+\framebox[1\width]{{\fontsize{6.5}{6}{ \texttt{at}
+}}}
+\framebox[1\width]{{\fontsize{6.5}{6}{ \texttt{android}
+}}} 
+\framebox[\width]{{\fontsize{6.5}{6}{ \texttt{database}
+}}}
+\framebox[\width]{{\fontsize{6.5}{6}{ \texttt{Bulk}
+}}}
+\framebox[\width]{{\fontsize{6.5}{6}{ \texttt{Cursor}
+}}} 
+\framebox[\width]{{\fontsize{6.5}{6}{ \texttt{To}
+}}}
+\framebox[\width]{{\fontsize{6.5}{6}{ \texttt{Cursor}
+}}}
+\framebox[\width]{{\fontsize{6.5}{6}{ \texttt{Adaptor}
+}}} 
+\framebox[\width]{{\fontsize{6.5}{6}{ \texttt{throw}
+}}}
+\framebox[\width]{{\fontsize{6.5}{6}{ \texttt{If}
+}}}
+\framebox[\width]{{\fontsize{6.5}{6}{ \texttt{Cursor}
+}}} 
+\framebox[\width]{{\fontsize{6.5}{6}{ \texttt{Is}
+}}}
+\framebox[\width]{{\fontsize{6.5}{6}{ \texttt{Closed}
+}}}
+\framebox[\width]{{\fontsize{6.5}{6}{ \texttt{Bulk}
+}}} 
+\framebox[\width]{{\fontsize{6.5}{6}{ \texttt{Cursor}
+}}}
+\framebox[\width]{{\fontsize{6.5}{6}{ \texttt{To}
+}}} 
+\framebox[\width]{{\fontsize{6.5}{6}{ \texttt{Cursor}
+}}} 
+\framebox[\width]{{\fontsize{6.5}{6}{ \texttt{Adaptor}
+}}} 
+\framebox[\width]{{\fontsize{6.5}{6}{ \texttt{java}
+}}} 
+\framebox[\width]{{\fontsize{6.5}{6}{ \texttt{64}
+}}} 
+
+
+
+\item \textbf{\toolname\ LowerCase Tokenizer} \\ \vspace{0.3em}
+\framebox[1\width]{{\fontsize{6.5}{6}{ \texttt{at}
+}}}
+\framebox[1\width]{{\fontsize{6.5}{6}{ \texttt{android}
+}}} 
+\framebox[\width]{{\fontsize{6.5}{6}{ \texttt{database}
+}}}
+\framebox[\width]{{\fontsize{6.5}{6}{ \texttt{bulk}
+}}}
+\framebox[\width]{{\fontsize{6.5}{6}{ \texttt{cursor}
+}}} 
+\framebox[\width]{{\fontsize{6.5}{6}{ \texttt{to}
+}}}
+\framebox[\width]{{\fontsize{6.5}{6}{ \texttt{cursor}
+}}}
+\framebox[\width]{{\fontsize{6.5}{6}{ \texttt{adaptor}
+}}} 
+\framebox[\width]{{\fontsize{6.5}{6}{ \texttt{throw}
+}}}
+\framebox[\width]{{\fontsize{6.5}{6}{ \texttt{if}
+}}}
+\framebox[\width]{{\fontsize{6.5}{6}{ \texttt{cursor}
+}}} 
+\framebox[\width]{{\fontsize{6.5}{6}{ \texttt{is}
+}}}
+\framebox[\width]{{\fontsize{6.5}{6}{ \texttt{closed}
+}}}
+\framebox[\width]{{\fontsize{6.5}{6}{ \texttt{bulk}
+}}} 
+\framebox[\width]{{\fontsize{6.5}{6}{ \texttt{cursor}
+}}}
+\framebox[\width]{{\fontsize{6.5}{6}{ \texttt{to}
+}}} 
+\framebox[\width]{{\fontsize{6.5}{6}{ \texttt{cursor}
+}}} 
+\framebox[\width]{{\fontsize{6.5}{6}{ \texttt{adaptor}
+}}} 
+\framebox[\width]{{\fontsize{6.5}{6}{ \texttt{java}
+}}} 
+\framebox[\width]{{\fontsize{6.5}{6}{ \texttt{64}
+}}} 
+\end{enumerate}
+This tokenization process is repeated for all lines of all crash reports stored in the directory. At the end of this process, each \Crash-object is complemented with a new attribute which represents the set of preprocessed words.
+
+\paragraph{TF-IDF.} After the phase of preprocessing, the crash logs are ready to be bucketed. In order to classify them, some well-known bucketing techniques are implemented by \toolname, with the aim to deduplicate the greatest number possible of crash reports.
+In this direction, \toolname\ implements a \textit{tf-idf} algorithm \textit{(term frequency–inverse document frequency)}, a well-know term-weighting scheme used in information retrieval or text mining \cite{tfidf}. Indeed, tf–idf is a way to measure the relevance, the weight of a term compared to its document or its entire document collection (in our case, the crash logs). The importance of a term is given by the number of times it occurs in a particular document, inversely proportional to its appearance in the entire documents collection \cite{campbell}.  \\
+Generally, a tf-idf algorithm consists in three main components \cite{tfidfsimilarity}: 
+\begin{itemize}
+\item \textbf{TF (Term Frequency)}, \ie how many times a term appears in the currently scored document, where repeated terms indicate the topic of the document; A high TF means that the word in question has a high relevance for the document. The following simplified equation \cite{tfidf} describes a formula for calculating the term frequency:
+\begin{align*}
+tf_{x,y} = \frac{n_{x,y}}{\mid d_{y} \mid}
+\end{align*}
+where $n_{x,y}$ represents the number of occurrences of the term $t_x$ in the document $d_{y}$, while $\mid d_{y} \mid$ represents the number of words inside the document $d_{y}$.
+
+\item \textbf{IDF (Inverse Document Frequency)}, \ie the inverse of the document frequency, that represents the number of document in which the term appears. If the same term appears in fewer documents, IDF shows a high value, if a term is very common it returns a low value. 
+The equation \cite{tfidf} below describes a simplified version of the inverse document frequency formula: 
+\begin{align*}
+idf_{x} = \frac{\mid D \mid}{\mid \{d: t_{i} \in d\} \mid}
+\end{align*}
+where $\mid D \mid$ is the number of documents in the collection, while $\mid \{d: t_{i} \in d\} \mid$ represents the number of documents which contains the term $t_i$
+
+\item \textbf{TF-IDF}, \ie the product of the two above terms. If it has a high value means that the currently scored term has a high relevance, otherwise if it returns a low value, the term has little relevance.
+\begin{align*}
+tfidf_{x,y} = tf_{x,y}*idf_{x}
+\end{align*}
+
+\end{itemize}
+The IDF metric actually measures how important a term is. This because, a term which appears very often in a single document will have a high TF score but if this term rarely occurs in the other ones it will also have have a high IDF score and so a low TF-IDF value. This would imply that it shall not have a high relevance. Otherwise, if a word occurs very often both in a single document and in the entire collection it has a high TF score and a low IDF-value, which results in a high TF-IDF score. \\
+
+\toolname\ implements a \textit{tf-idf} scheme, computing TF-IDF scores for all words within all crash logs using again the \textbf{Apache Lucene} library. \\
+First of all, \toolname\ creates an index using an \texttt{IndexWriter}. The following diagram illustrates the main components of the Lucene indexing process:
+\begin{figure}[htb]
+\centering 
+\includegraphics[width=\columnwidth]{diagrams/indexingProcess} 
+\caption{Apache Lucene indexing process}
+\label{fig: indexingprocess}
+\end{figure}
+
+\paragraph{Creating documents and adding fields.}
+The first step \toolname\ performs is to create a set of \textit{Lucene documents}. 
+To do this, it goes through all previously created \Crash-objects and convert their preprocessed words into Lucene documents. Each document must contain its group of \textit{fields} in order to be indexed.
+Therefore, each time a new Lucene document is created, a set of fields must be set and enclosed inside it. 
+A field can be viewed as a section of a document which can be optionally stored in the index \cite{lucenefield} and usually has three components: name, type and content. For each stored field, it is important to determine which type is best suited to the content that is going to be indexed. 
+For instance, \toolname\ indexes documents which enclose \textit{text fields}, since they are already stored, tokenized and indexed \cite{lucenetextfield}. 
+In order to be able to compute TF-IDF values for the indexed Lucene documents, \toolname\ must enable the property that they can have \textit{term vectors}, \ie they can store "a list of the document's terms and their number of occurrences in that document" \cite{lucenetermvector}. \\
+The first steps of the Lucene indexing process can be summarized by the following code snippet, which is a simplified version of the \textit{createIndex()} method, illustrated in the diagram~\ref{clustering}.
+
+\begin{lstlisting}[caption=\TFIDF\ describing the Lucene indexing process,label={lst: indexing}]
+/**
+* @class: TFIDFCalculator
+*/
+private void createIndex(List<CrashLog> crashLogs) throws IOException {
+			// TODO: create IndexWriter
+            for (CrashLog crash : crashLogs) {
+                ArrayList<String> crash_log_words = crash.getSetOfWords();
+                // type of field is set
+                FieldType fieldType = new FieldType(TextField.TYPE_STORED); 
+                // term vector is enabled
+                fieldType.setStoreTermVectors(true); 
+                // new document is created
+                Document doc = new Document(); 
+                for (String word : crash_log_words) {
+                    // fields are added into the documents
+                    doc.add(new Field(LConstants.FIELD_NAME, word, fieldType)); 
+                }
+                doc.add(new Field(LConstants.FIELD_ID, crash.getPath(), fieldType));
+            }
+\end{lstlisting} 
+As shown in the listing above, \toolname\ goes through all the given crash logs and stores in a local list their preprocessed log words. 
+Afterwards, the field type \textit{TextField} is selected. 
+In the next line, the above mentioned term vector property is enabled. Then, a new Lucene document is generated. 
+At this point, \toolname\ goes through each preprocessed word and at each iteration adds the current word to a new field which has just been created. The new field has a name, a content, \ie the word in question and a type, \ie the previously selected field type. Finally, the entire field is added to the document. At the end of the loop an additional field is added and used as ID for the document (in our case, the crash log path acts as unique attribute in the index). 
+
+\paragraph{Creating IndexWriter and adding documents.}
+In order to index Lucene documents, \toolname\ must generate an \textit{IndexWriter}. This because, this object acts as a core component for creating and updating indexes. 
+First of all, \toolname\ creates an object of type \textit{IndexWriter}. However, the instantiating process of this class requires some supplementary configurations that must be passed to the constructor in order to create a new object of that type. 
+These two information consist in (i) the directory where the index should point at and (ii) the Lucene \textit{Analyser} which is in charge of analysing the indexed documents. 
+After the specification of these two information, a new object of type \textit{IndexWriter} can be created. 
+Once created, all documents can be added to the index. At the end of the indexing process the writer must be closed.\\
+The listing below complements the code snippet~\ref{lst: indexing} with the instantiation of the \textit{IndexWriter} class and consequentially with the addition of the documents to the index.  
+\begin{lstlisting}[caption=\TFIDF\ describing the instantiation of an IndexWriter,label={lst: indexwriter}]
+/**
+* @class: TFIDFCalculator
+*/
+private void createIndex (List<CrashLog> crashLogs) throws IOException {
+			// directory gets specified
+		    FSDirectory dir = FSDirectory.open(new File("\Users\Lucas\Desktop\BA\Index").toPath());
+		    // configuration is set
+            IndexWriterConfig config = new IndexWriterConfig(new StandardAnalyzer());
+            // IndexWriter gets instantiated 
+            IndexWriter writer = new IndexWriter(dir, config);
+	
+            for (CrashLog crash : crashLogs) {
+                ArrayList<String> crash_log_words = crash.getSetOfWords();
+                FieldType fieldType = new FieldType(TextField.TYPE_STORED); 
+                fieldType.setStoreTermVectors(true); 
+                Document doc = new Document(); 
+                for (String word : crash_log_words) {
+                    doc.add(new Field(LConstants.FIELD_NAME, word, fieldType)); 
+                }
+                doc.add(new Field(LConstants.FIELD_ID, crash.getPath(), fieldType));
+                // document are added to the index using an IndexWriter object
+                writer.addDocument(doc);
+            }
+                writer.close();
+}
+    
+\end{lstlisting} 
+As illustrated in the example above, the location where the index should point at can be inserted using the Lucene class \textit{FSDirectory}. It is a base class for Directory implementations that store index files in the file system \cite{lucenefsdir}. Next line of code, the analyser which is used for analysing the Lucene documents is defined. This can made using the Lucene class \textit{IndexWriterConfig}, which holds all the configuration that is used to create an \textit{IndexWriter}. \toolname\ defines again a \textit{StandardAnalyser}, the same used for preprocessing the crash logs.
+Finally, a new \textit{IndexWriter} can be constructed per the previously configured settings. 
+Once an \textit{IndexWriter} is created, all Lucene documents can be added to the index using a simple method called \textit{addDocument()}. At the end of the indexing process all preprocessed words contained inside the \Crash-objects have been converted into Lucene documents and have been indexed.
+
+
+\paragraph{Computing TF-IDF scores.} At this point, the index has been created and each document has the possibility to store its vector of terms so that TF-IDF values can be computed for each word of each term of vector of each crash report. 
+In this direction, \toolname\ invokes the \textit{computeScoreMap()} method in the \TFIDF\ class, which returns a hash map object. 
+This hash map has as keys the unique locations of the crash logs, each one of them is associated with another hash map which contains the term vector.
+Table ~\ref{tbl: scoremap} shows the structure of the hash map, taking as a reference the crash log presented in the listing ~\ref{lst: ringdroid}. 
+
+\begin{table}[htb]
+\centering
+\caption{Structure of the hash map containing its term vector}
+\label{tbl: scoremap}
+\begin{tabular}{l|c|c|}
+\hline
+\multicolumn{1}{|c|}{{\color[HTML]{000000} \textit{\textbf{Key (String)}}}}                                 & \multicolumn{2}{c|}{{\color[HTML]{000000} \textit{\textbf{Value (HashMap)}}}} \\ \hline
+\multicolumn{1}{|l|}{\textit{../Desktop/BA/CrashLogCollector/crash\_log1\_com.ringdroid.txt}} & {\ul \textit{term}}                   & {\ul \textit{tfidf}}                  \\ \hline
+                                                                                                            & \hspace{0.7cm}exception\hspace{0.7cm}                             & \hspace{0.2cm}1.73\hspace{0.2cm}                                      \\ \cline{2-3} 
+                                                                                                            & view                               & 5.12                                  \\ \cline{2-3} 
+                                                                                                            & accessibility                         & 4.77                                  \\ \cline{2-3} 
+                                                                                                            & crash                                 & 1.00                                  \\ \cline{2-3} 
+                                                                                                            & scrollable                            & 1.92                                  \\ \cline{2-3} 
+                                                                                                            & adapter                               & 2.44                                  \\ \cline{2-3} 
+                                                                                                            & ringdroid                             & 1.00                                  \\ \cline{2-3} 
+                                                                                                            & ...                             & ...                                  
+\end{tabular}
+\end{table}
+As shown in the table above, the terms which have the highest tf-idf relevance are \textit{accessibility} and \textit{view}. Indeed, they have a high term frequency in the currently scored crash log and a low document frequency of the term in the entire collection. 
+Terms such as \textit{crash} or \textit{ringdroid} have a low tf-idf weight. In fact, they are generic and irrelevant terms, since they don't give any useful information about the topic of the document. 
 
 
 \section{Linking}
