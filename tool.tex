@@ -1,3 +1,4 @@
+\label{chapter:tool}
 This section presents \toolname, a \textit{java-based} tool aimed at helping further developers during the testing process of their Android mobile applications. \\
 For giving a cleaner and more understandable explanation of how \toolname\ works, I would like to split its key features into three main categories (which should also be executed in a sequential way, in order to exploit the whole \toolname's potentiality): 
 \begin{enumerate}
@@ -309,7 +310,7 @@ public void generateCrashLog(File testLog) {
 
 
 At this point, the \textit{APK} has been tested, reported, its test logs have been investigated and possible crashes have been extracted. Figure~\ref{fig: apkprocess} summarizes the four components which characterizes the testing process of one application. 
-\begin{figure}[htb]
+\begin{figure}[tb]
 \centering 
 \includegraphics[width=\columnwidth]{imgs/apkprocess} 
 \caption{Four test steps performed by \toolname\ of an application}
@@ -329,7 +330,7 @@ In addition, during each test iteration and at the end of the whole testing sess
 \section{Clustering}
 %--------------CLUSTERING AIM-------------
 Once the testing phase is finished, all the generated crash logs are stored in a given directory. After this phase, the only way to differentiate them inside this directory is the name of the package for which these crashes occurred. However, among these crash logs there may be a lot of redundancy, since more of them may refer to the same bug. The aim behind the Clustering phase is to create a bucket of unique crash logs. This means, that each crash log has to be compared with the others	 of the same package and according to some metrics that will be explained below, they must be smartly group together. Figure~\ref{fig: clustering} shows the idea behind the Clustering process. 
-\begin{figure}[htb]
+\begin{figure}[tb]
 \centering 
 \includegraphics[width=\columnwidth]{imgs/clusteringidea} 
 \caption{The idea behind the Clustering process}
@@ -561,7 +562,7 @@ The IDF metric actually measures how important a term is. This because, a term w
 
 \toolname\ implements a \textit{tf-idf} scheme, computing TF-IDF scores for all words within all crash logs using again the \textbf{Apache Lucene} library. \\
 First of all, \toolname\ creates an index using an \texttt{IndexWriter}. The following diagram illustrates the main components of the Lucene indexing process:
-\begin{figure}[htb]
+\begin{figure}[tb]
 \centering 
 \includegraphics[width=\columnwidth]{diagrams/indexingProcess} 
 \caption{Apache Lucene indexing process}
@@ -735,7 +736,7 @@ In doing so, it gets added into the group which "resemble it more".
 \end{enumerate}
 The \textit{BPMN}\footnote{Business Process Model and Notation} diagram \ref{bucketing} explains and summarizes the above mentioned bucketing process provided by \toolname. \\
 
-\begin{figure}[htb]
+\begin{figure}[tb]
 \centering 
 %	\vspace{-1.5mm} 
 \includegraphics[width=\columnwidth]{diagrams/bucketingprocess.pdf} 
@@ -815,7 +816,7 @@ The following table depicts a shortened version of the \textit{ReviewMap}.
 First of all, a set of parameters and directories have to inserted in the static \textit{Configuration Manager} file.
 % qui inserire la command-line
 
-\begin{figure}[htb]
+\begin{figure}[tb]
 \centering 
 %	\vspace{-1.5mm} 
 \includegraphics[width=\columnwidth]{diagrams/testing.pdf} 

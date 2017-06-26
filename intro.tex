@@ -1,20 +1,20 @@
 % !TEX root =  ./lucas_thesis.tex
 %------------------------- THESIS OVERVIEW ------------------------
-% todo: set label for chapters
+\label{chapter:intro}
 This thesis is placed in the context on mobile automated testing. In particular, we aim to shed some initial lights into the possibility to integrate user feedback into such process, in order to increase its efficiency and efficacy.
 The first chapter of this work gives an overview about the context in which the thesis is placed, as well the motivations behind that led to such thesis. Follows a brief introduction about the mobile testing, its limitations and challenges. At the end, we disclose the research questions leading our investigations. 
 The remainder of this thesis is organized as follow. 
 
-Chapter 2 presents the recent literature in two areas of interest for this work, \ie the automated mobile testing and the exploiting of mobile stores mining in order to facilitate the software maintenance activities.
+Chapter \ref{chapter:related} presents the recent literature in two areas of interest for this work, \ie the automated mobile testing and the exploiting of mobile stores mining in order to facilitate the software maintenance activities.
 
-Chapter 3 describes the approach we developed in order to investigate our main goal.
+Chapter \ref{chapter:approach} describes the approach we developed in order to investigate our main goal.
 
-Chapter 4 presents \toolname, a tool that firstly relies on \monkey and \textbf{Sapienz} in order to test a set of Android applications, collecting crash logs (\ie stack traces). Secondly, exploiting classic Information Retrieval (IR) techniques, the tool is able to cluster the logs that refers to the same bugs. Finally, it relies on a novel approach for liking such clusters of crash logs with the users reviews that refers to the bug revealed by them. 
+Chapter \ref{chapter:tool} presents \toolname, a tool that firstly relies on \monkey and \textbf{Sapienz} in order to test a set of Android applications, collecting crash logs (\ie stack traces). Secondly, exploiting classic Information Retrieval (IR) techniques, the tool is able to cluster the logs that refers to the same bugs. Finally, it relies on a novel approach for liking such clusters of crash logs with the users reviews that refers to the bug revealed by them. 
 %The tool enables developers to link natural language contained inside user feedbacks and pieces of source code, such as names of classes, methods, functions, etc. 
 
-Chapter 5 describes the empirical study we conducted in order to evaluate the aforementioned approach on a set of 3 mobile apps (available on \textit{FDroid \footnote{\url{https://f-droid.org}}}) with their correspondent reviews crawled for the Google Play Store\footnote{\url{https://play.google.com/}}. 
+Chapter \ref{chapter:results} describes the empirical study we conducted in order to evaluate the aforementioned approach on a set of 3 mobile apps (available on \textit{FDroid \footnote{\url{https://f-droid.org}}}) with their correspondent reviews crawled for the Google Play Store\footnote{\url{https://play.google.com/}}. 
 
-Finally, Chapter 6 closes the main body of the thesis drawing the necessary conclusions and spreading the main ideas for future contributions.
+Finally, Chapter \ref{chapter:conclusion} closes the main body of the thesis drawing the necessary conclusions and spreading the main ideas for future contributions.
 
 
 %------------------------- CONTEXT: TESTING IN GENERAL -------------------
