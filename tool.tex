@@ -62,9 +62,9 @@ In addition to them, the directories on which the generated test logs are going 
 \end{itemize}
 
 According to the example \ref{config} above and assuming that the \textit{APKs} set consists in 10 apps, the total estimated testing time for an entire testing session would be: 
-\begin{center}
-30 min p/a * 10 apps * 5 iterations = 1500 min. (25 hours). 
-\end{center}
+\begin{align*}
+30 \:min \: \frac{per}{app} * 10\: app * 5\: iterations = 1500 \:min. \:(25\: hours). 
+\end{align*}
 Once the environment testing variables have been configured, the automated tool with whom the testing is going to be performed must be made explicit. Indeed, it has to be specified as parameter in \textsc{main} \textit{args} (as mentioned before in the section \ref{sec:choicetool}, the tools which can be selected are either \monkey or \sapienz). \\
 The last configuration step is to define on which kind of device (\textit{i.e}, a real device, such as a \textit{tablet} or a virtual device, such as an \textit{emulator}) the testing is going to be performed. In addition to them, an additional argument that starts a timer for a better overview during the testing process can also be passed as main argument. \toolname\ supports different types of emulators or real devices running on different android API levels. However, in order to correctly execute \sapienz, the API level shall be the \textit{Android 4.4, KitKat}. \\
 The listing below shows an example of a combination of possible parameters that could be given as main arguments. 
@@ -743,11 +743,84 @@ The \textit{BPMN}\footnote{Business Process Model and Notation} diagram \ref{buc
 \label{bucketing}
 \end{figure}
 
+At the end of the clustering phase, all crash logs collected in the testing phase have been systematically classified inside the bucket. 
+
 %At the end of the bucketing process, \toolname\ saves the bucket and print it out. The clustering process is now completed. 
 %conclusioni fare meglio
 
+\clearpage
 \section{Linking}
-aaaaaaa
+As mentioned in the introduction of this chapter, the linking phase performed by \toolname\ is in charge of studying the complementarity between user feedback and the outcomes of automated testing tools, \ie the crash logs. 
+
+\paragraph{INFUSA-TA.}
+In order to link these two different sources of information, \toolname\ assumes that the set of user feedbacks have been already classified, in according to a a defined taxonomy and preprocessed.
+In this direction, an experimental tool called  \textbf{INFUSE-TA} (\textbf{IN}tegrator o\textbf{F} \textbf{US}er \textbf{FE}edback while Testing \textbf{A}pps) developed by a team at the Software Evolution and Architecture Lab, provides an automatic approach for the classification of a set of user reviews according to a defined taxonomy using some machine learning techniques. 
+Furthermore, it performs a systematic Information Retrieval (IR) preprocessing \cite{BaezaYates:1999} on the user reviews aimed at (i) correcting mistakes, (ii) expanding contractions (e.g., \textit{can’t} is replaced with \textit{can not}), (iii) filtering nouns and verbs, (iv) removing common words or programming language keywords, and (v) stemming words (e.g., \textit{aiming} is replaced with \textit{aim}). \\
+The text below depicts an example of Information Retrieval preprocessing applied on a user feedback: 
+\smallbreak
+\emph{\small``Crashes on Messages I would give this 5 stars but it crashes every time I try to access my messages in the app. I have removed and reinstalled the app  signed in and out  even reformatted my phone. But it still crashes when I click Messages  every time without fail.''}. 
+\smallbreak
+Following, the review is preprocessed applying the techniques described above.  \smallbreak
+\emph{\small``crash messag i would give 5 star crash everi time i tri access messag app i remov reinstal app  sign  even reformat phone but still crash i click messag  everi time without fail''}. 
+\smallbreak
+
+%TODO : togliere ReviewPreProcessor dal class diagram?
+\paragraph{Extracting user reviews.} 
+The first step in linking phase performed by \toolname\, is to read the location specified in \Config\ of the dataset which contains the set of preprocessed and classified user reviews. 
+Afterwards, \toolname\ uses the \ReviewC\ component illustrated in the diagram~\ref{linking}, in order to convert all user feedbacks located in the dataset to a set of \Review\ Java-objects. 
+To achieve this, \toolname\ each time it find a new review in the dataset, it instantiates the class \Review\ and creates a new object of that type.
+Afterwards, this object is stored inside a \textit{ReviewMap} in the \ReviewC\ class. 
+This hash map has as keys a set of names of android packages for which the reviews have been submitted. Thus, each package name is associated with its own list of \Review-objects. 
+The following table depicts a shortened version of the \textit{ReviewMap}.
+\begin{table}[htb]
+\centering
+\caption{Scheme of the Reviewmap}
+\label{tbl: reviewmap}
+\begin{tabular}{l|l|}
+\hline
+\multicolumn{1}{|c|}{\textit{\textbf{Package name (key)}}}    & \textit{\textbf{Review list (value)}} \\ \hline
+\multicolumn{1}{||}{{\hspace{0.5cm}\ul \textit{com.danvelazco.fbwrapper}\hspace{0.5cm}}} & Review object 1                       \\ \hline
+                                                              & Review object 2                       \\ \cline{2-2} 
+                                                              & Review object 3                       \\ \cline{2-2} 
+                                                              & ...                                   \\ \hline
+\multicolumn{1}{|c|}{{\ul \textit{com.amaze.filemanager}}}    & Review object 1                       \\ \hline
+                                                              & Review object 2                       \\ \cline{2-2} 
+                                                              & ...                                   \\ \cline{2-2} 
+\end{tabular}
+\end{table}
+%extract the crash logs stored in the bucket and systematically \textit{augment} its previously preprocessed log words with 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+% cose da chiedere
+% 1. pacchetto URL in conflitto con pachetto URL di seal_thesis
+% 2. cosa va nell'apporach e cosa va nel tool 
+% 3. correzione lingua inglese
+% 4. conclusions and future work? 
+%.5. deve essere consegnato stampato e rilegato ?
+% 6. nome per il tool LOL
+% 7. RQ3?
+% 8. dove si risponde in sè alle RQ? 
+
+
+
+
+
+
+
+
+
 
 \section{How to start \toolname}
 First of all, a set of parameters and directories have to inserted in the static \textit{Configuration Manager} file.

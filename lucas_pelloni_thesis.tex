@@ -8,6 +8,7 @@
 \usepackage[table,xcdraw]{xcolor}
 \usepackage[normalem]{ulem}
 \useunder{\uline}{\ul}{}
+\usepackage{url}
 
 % ---------------------- INSERT CUSTOMIZED COMMENTS HERE ---------------------- 
 \newcommand{\toolname}{\textsc{TACL}}
@@ -26,6 +27,8 @@
 \newcommand{\Lucene}{\textsc{LuceneTokenizer}}
 \newcommand{\TFIDF}{\textsc{TFIDFCalculator}}
 \newcommand{\Oracle}{\textsc{Oracle}}
+\newcommand{\Review}{\textsc{Review}}
+\newcommand{\ReviewC}{\textsc{ReviewCollector}}
 
 
 % ---------------------- HERE STARTS THE THESIS BODY ---------------------- 
@@ -40,7 +43,7 @@
 \prof{Prof. Dr. Harald C. Gall}
 \assistent{Dr. Sebastiano Panichella \\ Giovanni Grano (PhD student)}
 \email{lucas.pelloni@uzh.ch}
-\url{https://github.com/lucaspelloni2/BA\_PROJ}
+%\url{https://github.com/lucaspelloni2/BA\_PROJ}
 \begindate{08.01.2017}
 \enddate{08.07.2017}
 
@@ -84,36 +87,13 @@ I would like to spend also some words for those people, who support me during th
 \label{sec:intro}
 \input{intro}
 
-%
-\newpage
-\subsubsection{Subsubsection}
-\fig[.5\textwidth]{imgs/seal_blue}{imgs/seal logo}{imgs/logo}
-
-\subsection{Subsection}
-%
-\paragraph{Paragraph.} Always with a point.
-
-\begin{lstlisting}[caption=An example code snippet]
-/**
- * Javadoc comment
- */
-public class Foo {
-	// line comment
-	public void bar(int number) {
-		if (number < 0) {
-			return; /* block comment */
-		}
-	}
-}
-\end{lstlisting}
-
-
-
 \chapter{Related Work}
 \label{sec:related}
 \input{related_1}
 
 \chapter{Approach}
+\label{sec:approach}
+\input{approach}
 
 \chapter{\toolname}
 \input{tool}
