@@ -65,7 +65,7 @@
 \def\prof#1{\gdef\@prof{#1}}
 \def\assistent#1{\gdef\@assistent{#1}}
 \def\email#1{\gdef\@email{#1}}
-\def\url#1{\gdef\@url{#1}}
+\def\urlT#1{\gdef\@urlT{#1}}
 \def\begindate#1{\gdef\@begindate{#1}}
 \def\enddate#1{\gdef\@enddate{#1}}
 
@@ -79,7 +79,7 @@
 \gdef\@prof{No Professor given}
 \gdef\@assistent{No Assisten(s) given}
 \gdef\@email{missing}
-\gdef\@url{missing}
+\gdef\@urlT{missing}
 \gdef\@begindate{No Begin Date given}
 \gdef\@enddate{No End Date given}
 \def\missing{missing}
@@ -172,7 +172,7 @@
    {\bf \@thesisType} & \\[4\p@]
    {\bf Author:} & \@author \ifemail , \@email\fi\\[4\p@]
    \ifurl
-   {\bf URL:} & \@url \\[4\p@]
+   {\bf URL:} & \@urlT \\[4\p@]
    \fi
    {\bf Project period:} & \@begindate \ - \@enddate \\[4\p@]
  \end{tabular}
