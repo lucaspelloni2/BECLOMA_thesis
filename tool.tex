@@ -9,7 +9,9 @@ For giving a cleaner and more understandable explanation of how \toolname\ works
 \item the \textsc{Linking} part represents the core feature of \toolname. It pre-processes a set of given \textit{user reviews} as well as the set of the previously created crash logs, in order to prepare and "clean" them for the linking procedure.  Afterwards, it investigates whether it exists a correlation between the stack traces and the user feedbacks, with the aim to link, whether possible, the reviews with the crash logs. 
 \end{enumerate}
 
+
 \section{Testing}
+\label{tool: testing}
 %----------------- FDROID CRAWLER --------------
 First of all, if no set of \textit{APKs} is available yet, \toolname\ can be exploited for downloading the needed mobile applications from the \textit{F-Droid API\footnote{LINK API}}. In this direction, as shown in the picture \ref{testing}, the component \FDroidCrawler, is first in charge of  parsing a static structured file (\textit{e.g.} a \textit{csv}-file format), which contains a set of android packages names. 
 The path of this file is given in the \textsc{configuration manager}, which contains a set of static properties that get elaborated by \toolname. Second, \textsc{fdroid crawler} searches and then extracts a set of \textit{HTTP links} for those android packages that have been found on the API. Afterwards, it builds the correct \textit{HTTP requests} and finally starts the downloading process, saving the returned \textit{APKs} in a given directory.
@@ -284,7 +286,7 @@ The testing phase in the "strict sense", \ie the stage where the \textit{APK} ge
 ...
 
 \end{lstlisting} 
-Indeed, the method \textit{generateCrashLog()} (~\ref{lst:generatecrash} in the \textit{testAllApp()} is in charge of extracting the crash(es) from its test log. The parsing technique used by this method is to individuate the beginning of the crash using the \texttt{"START\_CRASH"}  string. Once the start has been individuated, the loop continues to add lines of the log	until it finds the \texttt{"END\_CRASH"} string. Once the end has been reached the loop terminates and \Cmd\ writes the results into an external file, in order to extract the crash. 
+Indeed, the method \textit{generateCrashLog()} (~\ref{lst:generatecrash} in the \textit{testAllApp()} is in charge of extracting the crash(es) from its test log. The parsing technique used by this method is to individuate the beginning of the crash using the \texttt{"START\_CRASH"}  String. Once the start has been individuated, the loop continues to add lines of the log	until it finds the \texttt{"END\_CRASH"} String. Once the end has been reached the loop terminates and \Cmd\ writes the results into an external file, in order to extract the crash. 
 
 \begin{lstlisting}[caption=\AppTester's method for extracting a crash log from its test log,label={lst:generatecrash}]
 /**
@@ -328,6 +330,7 @@ In addition, during each test iteration and at the end of the whole testing sess
 
 
 \section{Clustering}
+\label{tool: clustering}
 %--------------CLUSTERING AIM-------------
 Once the testing phase is finished, all the generated crash logs are stored in a given directory. After this phase, the only way to differentiate them inside this directory is the name of the package for which these crashes occurred. However, among these crash logs there may be a lot of redundancy, since more of them may refer to the same bug. The aim behind the Clustering phase is to create a bucket of unique crash logs. This means, that each crash log has to be compared with the others	 of the same package and according to some metrics that will be explained below, they must be smartly group together. Figure~\ref{fig: clustering} shows the idea behind the Clustering process. 
 \begin{figure}[tb]
@@ -341,13 +344,13 @@ Some groups of crash logs may be overlapping. Despite the trigger method, \ie th
 
 In order to understand better the Clustering approach, a clarification of how a crash log is structured must be done. In order to do this, another example of a crash log is given in the listing~\ref{lst: ringdroid}. 
 \begin{lstlisting}[caption=Structure of a crash log, basicstyle=\fontsize{6}{8}\ttfamily,label={lst: ringdroid}]
-1.		// CRASH: com.ringdroid (pid 6207)
-2.		// Short Msg: android.database.StaleDataException
-3.		// Long Msg: android.database.StaleDataException: Attempted to access a cursor after it has been closed.
-4.		// android.database.StaleDataException: Attempted to access a cursor after it has been closed.
-5.		// 	at android.database.BulkCursorToCursorAdaptor.throwIfCursorIsClosed(BulkCursorToCursorAdaptor.java:64)
-6. 		// 	at android.database.BulkCursorToCursorAdaptor.getCount(BulkCursorToCursorAdaptor.java:70)
-7.		...
+// CRASH: com.ringdroid (pid 6207)
+// Short Msg: android.database.StaleDataException
+// Long Msg: android.database.StaleDataException: Attempted to access a cursor after it has been closed.
+// android.database.StaleDataException: Attempted to access a cursor after it has been closed.
+// 	at android.database.BulkCursorToCursorAdaptor.throwIfCursorIsClosed(BulkCursorToCursorAdaptor.java:64)
+// 	at android.database.BulkCursorToCursorAdaptor.getCount(BulkCursorToCursorAdaptor.java:70)
+...
 \end{lstlisting}
 A crash log is usually structured as follows: 
 \begin{itemize}
@@ -379,7 +382,7 @@ for (File crash : crash_container) {
 The method \textit{extractCrashLog()} converts simple crash log files stored inside a folder into \Crash\ Java-objects. 
 Indeed, for each crash log file found inside the directory, the constructor of the \Crash\ class get instantiated and so a new object of this type gets created. Each time the constructor of the \Crash\ class gets invoked, it automatically creates the structure of the \Crash-object analogously to the structure of the real crash log file. \\
 For instance, the crash log described in the listing \ref{lst: ringdroid} is converted into the \Crash-object represented in the listing~\ref{lst: crashobject}.
-It is printed out using the trivial Java method \textit{toString()}, which  per default gives a string representation of the object in question.  
+It is printed out using the trivial Java method \textit{toString()}, which  per default gives a String representation of the object in question.  
 
 \begin{lstlisting}[caption=\Crash-object,basicstyle=\fontsize{6}{8}\ttfamily, label={lst: crashobject}]
 Crash {
@@ -399,7 +402,7 @@ Crash {
 	 						  %Method, ZygoteInit]
 %augmented_stack_traces = [android, database, stale, attempted, access, cursor, closed, bulk, adaptor, count, wrapper , merge, widget, adapter]  
 As you can see in the listing above, the \Crash-object has assumed the same structure as the crash log file. Indeed, it analogously describes the \textit{package name} to which the crash belongs, the \textit{short} and the \textit{long} explanations about the exception, the \textit{trigger method}, etc.
-In addition to them, the \Crash-object stores a list of strings containing the log words, where each position of the array is occupied by a different line. 
+In addition to them, the \Crash-object stores a list of Strings containing the log words, where each position of the array is occupied by a different line. 
 %-----------LUCENE------------
 \paragraph{Preprocessing.}
 The second step of the clustering process is to \textit{preprocess} the crash reports in order to prepare them to be compared to each other. 
@@ -409,13 +412,12 @@ Indeed, the \Crash\ class statically invokes for each line the method \textit{to
 /**
 * @class: CrashLog
 */
-private List<String> logLines;
 for (String line : this.logLines) {
 	LuceneTokenizer.tokenizeLine(line);
 }
 \end{lstlisting} 
 For the tokenization process, \toolname\ uses a well known grammar-based  Lucene-tokenizer, called \textit{StandardTokenizer}. This tokenizer simply split the word fields into lexical units using punctuation and whitespaces as split points. In addition, it removes unnecessary symbols (\eg \texttt{"//"}).
-\toolname\ converts all the strings to lowercase and extends the tokenizer with a further regular expression. This because, it's a worldwide convention that developers use CamelCase notation for writing programming words such as names of classes, names of functions or names of variables.
+\toolname\ converts all the Strings to lowercase and extends the tokenizer with a further regular expression. This because, it's a worldwide convention that developers use CamelCase notation for writing programming words such as names of classes, names of functions or names of variables.
 Since most of the words included in the crash logs are programming language keywords, \toolname\ complements the StandardTokenizer of Lucene, so that CamelCase text fields can be also split at the upper-case letters into separate words. 
 \clearpage
 
@@ -648,7 +650,7 @@ Once an \textit{IndexWriter} is created, all Lucene documents can be added to th
 In this direction, \toolname\ invokes the \textit{computeScoreMap()} method in the \TFIDF\ class, which returns a hash map object. 
 This hash map has as keys the unique locations of the crash logs, each one of them is associated with another hash map which contains the term vector.
 Table ~\ref{tbl: scoremap} shows the structure of the hash map, taking as a reference the crash log presented in the listing ~\ref{lst: ringdroid}. 
-\begin{table}[htb]
+\begin{table}[tb]
 \centering
 \caption{Structure of the hash map containing its term vector}
 \label{tbl: scoremap}
@@ -682,7 +684,7 @@ where, in our case $A$ and $B$ are two normalized weighted term vectors consisti
 With the term "normalized" is understood that when two weighted vectors are used to compute cosine similarity among them, for each time a word is contained within a vector but not in the other, the vector that does not contain the term gets complemented with it by associating a tf-idf score of 0. In doing so furthermore, the two vectors have the same length so that their dot product can be computed.
 Figure below shows how the normalization process works. 
 
-\begin{table}[htb]
+\begin{table}[tb]
 \centering
 \caption{Vector terms $A$ and $B$ before normalization}
 \label{tbl: beforenormal}
@@ -701,7 +703,7 @@ Figure below shows how the normalization process works.
 \end{tabular}
 \end{table}
 
-\begin{table}[htb]
+\begin{table}[tb]
 \centering
 \caption{Normalized weighted vector terms $A$ and $B$}
 \label{tbl: afternormal}
@@ -725,7 +727,7 @@ As shown in the tables above, the vectors $A$ and $B$ after the normalization pr
 Once the vector terms have been normalized, the cosine similarity among crash reports can be computed. \\
 In this direction, \toolname\ defines a threshold in the class \Oracle\,  which represents the tolerance for evaluating the similarity between two crash reports. Indeed, if the calculated cosine similarity among them is greater than the given limit, the two crash logs are considered to describe the same bug, \ie they will belong to the same bug group in the bucket. \\
 Concretely, \toolname\ invokes the method \textit{fillCrashLogBucket()}, which is in charge of comparing the crash logs, classifying them with the aim of filling the bucket. 
-The bucket consists of a hash map, which has as keys a set of strings which act as a labels for the entire bug group they represent. Each label, in turn, has its own list of \Crash-objects\, which have been considered by the \Oracle\ referring to the same bug.  \\
+The bucket consists of a hash map, which has as keys a set of Strings which act as a labels for the entire bug group they represent. Each label, in turn, has its own list of \Crash-objects\, which have been considered by the \Oracle\ referring to the same bug.  \\
 The bucketing process iterates all crash reports and it concretely works as follows: 
 \begin{enumerate}
 \item The method \textit{fillCrashLogBucket()} firstly extracts the first crash log in the list and insert it into the bucket, assigning to it the label of the first bug group. 
@@ -750,9 +752,12 @@ At the end of the clustering phase, all crash logs collected in the testing phas
 %conclusioni fare meglio
 
 \clearpage
+
 \section{Linking}
+\label{tool: linking}
 As mentioned in the introduction of this chapter, the linking phase performed by \toolname\ is in charge of studying the complementarity between user feedback and the outcomes of automated testing tools, \ie the crash logs. 
 
+\label{par: infusa}
 \paragraph{INFUSA-TA.}
 In order to link these two different sources of information, \toolname\ assumes that the set of user feedbacks have been already classified, in according to a a defined taxonomy and preprocessed.
 In this direction, an experimental tool called  \textbf{INFUSE-TA} (\textbf{IN}tegrator o\textbf{F} \textbf{US}er \textbf{FE}edback while Testing \textbf{A}pps) developed by a team at the Software Evolution and Architecture Lab, provides an automatic approach for the classification of a set of user reviews according to a defined taxonomy using some machine learning techniques. 
@@ -761,26 +766,27 @@ The text below depicts an example of Information Retrieval preprocessing applied
 \smallbreak
 \emph{\small``Crashes on Messages I would give this 5 stars but it crashes every time I try to access my messages in the app. I have removed and reinstalled the app  signed in and out  even reformatted my phone. But it still crashes when I click Messages  every time without fail.''}. 
 \smallbreak
-Following, the review is preprocessed applying the techniques described above.  \smallbreak
+Following, the review is preprocessed applying the techniques described above.  
+\smallbreak
 \emph{\small``crash messag i would give 5 star crash everi time i tri access messag app i remov reinstal app  sign  even reformat phone but still crash i click messag  everi time without fail''}. 
 \smallbreak
 
 %TODO : togliere ReviewPreProcessor dal class diagram?
 \paragraph{Extracting user reviews.} 
-The first step in linking phase performed by \toolname\, is to read the location specified in \Config\ of the dataset which contains the set of preprocessed and classified user reviews. 
-Afterwards, \toolname\ uses the \ReviewC\ component illustrated in the diagram~\ref{linking}, in order to convert all user feedbacks located in the dataset to a set of \Review\ Java-objects. 
-To achieve this, \toolname\ each time it find a new review in the dataset, it instantiates the class \Review\ and creates a new object of that type.
-Afterwards, this object is stored inside a \textit{ReviewMap} in the \ReviewC\ class. 
-This hash map has as keys a set of names of android packages for which the reviews have been submitted. Thus, each package name is associated with its own list of \Review-objects. 
-The following table depicts a shortened version of the \textit{ReviewMap}.
-\begin{table}[htb]
+The first step in the linking phase performed by \toolname\, is to read the dataset location, which contains the set of preprocessed and classified user reviews, specified in \Config.
+Afterwards, \toolname\ uses the \ReviewC\ component illustrated in the diagram~\ref{linking}, in order to convert all user feedbacks located in the dataset to a set of Java-objects. 
+To achieve this, each time \toolname\ finds a new review in the dataset, it instantiates the class \Review, creating a new object of that type. 
+Afterwards, this object gets systematically inserted into a \textit{ReviewMap}, located in the \ReviewC\ class. 
+This hash map has as keys a set of labels indicating the names of the packages for which the reviews have been submitted. Thus, each label is associated with its own list of \Review-objects. 
+The following table depicts a shortened version of the architecture of the \textit{ReviewMap}.
+\begin{table}[tb]
 \centering
 \caption{Scheme of the Reviewmap}
 \label{tbl: reviewmap}
-\begin{tabular}{l|l|}
+\begin{tabular}{c|c|}
 \hline
 \multicolumn{1}{|c|}{\textit{\textbf{Package name (key)}}}    & \textit{\textbf{Review list (value)}} \\ \hline
-\multicolumn{1}{||}{{\hspace{0.5cm}\ul \textit{com.danvelazco.fbwrapper}\hspace{0.5cm}}} & Review object 1                       \\ \hline
+\multicolumn{1}{|c|}{{\ul \textit{com.danvelazco.fbwrapper}}} & Review object 1                       \\ \hline
                                                               & Review object 2                       \\ \cline{2-2} 
                                                               & Review object 3                       \\ \cline{2-2} 
                                                               & ...                                   \\ \hline
@@ -788,20 +794,102 @@ The following table depicts a shortened version of the \textit{ReviewMap}.
                                                               & Review object 2                       \\ \cline{2-2} 
                                                               & ...                                   \\ \cline{2-2} 
 \end{tabular}
-\end{table}
-%extract the crash logs stored in the bucket and systematically \textit{augment} its previously preprocessed log words with 
+\end{table}\\
+At this point, \toolname\ has at disposal two different sources information, \ie the set of \textit{\Crash-objects }collected and classified inside the bucket constructed in the clustering phase and a set of preprocessed and categorized \textit{user reviews}. \\
+Before the full linking process can start, the set of preprocessed words belonging to each \Crash-object must be \textit{augmented} in according to the approach explained in the section \ref{approach:linking}. \\
+In this direction, \toolname\ firstly extracts each \Crash-object from the bucket and then invokes for each of them the method 
+\textit{augmentstackTrace()} in the \Crash\ class. 
+Concretely, the augmenting process works as follows: 
+\begin{enumerate}
+\item As explained in the section \ref{approach:linking}, for each \Crash-object only the name and the cause of the raised exceptions are selected, \ie the String attribute \textit{firstJavaStackTraceLine}. Taking again as reference the crash log illustrated in the figure~\ref{lst: ringdroid}, the name and cause of the exception can be found at \textit{line 5}. 
+After the preprocessing procedure has been completed, the line looks like the following: 
+\begin{center}
+\smallbreak
+\emph{\small android, database, stale, attempted, access, cursor closed, bulk, adaptor, count }. 
+\end{center} 
+As you can see, the line has been already "stemmed and cleaned" using the method \textit{stemmAndCleanReports()} in the \textsc{Augmenter} class. 
+This method preprocesses the reports expoiting the information retrivial techniques used by \textbf{INFUSA-TA}, explained at the beginning of the section \ref{tool: linking}.
+Indeed, programming keywords such as "\textit{if}", "\textit{throw}" or "\textit{java}" and too short words such as "\textit{to}" or "\textit{at}" have been removed after the preprocessing procedure. 
+\item After cleaning the reports, the remaining text is augmented with the source code methods included in the stack trace. In this direction, \toolname\ firstly extracts all methods present in the stack trace. To achieve this, it goes through all log lines in the method \textit{augmentStackTrace()} and for each line it compiles the regular expression positioned at \textit{line 7}: 
+\begin{lstlisting}[caption=Regular expression for extracting all methods from a stack trace,label={lst: augmentstack}]
+/**
+* @class: CrashLog
+*/
+public void augmentStackTrace()() {
+        for (String line : this.logLines) {
+            if (line.startsWith("// 	at") && line.contains(".java:")) {
+            		String method = line.split("\\(")[1].split("\\.")[0];
+            		this.stackTraceMethods.add(method);
+            }
+        }
+        ...
+}
+\end{lstlisting}
+The first if statement checks whether the current line belongs to the stack trace body, thus starting from the line number number 4 in the example~\ref{lst: ringdroid}. 
+At \textit{line 7}, \toolname\ extracts only the method which is involved in the current line. 
+For instance, the method which will be extracted from the following crash log line: 
+\begin{center}
+\smallbreak
+\emph{\small android.database.BulkCursorToCursorAdaptor.throwIfCursorIsClosed\textbf{(}BulkCursorToCursorAdaptor.java:64\textbf{)}}
+\end{center} 
+will be
+\begin{center}
+\emph{BulkCursorToCursorAdaptor}
+\end{center} 
+Indeed, the regular expression firstly splits the line by a \textit{round bracket} creating a local static array of Strings. Afterwards, it selects the second position in this array. So, it splits the just created array by a \textit{period}, forming a second array of Strings. Finally, it selects the first position of this latter. 
+The figure below depicts the splitting process for the crash log line represented above: 
+\begin{itemize}
+
+\item \texttt{line.split({\color{blue}"\textbackslash\textbackslash("})} \\
+\emph{android.database.BulkCursorToCursorAdaptor.throwIfCursorIsClose,\\ BulkCursorToCursorAdaptor.java:64)}
+
+
+\item \texttt{line.split({\color{blue}"\textbackslash\textbackslash("})[1]} \\
+\emph{BulkCursorToCursorAdaptor.java:64)}
+
+\item \texttt{line.split({\color{blue}"\textbackslash\textbackslash("})[1].split({\color{blue}"\textbackslash\textbackslash."})} \\
+\emph{BulkCursorToCursorAdaptor, \\
+java:64)}
+
+\item \texttt{line.split({\color{blue}"\textbackslash\textbackslash("})[1].split({\color{blue}"\textbackslash\textbackslash."})[0]} \\
+\emph{BulkCursorToCursorAdaptor}
+
+\end{itemize}
+Once all classes present in the trace stack have been extracted, \toolname\ controls whether in the list of classes coming from the source code there are elements in common with those coming from the stack traces. 
+In the event that there are some classes in common, all additional words, \ie the methods found in that class, are added to the above illustrated \textit{firstJavaStackTraceLine}. 
+Code snippet below summarizes the core of the \textit{augmenting} process: 
+\begin{lstlisting}[caption=Augmenting a stack trace with methods coming from the source code,label={lst: sourcecode}]
+/**
+* @class: Augmenter
+*/
+public List<String> getAdditionalWordsFromSourceCode(){
+		HashMap<String, String> classes = Augmenter.getClassesFromCSV();
+		List<String> augmentedStackTrace = convertToList(this.firstJavaStackTraceLine);
+		classes.forEach((pClass, additionalWords)-> {
+			if (this.stackTraceMethods.contains(pClass)) {
+				augmentedStackTrace.add(additionalWords);
+			}
+		});
+    return augmentedStackTrace;
+}
+\end{lstlisting}
+First of all, the words coming from the source code are stored inside a local hash map called \textit{classes}.
+This hash map has as keys a set of Strings, which represent the name of the classes found while parsing the source code. 
+Their values consists of a set of Strings, each of them contains a list of preprocessed methods split by a white space.  
+\textit{Line 7} goes through each key element in the hash map and whether \toolname\ notices that there is an element in common between the stack trace classes and those from the source code (\textit{line 8}), it adds its additional words to the list representing the \textit{augmentedStackTrace} (\textit{line 9}).
+At the end of this process, presented in the first step of the augmenting process looks like the following: 
+\begin{center}
+\smallbreak
+\emph{\small android, database, stale, attempted, access, cursor closed, bulk, adaptor, count, \\{\color{red}sound, hear, context, supported, filename, rate, channels, launch, intent, title}, ... }
+\end{center} 
+\end{enumerate}
+At this point, \toolname\ has at disposal a set of \textit{preprocessed} reviews and a set of \textit{augmented} stack traces. 
+The final step provides the linking procedure using the \textit{asymmetric Dice} similarity coefficient described in the section \ref{approach:linking}.
+First, ..
 
 
 
-% cose da chiedere
-% 1. pacchetto URL in conflitto con pachetto URL di seal_thesis
-% 2. cosa va nell'apporach e cosa va nel tool 
-% 3. correzione lingua inglese 
-% 4. conclusions and future work? 
-%.5. deve essere consegnato stampato e rilegato ?
-% 6. nome per il tool LOL
-% 7. RQ3?
-% 8. dove si risponde in sè alle RQ? 
+
 
 
 
