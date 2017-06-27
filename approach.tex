@@ -1,7 +1,183 @@
 \label{chapter:approach}
+In the following, I devise an approach named \textbf{BECLOMA} (\textbf{B}ug \textbf{E}xtractor, \textbf{C}lassifier and \textbf{L}inker \textbf{O}f \textbf{M}obile \textbf{A}pps).
+Figure \ref{fig: becloma} depicts the main actions performed by this approach.
+For giving a cleaner and more understandable explanation of how \toolname\ works, I would like to split its key features (see figure \ref{fig: becloma}) into three main categories (which should also be executed in a sequential way, in order to exploit the whole \toolname's potentiality): 
+\begin{enumerate}
+\item the \textsc{Testing} part is in charge of testing a given set of \textit{APKs}, reporting their testing results and extracting possible \textit{crashes} from the before generated test logs; 
+
+\item the \textsc{Clustering} part investigates the similarity between the previous extracted crash logs, using different metrics and strategies, in order to collect they together and create a crash log \textit{bucket}; 
+
+\item the \textsc{Linking} part represents the core feature of \toolname. It pre-processes a set of given \textit{user reviews} as well as the set of the previously created crash logs, in order to prepare and "clean" them for the linking procedure.  Afterwards, it investigates whether it exists a correlation between the stack traces and the user feedbacks, with the aim to link, whether possible, the reviews with the crash logs. 
+\end{enumerate}
+\begin{figure}[tb]
+\centering 
+%	\vspace{-1.5mm} 
+\includegraphics[width=\columnwidth]{diagrams/becloma_approach_img} 
+\caption{\toolname\ apporach}
+\label{fig: becloma}
+\end{figure}
+
+
 \section{Testing approach}
 \label{approach:testing}
+The testing approach basically consists of collecting the outcomes of the automated testing tools, investigating the possible existence of crashes inside them.
+First of all, \toolname\ can act as crawler for downloading the set of desired \textit{APKs} from the \textit{FDroid} API. 
+In this sense, the approach firstly reads a static structured file containing a set of android package names, secondly it builds the necessary \textit{HTTP links} in order to download their \textit{APK} files. 
+Once the dataset has been built and some testing parameters have been specified, the testing session can be started. 
+The testing approach of \toolname\ consists of three testing cycles: 
+\begin{enumerate}
+\item The cycle describing how long a single \textit{APK} is tested in according to its testing parameters;
+\item The cycle indicating all \textit{APKs} contained in the data set;
+\item The cycle characterizing a testing session, \ie how many times the entire dataset is tested. 
+\end{enumerate}
+The process behind the testing of a single \textit{APK} is illustrated in the figure \ref{fig: apkprocess}.
+This consists of firstly systemically \textit{testing} each \textit{APK} in according to its specifications and testing parameters.
+Its specifications consists of the number of random events that will be sent to the app under test, how long the testing of that \textit{APK} will last, the directory where the reports will be stored, etc. 
+Once the testing environment has been configured, the test can concretely start. 
+After the cycle describing the testing of a single \textit{APK} has finished, \toolname\ begins with the \textit{reporting} phase. 
+This step of the approach consists of saving the generated reports which contain the stack traces of the runtime exceptions with the sequence of the events that led to the failures. Afterwards, the approach follows the investigation process. Indeed, this step aims at \textit{investigating} whether they contain some crashes inside them. 
+The last step of the testing approach consists of \textit{extracting} possible crashes from their stack traces and saving them in a specified directory in the form of text files. 
+
+
+\begin{figure}[tb]
+\centering 
+\includegraphics[width=\columnwidth]{imgs/apkprocess} 
+\caption{Approach performed by \toolname\ for testing a single android app}
+\label{fig: apkprocess}
+\end{figure}
+
+
+
+%that contain the stack traces of the runtime exceptions detected by the tools together with the sequence of the UI and/or system events that led to the failures [6].
+
+
+
 \section{Clustering approach}
 \label{approach:clustering}
+Once the testing phase is finished, all crash logs that have been generated are stored in a given directory. 
+However, at this point, the only way to differentiate them inside this directory is the name of the package for which these crashes occurred. 
+Indeed, among these crash logs there may be a lot of redundancy, since more of them may refer to the same bug. 
+The aim behind the clustering phase is to create a bucket of unique crash logs. 
+This means, that each crash log has to be compared with the others which describe the same package name and according to some metrics that will be explained below, they must be smartly group together. Figure~\ref{fig: clustering} shows the idea behind the clustering approach. 
+\begin{figure}[tb]
+\centering 
+\includegraphics[width=\columnwidth]{imgs/clusteringidea} 
+\caption{The idea behind the Clustering process}
+\label{fig: clustering}
+\end{figure}
+As shown in the figure \ref{fig: clustering} some groups of crash logs may be overlapping. 
+Despite the trigger method, \ie the method that raised to the exception, may be the same, there may be different sequences of function calls in the stack trace, the more the analysis goes deep. 
+However, they are hardly detectable and is difficult to affirm that two stack traces which have the same trigger method refer to different bugs. 
+
+
+In order to understand better the Clustering approach, a clarification of how a crash log is structured must be done. In order to do this, another example of a crash log is given in the listing~\ref{lst: ringdroid}. 
+\begin{lstlisting}[caption=Structure of a crash log, basicstyle=\fontsize{6}{8}\ttfamily,label={lst: ringdroid}]
+// CRASH: com.ringdroid (pid 6207)
+// Short Msg: android.database.StaleDataException
+// Long Msg: android.database.StaleDataException: Attempted to access a cursor after it has been closed.
+// android.database.StaleDataException: Attempted to access a cursor after it has been closed.
+// 	at android.database.BulkCursorToCursorAdaptor.throwIfCursorIsClosed(BulkCursorToCursorAdaptor.java:64)
+// 	at android.database.BulkCursorToCursorAdaptor.getCount(BulkCursorToCursorAdaptor.java:70)
+...
+\end{lstlisting}
+A crash log is usually structured as follows: 
+\begin{itemize}
+\item \textit{Line 1} represents the top of the crash log, where the concerned package name is made explicit;
+\item \textit{Line 2} tells in few words the cause of the exception; 
+\item \textit{Line 3} complements the cause of the exception giving a long explanation about the exception itself;
+\item \textit{Line 4} represents the first line of the stack trace. From this point, all the function calls underlying are part of the stack trace;
+\item \textit{Line 5} is considered the exact reason for the exception, \ie the trigger method that caused the crash;
+\item From \textit{line 6} moving gradually down until the end of the stack trace, there are other nested function calls which contain additional information about the cause of the exception. Usually, the most important ones for identifying the cause are in the first few lines. 
+\end{itemize}
+
+\paragraph{Preprocessing.}
+The second step of the clustering approach consists of \textit{preprocessing} the crash reports in order to prepare them to be compared to each other. 
+To achieve this, the approach follows a grammar-based tokenization technique implemented in the well-know \textbf{Apache Lucene} \cite{lucene} library.  
+%Indeed, all words contained in the crash reports are preprocessed using \textbf{Apache}. 
+The approach consists of collect all words contained in the crash reports, and preprocess them using a Lucene-tokenizer, called \textit{StandardTokenizer}. 
+This tokenizer simply split the word fields into lexical units using punctuation and whitespaces as split points. In addition, it removes unnecessary symbols (\eg \texttt{"//"}).
+\toolname\ converts all the Strings to lowercase and extends the tokenizer with a further regular expression. 
+This because, it's a worldwide convention that developers use CamelCase notation for writing programming words such as names of classes, names of functions or names of variables.
+Since most of the words included in the crash logs are programming language keywords, \toolname\ complements the StandardTokenizer of Lucene, so that CamelCase text fields can be also split at the upper-case letters into separate words. 
+
+\paragraph{TF-IDF.} 
+Once all words inside the crash logs have been tokenized, the reports are actually ready to be bucketed.
+In order to classify them, some well-known bucketing techniques are implemented by \toolname, with the aim to deduplicate the greatest number possible of crash reports.
+In this direction, \toolname\ implements a \textit{tf-idf} algorithm \textit{(term frequency–inverse document frequency)}, a well-know term-weighting scheme used in information retrieval or text mining \cite{tfidf}. Indeed, tf–idf is a way to measure the relevance, the weight of a term compared to its document or its entire document collection (in our case, the crash logs). The importance of a term is given by the number of times it occurs in a particular document, inversely proportional to its appearance in the entire documents collection \cite{campbell}.  \\
+Generally, a tf-idf algorithm consists in three main components \cite{tfidfsimilarity}: 
+\begin{itemize}
+\item \textbf{TF (Term Frequency)}, \ie how many times a term appears in the currently scored document, where repeated terms indicate the topic of the document; A high TF means that the word in question has a high relevance for the document. The following simplified equation \cite{tfidf} describes a formula for calculating the term frequency:
+\begin{align*}
+tf_{x,y} = \frac{n_{x,y}}{\mid d_{y} \mid}
+\end{align*}
+where $n_{x,y}$ represents the number of occurrences of the term $t_x$ in the document $d_{y}$, while $\mid d_{y} \mid$ represents the number of words inside the document $d_{y}$.
+
+\item \textbf{IDF (Inverse Document Frequency)}, \ie the inverse of the document frequency, that represents the number of document in which the term appears. If the same term appears in fewer documents, IDF shows a high value, if a term is very common it returns a low value. 
+The equation \cite{tfidf} below describes a simplified version of the inverse document frequency formula: 
+\begin{align*}
+idf_{x} = \frac{\mid D \mid}{\mid \{d: t_{i} \in d\} \mid}
+\end{align*}
+where $\mid D \mid$ is the number of documents in the collection, while $\mid \{d: t_{i} \in d\} \mid$ represents the number of documents which contains the term $t_i$
+
+\item \textbf{TF-IDF}, \ie the product of the two above terms. If it has a high value means that the currently scored term has a high relevance, otherwise if it returns a low value, the term has little relevance.
+\begin{align*}
+tfidf_{x,y} = tf_{x,y}*idf_{x}
+\end{align*}
+
+\end{itemize}
+The IDF metric actually measures how important a term is. This because, a term which appears very often in a single document will have a high TF score but if this term rarely occurs in the other ones it will also have have a high IDF score and so a low TF-IDF value. This would imply that it shall not have a high relevance. Otherwise, if a word occurs very often both in a single document and in the entire collection it has a high TF score and a low IDF-value, which results in a high TF-IDF score.
+
+At the end of this phase, \toolname\ has created for each crash log its correspondent vector space model, \ie a weighted vector term, where each term indicates a new dimension in the vector and is associated with its correspondent tf-idf value. 
+
+
+\paragraph{Cosine Similarity.}
+To state whether two crash reports refer to the same bug, the approach computes cosine similarity between their previously created vectors space model. 
+The cosine similarity is just a measure of similarity between two vectors \cite{cosine} (in our case, two normalized weighted vectors consisting of their tf-idf scores).
+Usually, the resulting similarity ranges from -1 to 1, but in the case of information retrieval, since the frequency of the terms are always positive, the returned values range from 0 to 1, where 0 indicates that two documents are completely decorrelated, while 1 means that the words contained inside them are exactly the same.  
+The equation describing the cosine similarity between two vectors is as follows: 
+\begin{align*}
+cosine\:similarity = \cos({\theta}) = \frac{A\cdot{B}}{||A||\:||B||}
+\end{align*}
+where, in our case $A$ and $B$ are two normalized weighted term vectors consisting of tf-idf values. 
+With the term "normalized" is understood that when two weighted vectors are used to compute cosine similarity among them, for each time a word is contained within a vector but not in the other, the vector that does not contain the term gets complemented with it by associating a tf-idf score of 0. Furthermore, in doing so the two vectors will have the same length by making the computation of their dot product possible. 
+
+
+
 \section{Linking approach}
 \label{approach:linking}
+
+\paragraph{INFUSA-TA.}
+\label{par: infusa}
+To study the correlation between user reviews and the outcomes of automated testing tools, \toolname\ assumes that the set of user feedbacks have been already classified in according to a a defined taxonomy and preprocessed.
+In this direction, an experimental tool called  \textbf{INFUSE-TA} (\textbf{IN}tegrator o\textbf{F} \textbf{US}er \textbf{FE}edback while Testing \textbf{A}pps) developed by a team at the Software Evolution and Architecture Lab, provides an automatic approach for the classification of a set of user reviews according to a defined taxonomy using some machine learning techniques. 
+Furthermore, it performs a systematic Information Retrieval (IR) preprocessing \cite{BaezaYates:1999} on both the user reviews and \textit{augmented} stack traces aimed at (i) correcting mistakes, (ii) expanding contractions (e.g., \textit{can’t} is replaced with \textit{can not}), (iii) filtering nouns and verbs, (iv) removing common words or programming language keywords, and (v) stemming words (e.g., \textit{aiming} is replaced with \textit{aim}). \\
+The text below depicts an example of Information Retrieval preprocessing applied on a user feedback: 
+\smallbreak
+\emph{\small``Crashes on Messages I would give this 5 stars but it crashes every time I try to access my messages in the app. I have removed and reinstalled the app  signed in and out  even reformatted my phone. But it still crashes when I click Messages  every time without fail.''}. 
+\smallbreak
+Following, the review is preprocessed applying the techniques described above.  
+\smallbreak
+\emph{\small``crash messag i would give 5 star crash everi time i tri access messag app i remov reinstal app  sign  even reformat phone but still crash i click messag  everi time without fail''}. 
+\smallbreak
+
+
+\paragraph{Linking between Crash Logs and Reviews}
+The last step of the approach consists of linking the information from the stack traces contained in the reports to the relevant user reviews. 
+However, linking the two sources of information is difficult because they are very different: user reviews contain information text which describe the overall scenario that led to a failure \cite{mernik}, while the stack traces contain technical information about the exceptions raised during the execution of a certain test case. 
+To account for this aspect, the approach first removes all information that creates noise in the collected stack traces, only the name and cause of the raised exceptions are selected. The choice of considering only some specific parts of the stack traces was driven by experimental results, where we tested how the linking accuracy was influenced by the presence/absence of this information. 
+After cleaning the reports, the remaining text is augmented with the source code methods included in the stack trace. This step extends the information from the reports with contextual information from the source code, possibly providing additional information useful for the linking process. Also in this case, the choice was not random but driven by the experimental results.
+Afterwards, the approach performs the systematic Information Retrieval (IR) preprocessing \cite{BaezaYates:1999} \textbf{INFUSA-TA}.
+Finally, the resulting documents are linked using the asymmetric Dice similarity coefficient \cite{BaezaYates:1999}, which is defined as
+follow: 
+\begin{align*}
+Dice (review_j, crash_i) = \frac{|W_{review_j} \cap W_{crash_i}|}{\textit{min}(|W_{review_j}|, |W_{crash_i}|)}
+\end{align*}
+where $W_{review_j}$ represents the set of words composing a user review $j$, $W_{crash_i}$ is the set of words contained in an augmented stack trace $i$ and the $min$ function normalizes the Dice score with respect to the number of words contained in the shortest document between $j$ and $i$. 
+The asymmetric Dice similarity returns values between [0,1]. 
+In my thesis, pairs of documents having a Dice score higher than \textbf{0.5} were considered as linked by the approach.
+
+
+
+
+
+
