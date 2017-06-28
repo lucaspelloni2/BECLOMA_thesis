@@ -15,16 +15,22 @@ All the parameters needed for starting a testing session have to be specified in
 \label{config}
 \begin{lstlisting}[caption=Properties which get elaborated during the testing sessions]
 /**
- * Testing session specifications
- */
-MINUTES_PER_APP = 30
-NR_OF_ITERATIONS = 5
- 
+* Dataset directories
+*/
+CSV_FILE_DIR = Dataset/dataset.csv
+APK_DIR = Downloads/apks 
+
 /**
 * Test logs directories
 */
 MONKEY_DIR = Reports/MonkeyReports
 SAPIENZ_DIR = Reports/SapienzReports
+
+/**
+ * Testing session specifications
+ */
+MINUTES_PER_APP = 30
+NR_OF_ITERATIONS = 5
 
 /**
  * Monkey parameters
@@ -50,20 +56,25 @@ GENERATION = 100
 CXPB = 0.7
 MUTPB = 0.3
 \end{lstlisting}
-The figure above represents a part of the \textsc{configuration manager}, where all the testing parameters for \monkey and \sapienz are specified. An in-depth explanation about these parameters concering \monkey and \sapienz can be found on \cite{monkey}, respectively on \cite{sapienz}.\\
-In addition to them, the directories on which the generated test logs are going to be stored must be given as well as the specifications about the testing session. The properties about the testing session consist of two values: 
+The figure above represents a part of the \textsc{configuration manager}, where all the testing parameters for \monkey and \sapienz are specified (\textit{line 22-41}). An in-depth explanation about these parameters concering \monkey and \sapienz can be found on \cite{monkey}, respectively on \cite{sapienz}.\\
+Furthermore, the directories containing the dataset must be specified. These include the location of the static structured file and the directory where the \textit{APKS} are going to be stored (\textit{line 4-5}).
+In addition to them, the directories on which the generated test logs are going to be saved (\textit{line 10-11}) as well as the specifications about the testing session (\textit{line 16-17}) must be given. 
+The properties about the testing session consist of two values: 
 \begin{itemize}
 \item \textsc{minutes\_per\_app}, specifies how many minutes an app will be tested. After that time frame, a time-out occurs and the testing process gets restarted with the next app. 
+Referring to the approach explained in the section \ref{approach:testing}, this value represents the  \textit{testing cycle} of a single \textit{APK}.
 \item \textsc{nr\_of\_iterations}, specifies how many times the whole dataset will be tested.
+This value, in turn, describes the \textit{testing cycle} involving an entire testing session.
 \end{itemize}
 
-According to the example \ref{config} above and assuming that the \textit{APKs} set consists in 10 apps, the total estimated testing time for an entire testing session would be: 
+According to the example \ref{config} above and assuming that the dataset consists in 10 apps, the total estimated testing time for an entire testing session would be: 
 \begin{align*}
 30 \:min \: \frac{per}{app} * 10\: app * 5\: iterations = 1500 \:min. \:(25\: hours). 
 \end{align*}
-Once the environment testing variables have been configured, the automated tool with whom the testing is going to be performed must be made explicit. Indeed, it has to be specified as parameter in \textsc{main} \textit{args} (as mentioned before in the section \ref{sec:choicetool}, the tools which can be selected are either \monkey or \sapienz). \\
-The last configuration step is to define on which kind of device (\textit{i.e}, a real device, such as a \textit{tablet} or a virtual device, such as an \textit{emulator}) the testing is going to be performed. In addition to them, an additional argument that starts a timer for a better overview during the testing process can also be passed as main argument. \toolname\ supports different types of emulators or real devices running on different android API levels. However, in order to correctly execute \sapienz, the API level shall be the \textit{Android 4.4, KitKat}. \\
-The listing below shows an example of a combination of possible parameters that could be given as main arguments. 
+Once the testing environment has been configured, the automated tool with whom the testing is going to be performed must be made explicit. 
+Indeed, it has to be specified as parameter in \textsc{main} \textit{args} (as mentioned before in the section \ref{sec:choicetool}, the tool which can be selected is either \monkey or \textsc{Sapienz}).\\
+The last configuration step is to define on which kind of device (\textit{i.e}, a real device, such as a \textit{tablet} or a virtual device, such as an \textit{emulator}) the testing is going to be performed. In addition to them, an additional argument that starts a timer for a better overview during the testing process can also be passed as main argument. \toolname\ supports different types of emulators or real devices running on different android API levels. However, in order to correctly execute \sapienz, the API level shall be \textit{Android 4.4, KitKat}. \\
+The listing below shows an example of a possible combination of parameters that could be given as main arguments. 
 
 
 \begin{lstlisting}[caption=\toolname\ command line, language=bash]
@@ -71,9 +82,9 @@ $ java -BECLOMA.jar -device -monkey -timer
 \end{lstlisting}
 
 %-----------LAUNCH A TESTING SESSION -----------
-Once the configuration phase is terminated, \toolname\ is able to start the testing process. 
+\paragraph{Testing session.} Once the configuration phase is terminated, \toolname\ is able to start the testing process. 
 As shown in the picture \ref{testing}, it manages the component \SessionLauncher, which is in charge of translating the previously specified testing properties into "java readable code" and initializing the testing session. 
-Concretely, after \toolname\ invokes \SessionLauncher\ all the attached devices respectively the chosen emulators get initialized, \ie they get rebooted and restarted as root, so that some important write-read-permissions are enabled during the testing session. 
+Concretely, after \toolname\ invokes \SessionLauncher\ all attached devices respectively the chosen emulators get initialized, \ie they get rebooted and restarted as root, so that some important write-read-permissions are enabled during the testing session. 
 Whether the timer has been given as main argument, it gets also started. \\
 Once the initialization step has been completed, \SessionLauncher\  invokes the \AppTester\ component which finally starts the testing session. The Listing~\ref{lst:startsession} gives a simplified code snippet about the beginning of the testing process. 
 
@@ -98,11 +109,15 @@ public void startTestingSession() throws Exception {
         }
 }
 \end{lstlisting}
-First of all, the total number of iterations specified in the \Config\ is read and stored into a constant of type int. After that, all the attached devices (or the chosen emulators) gets statically initialized. According to the boolean variable \textit{isTimer}, a timer may also be started.
-Afterwards, a for-loop starts where at each iteration the method \textit{testAllApp()} gets invoked. 
-The idea behind this, is that at each iteration a new object of type \AppTester\ is created, so that each created object represents one testing loop of the dataset. 
-For this reason, as shown in the figure~\ref{testing}, the \SessionLauncher\ would be able to instantiate infinite times the class \AppTester. However, it must create at least one object of that type in order to start a testing session. 
+First of all, the total number of iterations specified in the \Config\ is read and stored into a constant of type int. After that, the specified device gets initialized, statically invoking the correspondent method (\textit{line 4-9}).  
+According to the boolean variable \textit{isTimer}, a timer may also be started (\textit{line 11-13}).
+Afterwards, a for-loop starts, where at each iteration the method \textit{testAllApp()} gets invoked. 
+The idea behind this, is that at each iteration a new object of type \AppTester\ is created, so that each created object represents exactly one testing loop of the entire dataset. 
+Referring to the approach exaplained in the section \ref{approach:testing}, this cycle corresponds to
+all \textit{APKs} contained in the dataset. 
+As shown in the figure~\ref{testing}, the \SessionLauncher\ would be able to instantiate infinite times the class \AppTester. However, it must create at least one object of that type in order to start a testing session. 
 
+\paragraph{Testing the entire dataset.} 
 \AppTester\ and \Cmd\ represent the core components of the whole testing process. Indeed, \AppTester\ can be viewed as brain of the process, since it tells step-by-step to the body, \ie the \Cmd\ component, which commands it has to execute and at what stage of the process it has to perform it. \\
 Listing~\ref{lst:apptester} shows a very simplified code snippet of the relation between the two above mentioned components. 
 \begin{lstlisting}[caption=Testing mechanism between \AppTester\ and \Cmd\, ,label={lst:apptester}]
@@ -154,19 +169,28 @@ public static File getCurrentLog() {
 
 
 First of all, \AppTester\ creates a for-loop in which it iterates each \textit{APK} file contained in the \textit{APKs} directory. Once again, this directory is specified in the \Config. 
-The first if statement checks whether the file in question has an adequate extension, \ie it is able to be installed on a android mobile device. After that, \AppTester\ uninstalls the concerned \textit{APK}, so that at each iteration of the testing it get reinstalled. This beacause, it may be that an \textit{APK} gets affected by previously generated sequences (\eg a sequence of random events that led the app to an external website). \\
+The first if statement checks whether the file in question has an adequate extension, \ie it is able to be installed on a android mobile device. 
+After that, \AppTester\ uninstalls the concerned \textit{APK}, so that at each iteration of the testing it gets reinstalled. 
+This beacause, it may be that an \textit{APK} gets affected by some previously generated sequences (\eg a sequence of random events that led the app to an external website). \\
 Afterwards, \AppTester\ checks which automated tool has been chosen by the tester, so that it can tell to the \Cmd\ component, which command-line it has to execute. As stated before, \AppTester\ prepares the single testing components such as which \textit{APK}, which tool, which testing parameters, etc., while \Cmd\ executes them without any prior knowledge. \\
-After the automated tool has been detected, \Cmd\ is able to concretely start the testing, executing the passed command-line. This is represented in listing \ref{lst:apptester} by the method \textit{generateReport}. Indeed, \Cmd\ uses a single instance of the java-class \textit{Runtime} that allows the application to interact with the environment in which the app is running \cite{runtime}. This is actually achieved by the \textit{Runtime.getRuntime()}. The next line executes with the previously created object the given command-line. Since this method returns a new Process object, the result of the execution is assigned to a separate process. \\
+After the automated tool has been detected, \Cmd\ is able to concretely start the testing, executing the passed command-line. This is represented in listing \ref{lst:apptester} by the method \textit{generateReport} (\textit{line 33}). Indeed, \Cmd\ uses a single instance of the java-class \textit{Runtime} that allows the application to interact with the environment in which the app is running \cite{runtime}. 
+This is actually achieved by the \textit{Runtime.getRuntime()} (\textit{line 34}). The next line concretely executes the passed command-line. 
+The returned code of the function call at \textit{line 35} consists of a new \textit{process} object. 
+The process actually contains the execution of the command line. 
 Assigning the execution of each single command-line to a new single separate process brings with it many advantages: 
 \begin{itemize}
-\item Processes are independent of each other. If the execution of a command-line fails, it can be interrupted without affecting the entire testing process; 
+\item Processes are independent of each other. 
+Whether the execution of a command-line fails, it can be interrupted without affecting the entire testing process; 
 \item Multithreading can be easily supported; Indeed, the component \Stream\ extends the \textit{Thread} java-class which implements the \textit{Runnable} java-interface. Each time a new process comes in, it starts a new thread in this class.
 \item Each process has it own timeout. It may be that some command-lines cannot properly terminate and need to be interrupted during their execution.  
 \end{itemize}
-\Stream, in turn, is in charge of writing the test report. Each time its construct get instantiated in the \textit{generateReport()} method of the \Cmd\ class, it starts a new thread and begins in parallel the writing phase of the log. 
-As shown in listing~\ref{lst:gobbler}, the method \textit{run()} overridden from the \textit{Runnable} interface gets automatically per-default invoked when in the \textit{generateReport} method an object of type \textit{StreamGobbler} calls the \textit{start()} method. 
-Once the \textit{start()} method is called, the writing phase starts. This phase uses a \textit{PrintWriter} as well as classic \textit{Reader} for writing text on a file.
-Before the test log is written, the metadata about the testing environments are appended to the writer. At the end of the process the writer is closed and the thread can terminate. Once the thread is finished, the method \textit{writeTestingEndTime()} in the method \textit{generateReport()} can start. This method complement the metadata writing the testing end time, so that the total testing time can be computed. 
+\paragraph{Reporting phase.}
+\Stream, in turn, is in charge of writing the test report. Each time its constructor get instantiated in the \textit{generateReport()} method in the \Cmd\ class, it starts a new thread and begins in parallel the writing phase of the log. 
+As shown in listing~\ref{lst:gobbler}, the method \textit{run()} overrides the method located in the \textit{Runnable} interface. 
+Indeed, it gets automatically invoked when in the \textit{generateReport()} method an object of type \textit{StreamGobbler} calls the function \textit{start()}  (\textit{line 37}). 
+Once it gets called, the \textit{reporting} phase begins. This phase uses a \textit{PrintWriter} as well as classic \textit{Reader} for writing text on a file.
+Before the test log is written, the metadata about the testing environments are appended to the writer. At the end of the process the writer is closed and the thread can terminate. Once the thread is finished, the method \textit{writeTestingEndTime()} (\textit{line 38}) can be executed.  
+It complements the metadata, writing the testing end time, so that the total testing time can be computed. 
 
 
 
@@ -244,6 +268,7 @@ Percentage of touch events: 1.0% (number of touch events: 30 of 3000 events)
 
 As shown in the figure above, the test logs do not only contain the test results of the tested app, but also the above mentioned meta-data for documenting and retracing the whole testing session.
 
+\paragraph{Investigating phase. }
 The testing phase in the "strict sense", \ie the stage where the \textit{APK} gets stressed with an automated tool is over. At this point, the logs must be investigated about the possibility that some apps have generated a crash during its testing time frame. In this sense, the last part of the method \textit{testAllApp()} illustrated in the listing ~\ref{lst:apptester}, is in charge of stating whether a test log contains a crash or not. The method for checking whether a test log has collected a crash inside it is quite intuitive. This because, the syntax used by \monkey and \sapienz in their report for indicating the presence of a crash is the same. As illustrated in the listing~\ref{lst:crashlog}, a crash can be delimited using the following two \textit{Strings}: 
 \begin{itemize}
 \item Crash beginning: \texttt{"// CRASH: "}
@@ -279,7 +304,8 @@ The testing phase in the "strict sense", \ie the stage where the \textit{APK} ge
 ...
 
 \end{lstlisting} 
-Indeed, the method \textit{generateCrashLog()} (~\ref{lst:generatecrash} in the \textit{testAllApp()} is in charge of extracting the crash(es) from its test log. The parsing technique used by this method is to individuate the beginning of the crash using the \texttt{"START\_CRASH"}  String. Once the start has been individuated, the loop continues to add lines of the log	until it finds the \texttt{"END\_CRASH"} String. Once the end has been reached the loop terminates and \Cmd\ writes the results into an external file, in order to extract the crash. 
+Indeed, the method \textit{generateCrashLog()} 
+is in charge of extracting the crash(es) from its test log. The parsing technique used by this method is to individuate the beginning of the crash using the \texttt{"START\_CRASH"}  String. Once the start has been individuated, the loop continues to insert lines of the log	into a local array of Strings (\textit{line 13}) until it finds the \texttt{"END\_CRASH"} String. Once the end has been reached the loop terminates and \Cmd\ writes the results into an external file, in order that the crash can be extracted. 
 
 \begin{lstlisting}[caption=\AppTester's method for extracting a crash log from its test log,label={lst:generatecrash}]
 /**
@@ -312,8 +338,8 @@ At this point, the \textit{APK} has been tested, reported, its test logs have be
 
 
 
-Now, \toolname\ is able to start testing the next application (\ie the next iteration of the loop inside the method \textit{testAllApp())}. 
-Once all the applications specified in the dataset have been tested exactly one time, \SessionLauncher\ can begin with the next iteration of its loop (listing ~\ref{lst:startsession}) and so start testing the whole dataset another time. 
+\toolname\ can now repeat this entire process with the next application (\ie the next iteration in the loop inside the method \textit{testAllApp())}. 
+Once all the applications specified in the dataset have been tested exactly one time, \SessionLauncher\ can begin with the next iteration in its loop (listing ~\ref{lst:startsession}) and so start testing the whole dataset another time. 
 This loop ends when the number of iterations reaches the one specified by the user. \\
 In addition, during each test iteration and at the end of the whole testing session useful statistics are computed and written into external excel files, using the components \textsc{OnGoingCalculator} and \textsc{FinalCalculator}. They use the pure Java library \textit{Apache POI}, for reading and writing files in Microsoft Office formats \cite{apachepoi}. 
 
@@ -343,7 +369,7 @@ for (File crash : crash_container) {
 \end{lstlisting} 
 The method \textit{extractCrashLog()} converts simple crash log files stored inside a folder into \Crash\ Java-objects. 
 Indeed, for each crash log file found inside the directory, the constructor of the \Crash\ class get instantiated and so a new object of this type gets created. Each time the constructor of the \Crash\ class gets invoked, it automatically creates the structure of the \Crash-object analogously to the structure of the real crash log file. \\
-For instance, the crash log described in the listing \ref{lst: ringdroid} is converted into the \Crash-object represented in the listing~\ref{lst: crashobject}.
+For instance, the crash log described in the listing \ref{lst: ringdroid} is converted into a \Crash-object represented in the listing~\ref{lst: crashobject}.
 It is printed out using the trivial Java method \textit{toString()}, which  per default gives a String representation of the object in question.  
 
 \begin{lstlisting}[caption=\Crash-object,basicstyle=\fontsize{6}{8}\ttfamily, label={lst: crashobject}]
@@ -356,7 +382,6 @@ Crash {
 	trigger_method = [android.database.BulkCursorToCursorAdaptor.getCount(BulkCursorToCursorAdaptor.java:70)]
 	trigger_class = BulkCursorToCursorAdaptor
 	log_lines = [// CRASH: com.ringdroid (pid 20442), // Short Msg: android.database.StaleDataException, ...]
-	
 }
 \end{lstlisting}
 %	all_stack_trace_methods = [BulkCursorToCursorAdaptor, CursorWrapper, MergeCursor,
@@ -377,7 +402,7 @@ for (String line : this.logLines) {
 	LuceneTokenizer.tokenizeLine(line);
 }
 \end{lstlisting} 
-To provide a concrete example, the following line extracted from the crash report in listing~\ref{lst: ringdroid} is passed as argument to the method \textit{tokenizeLine()}: \vspace{-0.8cm}
+To provide a concrete example, the following line, extracted from the crash report in listing~\ref{lst: ringdroid} is passed as argument to the method \textit{tokenizeLine()}: \vspace{-0.8cm}
 \begin{center}
 \framebox[1\width]{{\fontsize{6.5}{6}{ \texttt{
 //\hspace*{0.6cm}at android.database.BulkCursorToCursorAdaptor.throwIfCursorIsClosed(BulkCursorToCursorAdaptor.java:64)}
@@ -489,18 +514,15 @@ The following two boxes show the various tokenization steps that are performed b
 }}} 
 \end{enumerate}
 As shown above, the crash log line gets firstly preprocessed using the \textit{StandardTokenizer} provided by \textbf{Lucene}.
-Afterwards, \toolname\ for the reasons explained in the section \ref{approach:clustering} performs a further tokenization step, dividing the line by an additioanl \textit{CamelCase tokenizer}. 
+Afterwards, \toolname\ for the reasons explained in the section \ref{approach:clustering} performs a further tokenization step, tokenizing the lines using an additional \textit{CamelCase tokenizer}. 
 Finally, it uses a simply tokenizer to make the words lower case. 
-This tokenization process is repeated for all lines of all crash reports stored in the directory. At the end of this process, each \Crash-object is complemented with a new attribute which represents the set of preprocessed words.
-
+This tokenization process is repeated for all lines of all crash reports stored in the directory. At the end of this process, each \Crash-object has its own set of preprocessed log lines (in the class diagram \ref{clustering}, represented by the list of Strings \textit{crashLogWords})
 
 \paragraph{TF-IDF}
-In order to follow the clustering approach in the section \ref{approach:clustering}, \toolname\ must create the vectors space model. 
-To do this, it makes use of the \textbf{Lucene} library again.
-Indeed, the approach proposed by Lucene consists of executing a process of indexation . 
-
-
-First of all, \toolname\ creates an index using an \texttt{IndexWriter}. The  diagram \ref{fig: indexingprocess} illustrates the main components of the Lucene indexing process:
+In order to follow the clustering approach described in the section \ref{approach:clustering}, \toolname\ creates for each crash log its correspondent vector space model. 
+For this purpose, it makes use of the \textbf{Lucene} library again.
+Indeed, the approach proposed by Lucene consists of (i) executing a indexation process with a set of Lucene documents, (ii) creating a term vector for each document (iii) computing for each term within the vector its tf-idf score. \\ 
+The  diagram \ref{fig: indexingprocess} illustrates the main components of the Lucene indexation process.
 \begin{figure}[tb]
 \centering 
 \includegraphics[width=\columnwidth]{diagrams/indexingProcess} 
@@ -512,7 +534,8 @@ First of all, \toolname\ creates an index using an \texttt{IndexWriter}. The  di
 The first step \toolname\ performs is to create a set of \textit{Lucene documents}. 
 To do this, it goes through all previously created \Crash-objects and convert their preprocessed words into Lucene documents. Each document must contain its group of \textit{fields} in order to be indexed.
 Therefore, each time a new Lucene document is created, a set of fields must be set and enclosed inside it. 
-A field can be viewed as a section of a document which can be optionally stored in the index \cite{lucenefield} and usually has three components: name, type and content. For each stored field, it is important to determine which type is best suited to the content that is going to be indexed. 
+A field can be viewed as a section of a document which can be optionally stored in the index \cite{lucenefield}. 
+It has usually three components: \textit{name}, \textit{type} and \textit{content}. For each stored field, it is important to determine which type is best suited to the content that is going to be indexed. 
 For instance, \toolname\ indexes documents which enclose \textit{text fields}, since they are already stored, tokenized and indexed \cite{lucenetextfield}. 
 In order to be able to compute TF-IDF values for the indexed Lucene documents, \toolname\ must enable the property that they can have \textit{term vectors}, \ie they can store "a list of the document's terms and their number of occurrences in that document" \cite{lucenetermvector}. \\
 The first steps of the Lucene indexing process can be summarized by the following code snippet, which is a simplified version of the \textit{createIndex()} method, illustrated in the diagram~\ref{clustering}.
@@ -539,9 +562,13 @@ private void createIndex(List<CrashLog> crashLogs) throws IOException {
             }
 \end{lstlisting} 
 As shown in the listing above, \toolname\ goes through all the given crash logs and stores in a local list their preprocessed log words. 
-Afterwards, the field type \textit{TextField} is selected. 
-In the next line, the above mentioned term vector property is enabled. Then, a new Lucene document is generated. 
-At this point, \toolname\ goes through each preprocessed word and at each iteration adds the current word to a new field which has just been created. The new field has a name, a content, \ie the word in question and a type, \ie the previously selected field type. Finally, the entire field is added to the document. At the end of the loop an additional field is added and used as ID for the document (in our case, the crash log path acts as unique attribute in the index). 
+Afterwards, the field type \textit{TextField} is selected (\textit{line 9}). 
+In the next line, the above mentioned term vector property is enabled. 
+Then, a new Lucene document is generated. 
+At this point, \toolname\ goes through each preprocessed word and at each iteration adds the current word to a new field which has just been created (\textit{line 16}). 
+The new field has a name, a content, \ie the word in question and a type, \ie the previously selected field type. 
+Finally, the entire field is added to the document. 
+At the end of the loop an additional field is added and used as ID for the document (in our case, the crash log path acts as unique attribute in the index). 
 
 \paragraph{Creating IndexWriter and adding documents.}
 In order to index Lucene documents, \toolname\ must generate an \textit{IndexWriter}. This because, this object acts as a core component for creating and updating indexes. 
@@ -578,15 +605,19 @@ private void createIndex (List<CrashLog> crashLogs) throws IOException {
 }
     
 \end{lstlisting} 
-As illustrated in the example above, the location where the index should point at can be inserted using the Lucene class \textit{FSDirectory}. It is a base class for Directory implementations that store index files in the file system \cite{lucenefsdir}. Next line of code, the analyser which is used for analysing the Lucene documents is defined. This can made using the Lucene class \textit{IndexWriterConfig}, which holds all the configuration that is used to create an \textit{IndexWriter}. \toolname\ defines again a \textit{StandardAnalyser}, the same used for preprocessing the crash logs.
+As illustrated in the example above, the location where the index should point at can be inserted using the Lucene class \textit{FSDirectory} (\textit{line 6}). It is a base class for Directory implementations that store index files in the file system \cite{lucenefsdir}. 
+Next line of code, the analyser which is used for analysing the Lucene documents is defined. 
+This can made using the Lucene class \textit{IndexWriterConfig}, which holds all the configuration that is used to create an \textit{IndexWriter} (\textit{line 8}). \toolname\ defines again a \textit{StandardAnalyser}, the same used for preprocessing the crash logs.
 Finally, a new \textit{IndexWriter} can be constructed per the previously configured settings. 
 Once an \textit{IndexWriter} is created, all Lucene documents can be added to the index using a simple method called \textit{addDocument()}. At the end of the indexing process all preprocessed words contained inside the \Crash-objects have been converted into Lucene documents and have been indexed.
 
 
-\paragraph{Computing TF-IDF scores.} At this point, the index has been created and each document has the possibility to store its vector of terms so that TF-IDF values can be computed for each word of each term of vector of each crash report. 
+\paragraph{Computing TF-IDF scores.} 
+At this point, the index has been created and each document has the possibility to store its vector of terms. 
+Thus, TF-IDF values can now be computed for each word of each vector of each crash report. 
 In this direction, \toolname\ invokes the \textit{computeScoreMap()} method in the \TFIDF\ class, which returns a hash map object. 
-This hash map has as keys the unique locations of the crash logs, each one of them is associated with another hash map which contains the term vector.
-Table ~\ref{tbl: scoremap} shows the structure of the hash map, taking as a reference the crash log presented in the listing ~\ref{lst: ringdroid}. 
+This hash map has as keys the unique locations of the crash logs, each one of them is associated with another hash map which contains the correspondent term vector.
+Table~\ref{tbl: scoremap} shows the structure of the hash map, taking as a reference the crash log presented in the listing~\ref{lst: ringdroid}. 
 \begin{table}[tb]
 \centering
 \caption{Structure of the hash map containing its term vector}
@@ -606,13 +637,16 @@ Table ~\ref{tbl: scoremap} shows the structure of the hash map, taking as a refe
 \end{tabular}
 \end{table}
 
-As shown in the table above, the terms which have the highest tf-idf relevance are \textit{accessibility} and \textit{view}. Indeed, they have a high term frequency in the currently scored crash log and a low document frequency of the term in the entire collection. 
+As shown in the table~\ref{tbl: scoremap}, the terms which have the highest tf-idf relevance are \textit{accessibility} and \textit{view}. Indeed, they have a high term frequency in the currently scored crash log and a low document frequency in the entire collection. 
 Terms such as \textit{crash} or \textit{ringdroid} have a low tf-idf weight. In fact, they are generic and irrelevant terms, since they don't give any useful information about the topic of the document. \\
-\toolname\ computes tf-idf scores for all vector terms of all crash logs. Once this processed is completed, the similarity between the set of crash logs stored inside the hash map can be computed.
-\paragraph{Cosine similarity.} 
-In order to state whether two crash logs refer to the same bug, \ie they can belong to the same group in the bucket, \toolname\ computes cosine similarity between the previously generated vectors terms. 
-Figure below shows how the normalization process works.
+%\toolname\ computes tf-idf scores for all vector terms of all crash logs. Once this processed is completed, the similarity between the set of crash logs stored inside the hash map can be computed.
 
+\paragraph{Cosine similarity.} 
+In order to state whether two crash logs refer to the same bug, \ie they can belong to the same group in the bucket, \toolname\ follows the approach described in the section \ref{approach:clustering}. 
+Indeed, it computes a well-known similarity measure, \ie cosine similarity \cite{cosine} between different crash reports,
+However, in order for that to happen, when cosine similarity is computed among two vectors belonging to two different crash logs, they must first be \textit{normalized}. 
+The \textit{normalization} process described in the approach (section \ref{approach:clustering}) is illustrated in the example shown in the table \ref{tbl: beforenormal} and \ref{tbl: afternormal}.
+As illustrated, the vectors $A$ and $B$ after the normalization process have the same length and have been complemented with their missing words. 
 \begin{table}[tb]
 \centering
 \caption{Vector terms $A$ and $B$ before normalization}
@@ -650,7 +684,7 @@ invoke                             & 1.41                               & \textb
 ringdroid                          & 1.00                               & ringdroid                         & 1.00                               \\ \hline
 \end{tabular}
 \end{table}
-As shown in the tables above, the vectors $A$ and $B$ after the normalization process have the same length and have been complemented with their missing words. 
+
 
 \paragraph{Computing Cosine Similarity to create the bucket.}
 Once the vector terms have been normalized, the cosine similarity among crash reports can be computed. \\
@@ -723,7 +757,7 @@ After the preprocessing procedure has been completed, the line looks like the fo
 \emph{\small android, database, stale, attempted, access, cursor closed, bulk, adaptor, count }. 
 \end{center} 
 As you can see, the line has been already "stemmed and cleaned" using the method \textit{stemmAndCleanReports()} in the \textsc{Augmenter} class. 
-This method preprocesses the reports expoiting the information retrivial techniques used by \textbf{INFUSA-TA}, explained at the beginning of the section \ref{tool: linking}.
+This method preprocesses the reports expoiting the information retrivial techniques used by \textbf{INFUSA-TA}, explained at the beginning of the section \ref{approach:linking}.
 Indeed, programming keywords such as "\textit{if}", "\textit{throw}" or "\textit{java}" and too short words such as "\textit{to}" or "\textit{at}" have been removed after the preprocessing procedure. 
 \item After cleaning the reports, the remaining text is augmented with the source code methods included in the stack trace. In this direction, \toolname\ firstly extracts all methods present in the stack trace. To achieve this, it goes through all log lines in the method \textit{augmentStackTrace()} and for each line it compiles the regular expression positioned at \textit{line 7}: 
 \begin{lstlisting}[caption=Regular expression for extracting all methods from a stack trace,label={lst: augmentstack}]
@@ -860,8 +894,7 @@ At the end of the entire linking procedure (\textit{line 21}), the \textit{conte
 
 
 \section{How to start \toolname}
-First of all, a set of parameters and directories have to inserted in the static \textit{Configuration Manager} file.
-% qui inserire la command-line
+\input{startbecloma}
 
 \begin{figure}[tb]
 \centering 
