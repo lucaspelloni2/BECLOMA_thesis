@@ -11,9 +11,9 @@ The path of this file is given in the \textsc{configuration manager}, which cont
 
 %-------------- CONFIGURATION ENVIRONMENT--------------
 The first step of the testing part was to build a set of \textit{APKs}, with which to perform the testing process. As said, this can be achieved using either \textsc{fdroid crawler} or can also be manually created. Now, the second step is to prepare and configure the testing environment. 
-All the parameters needed for starting a testing session have to be specified in the \textsc{configuration manager}. Figure \ref{config}, shows an example of a simplified set of parameters which must be given a priori in order to launch a testing session. \newpage
-\label{config}
-\begin{lstlisting}[caption=Properties which get elaborated during the testing sessions]
+All the parameters needed for starting a testing session have to be specified in the \textsc{configuration manager}. Figure \ref{lst: config}, shows an example of a simplified set of parameters which must be given a priori in order to launch a testing session. \newpage
+\label{lst: config}
+\begin{lstlisting}[caption=Properties which get elaborated during the testing sessions,label={lst: config}]
 /**
 * Dataset directories
 */
@@ -88,7 +88,7 @@ Concretely, after \toolname\ invokes \SessionLauncher\ all attached devices resp
 Whether the timer has been given as main argument, it gets also started. \\
 Once the initialization step has been completed, \SessionLauncher\  invokes the \AppTester\ component which finally starts the testing session. The Listing~\ref{lst:startsession} gives a simplified code snippet about the beginning of the testing process. 
 
-\begin{lstlisting}[caption=\SessionLauncher\ Code snippet for starting a testing session, ,label={lst:startsession}]
+\begin{lstlisting}[caption=\SessionLauncher\ Code snippet for starting a testing session ,label={lst:startsession}]
 private appTester; 
 public void startTestingSession() throws Exception {
         final int NUMBER_ITERATIONS = ConfigurationManager.getNumberOfIterations();
@@ -892,10 +892,6 @@ If this is the case, the \textit{content} String (\textit{line 13}) is updated w
 the \textit{review id}, the set of words indicating the preprocessed review and finally the augmented stack trace. 
 At the end of the entire linking procedure (\textit{line 21}), the \textit{content} String is written into an external file located at the specified \textit{path}.
 
-
-\section{How to start \toolname}
-\input{startbecloma}
-
 \begin{figure}[tb]
 \centering 
 %	\vspace{-1.5mm} 
@@ -924,3 +920,13 @@ At the end of the entire linking procedure (\textit{line 21}), the \textit{conte
 \label{linking}
 \vspace{-3mm} 
 \end{figure}
+
+
+\section{Installation and usage of \toolname}
+\input{startbecloma}
+
+
+
+
+
+
