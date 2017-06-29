@@ -1,43 +1,44 @@
 \label{chapter:approach}
-In the following, I devise an approach named \textbf{BECLOMA} (\textbf{B}ug \textbf{E}xtractor, \textbf{C}lassifier and \textbf{L}inker \textbf{O}f \textbf{M}obile \textbf{A}pps).
+In this work, we aim to build an approach able to i) automatically test Android application with modern state-of-art tools, ii) automatically collect the arose errors (\ie stack traces), iii) detect the unique errors (\ie the ones that derive from the same bug), iv) link such stack traces with the user reviews that claim about the correspondent problems.           
+We called this approach \textbf{BECLOMA} (\textbf{B}ug \textbf{E}xtractor, \textbf{C}lassifier and \textbf{L}inker \textbf{O}f \textbf{M}obile \textbf{A}pps).
 Figure \ref{fig: becloma} depicts the main actions performed by this approach.
-For giving a cleaner and more understandable explanation of how \toolname\ works, I would like to split its key features (see figure \ref{fig: becloma}) into three main categories (which should also be executed in a sequential way, in order to exploit the whole \toolname's potentiality): 
+For giving a cleaner and more understandable explanation of how \toolname\ works, we describe in the following chapter its key features (see figure \ref{fig: becloma}). Such features represent the three main processes that \toolname\ sequentially performs.
 \begin{enumerate}
-\item the \textsc{Testing} part is in charge of testing a given set of \textit{APKs}, reporting their testing results and extracting possible \textit{crashes} from the before generated test logs; 
+\item the \textsc{Testing} uses \monkey and \sapienz to test the \textit{APKs} under test, reporting their testing results and extracting possible \textit{crashes} from the before generated test logs; 
 
-\item the \textsc{Clustering} part investigates the similarity between the previous extracted crash logs, using different metrics and strategies, in order to collect they together and create a crash log \textit{bucket}; 
+\item the \textsc{Clustering} part investigates the similarity between the previous extracted crash logs, using different metrics and strategies, in order to collect them together and create a crash log \textit{bucket}, \ie a set of unique; 
 
-\item the \textsc{Linking} part represents the core feature of \toolname. It preprocesses a set of given \textit{user reviews} as well as the set of the previously created crash logs, in order to prepare and "clean" them for the linking procedure.  Afterwards, it investigates whether it exists a correlation between the stack traces and the user feedbacks, with the aim to link, whether possible, the reviews with the crash logs. 
+\item the \textsc{Linking} part represents the core feature of \toolname. It preprocesses a set of given \textit{user reviews} as well as the set of the previously created crash logs, in order to preprocess them for the linking procedure. Afterwards, it investigates whether it exists a correlation between the stack traces and the user feedbacks, with the aim to link, whether possible, the reviews with the crash logs. 
 \end{enumerate}
 \begin{figure}[tb]
 \centering 
 %	\vspace{-1.5mm} 
 \includegraphics[width=\columnwidth]{diagrams/becloma_approach_img} 
-\caption{\toolname\ apporach}
+\caption{\toolname\ approach}
 \label{fig: becloma}
 \end{figure}
 
 
-\section{Testing approach}
+\section{Testing and Traces Collection}
 \label{approach:testing}
-The testing approach basically consists of collecting the outcomes of the automated testing tools, investigating the possible existence of crashes inside them.
-First of all, \toolname\ can act as crawler for downloading the set of desired \textit{APKs} from the \textit{FDroid} API. 
-In this sense, the approach firstly reads a static structured file containing a set of android package names, secondly it builds the necessary \textit{HTTP links} in order to download their \textit{APK} files. 
+The first step in the overall approach basically relies on two of the most used Android testing tools, in order to exercise the SUT under tests and collect as many failures as possible. 
+First of all, \toolname\ acts as crawler in order to download the set of desired \textit{APKs} from the \textit{FDroid} API. 
+Thus, it firstly reads a static structured file containing a set of android package names; then, it builds the necessary \textit{HTTP links} in order to download the correspondent \textit{APK} files. 
 Once the dataset has been built and some testing parameters have been specified, the testing session can be started. 
-The testing approach of \toolname\ consists of three testing cycles: 
+\GIO{Which testing parameters?}
+The overall approach of \toolname\ consists of three testing cycles: \GIO{The explanation of these 3 cycles is not super clear. Try to rephrase}
 \begin{enumerate}
 \item The cycle describing how long a single \textit{APK} is tested in according to its testing parameters;
 \item The cycle indicating all \textit{APKs} contained in the data set;
 \item The cycle characterizing a testing session, \ie how many times the entire dataset is tested. 
 \end{enumerate}
 The process behind the testing of a single \textit{APK} is illustrated in the figure \ref{fig: apkprocess}.
-This consists of systemically \textit{testing} each \textit{APK} in according to its specifications and testing parameters.
-Its specifications describe the number of random events that will be sent to the app under test, how long the testing of that \textit{APK} will last, the directory where the reports will be stored, etc. 
+It tests systemically each \textit{APK} according to its specifications and testing parameters. The former describes the number of random events that will be sent to the app under test, how long the testing of that \textit{APK} will last, the directory where the reports will be stored, etc. 
+
 Once the testing environment has been configured, the test can concretely start. 
 After the cycle describing the testing of a single \textit{APK} has finished, \toolname\ begins with the \textit{reporting} phase. 
-This step of the approach consists of saving the generated reports which contain the stack traces of the runtime exceptions with the sequence of the events that led to the failures. Afterwards, the approach follows the investigation process. Indeed, this step aims at \textit{investigating} whether the stack traces contain some crashes.
-The last step of the testing approach consists of \textit{extracting} possible crashes from their stack traces and saving them in a specified directory in the form of text files. 
-
+This step of the approach consists of saving the generated reports which contain the stack traces of the runtime exceptions with the sequence of the events that led to the failures. 
+Once the reports of the test has been stored, we proceed to parse them looking for an eventually arose failure. If a crash occurred, we extract its part relative to the stack trace from the whole corpus of the log. At the end, this information is saved into a specific directory aiming at collecting all the arose failures.
 
 \begin{figure}[tb]
 \centering 
@@ -52,20 +53,20 @@ The last step of the testing approach consists of \textit{extracting} possible c
 
 
 
-\section{Clustering approach}
+\section{Clustering of The Collected Traces}
 \label{approach:clustering}
-Once the testing phase is finished, all crash logs that have been generated are stored in a given directory. 
-However, at this point, the only way to differentiate them inside this directory is the name of the package for which these crashes occurred. 
-Indeed, among these crash logs there may be a lot of redundancy, since more of them may refer to the same bug. 
-The aim behind the clustering phase is to create a bucket of unique crash logs. 
-This means, that each crash log has to be compared to the other ones of the same package name and according to some metrics that will be explained below, they must be smartly group together. Figure~\ref{fig: clustering} shows the idea behind the clustering approach. 
+As we said before at the end of the testing phase all the stack traces that have been generated are stored in a specific directory. However, it is worth to notice that with an high change, most part of such failures would refer to the same bug (in other words, the traces are duplicates).
+
+In order to identify the \textit{unique crashes}, the second step of our approaches performs an automatic clustering of the overall bunch of logs. Ideally, at the end of such phase, each cluster should contain logs that refers to the same bug.
+For this task, we rely on classic Information Retrieval (IR) techniques, collecting features about the logs and comparing them using the \textit{cosine similarity} metrics (see Section \ref{sec:cosine_similarity}).
+Figure \ref{fig: clustering} shows the overall process for this task. 
 \begin{figure}[tb]
 \centering 
 \includegraphics[width=\columnwidth]{imgs/clusteringidea} 
 \caption{The idea behind the Clustering process}
 \label{fig: clustering}
 \end{figure}
-As shown in the figure \ref{fig: clustering} some groups of crash logs may be overlapping. 
+As said before, some track traces may be overlapping \ie refers to the same bug of be even duplicates. 
 Despite the trigger method, \ie the method that raised to the exception, may be the same, there may be different sequences of function calls in the stack trace, the more the analysis goes deep. 
 However, they are hardly detectable and is difficult to affirm that two stack traces which have the same trigger method refer to different bugs. 
 Therefore, some reports may belong to two different bug groups in the bucket. 
@@ -91,21 +92,24 @@ From this point, all the function calls underlying are part of the stack trace;
 \item \textit{Line 5} is considered the exact reason for the exception, \ie the trigger method within the source code that caused the crash;
 \item From \textit{line 6} moving gradually down until the end of the stack trace, there are other nested function calls which contain additional information about the cause of the exception. Usually, the most important ones for identifying the cause are in the first few lines. 
 \end{itemize}
+\GIO{Specify that we used a search based approach to identify the correct threshold to choose whether two logs are the same or not}
 
 \paragraph{Preprocessing.}
 The first step of the clustering approach consists of \textit{preprocessing} the crash reports in order to prepare them to be compared to each other. 
 To achieve this, the approach follows a grammar-based tokenization technique implemented in the well-know \textbf{Apache Lucene} \cite{lucene} library.  
 %Indeed, all words contained in the crash reports are preprocessed using \textbf{Apache}. 
-The approach consists of collecting all words contained in the crash reports and preprocess them using a Lucene-tokenizer, called \textit{StandardTokenizer}. 
-This tokenizer simply split the word fields into lexical units using punctuation and whitespaces as split points. In addition, it removes unnecessary symbols (\eg \texttt{"//"}).
-\toolname\ converts all Strings to lower-case and extends the tokenizer to a further regular expression. 
-This because, it's a worldwide convention that developers use CamelCase notation for writing programming words such as names of classes, names of functions or names of variables.
-Since most of the words included in the crash logs are programming language keywords, \toolname\ complements the StandardTokenizer of Lucene, so that CamelCase text fields can be also split at the upper-case letters into separate words. 
+The approach consists of collecting all words contained in the crash reports and preprocess them using a Lucene tokenizer, called \textit{StandardTokenizer}. 
+\GIO{Do not use too often ''the approach consists''! You can use 'it' or 'we'}
+This tokenizer simply splits the word fields into lexical units using punctuation and whitespaces as split points. In addition, it removes unnecessary symbols (\eg \texttt{"//"}).
+\toolname\ converts all strings to lower-case and extends the tokenizer to a further regular expression. 
+This because, it is a worldwide convention that developers use CamelCase notation for writing programming words such as names of classes, names of functions or names of variables.
+Since most of the words included in the crash logs are programming language keywords, \toolname\ complements such the StandardTokenizer, so that CamelCase text fields can be also split at the upper-case letters into separate words. 
 
 \paragraph{TF-IDF.} 
-Once all words inside the crash logs have been tokenized, 
-some well-known bucketing techniques are implemented by \toolname, with the aim to deduplicate the greatest number possible of crash reports.
-In this direction, \toolname\ implements a \textit{tf-idf} algorithm \textit{(term frequency–inverse document frequency)}, a well-know term-weighting scheme used in information retrieval or text mining \cite{tfidf}. Indeed, tf–idf is a way to measure the relevance, the weight of a term compared to its document or its entire document collection (in our case, the crash logs). The importance of a term is given by the number of times it occurs in a particular document, inversely proportional to its appearance in the entire documents collection \cite{campbell}.  \\
+Once all words inside the crash logs have been tokenized, we relied on some well know Information Retrieval techniques in order to link together the duplicated crashes.
+As features for such process, we relied on the computation of the the tf-idf values on the collected stack traces. 
+\UPDATE{In this direction, \toolname\ implements a \textit{tf-idf} algorithm \textit{(term frequency inverse document frequency)}, a well-know term-weighting scheme used in information retrieval or text mining \cite{tfidf}. Indeed, tf-idf is a way to measure the relevance, the weight of a term compared to its document or its entire document collection (in our case, the crash logs). The importance of a term is given by the number of times it occurs in a particular document, inversely proportional to its appearance in the entire documents collection \cite{campbell}.  \\}
+\GIO{The tfidf is not an algorithm. That's a statistics that measure the importance of a word in a set on document. Slightly modify this section changing a bit the terminology}
 Generally, a tf-idf algorithm consists in three main components \cite{tfidfsimilarity}: 
 \begin{itemize}
 \item \textbf{TF (Term Frequency)}, \ie how many times a term appears in the currently scored document, where repeated terms indicate the topic of the document; A high TF means that the word in question has a high relevance for the document. The following simplified equation \cite{tfidf} describes a formula for calculating the term frequency:
@@ -133,6 +137,7 @@ At the end of this phase, \toolname\ has created for each crash log its correspo
 
 
 \paragraph{Cosine Similarity.}
+\label{sec:cosine_similarity}
 To state whether two crash reports refer to the same bug, the approach computes cosine similarity between their previously created vectors space model. 
 The cosine similarity is just a measure of similarity between two vectors \cite{cosine} (in our case, two normalized weighted vectors consisting of their tf-idf scores).
 Usually, the resulting similarity ranges from -1 to 1, but in the case of information retrieval, since the frequency of the terms are always positive, the returned values range from 0 to 1, where 0 indicates that two documents are completely decorrelated, while 1 means that the words contained inside them are exactly the same.  
@@ -147,11 +152,11 @@ With the term "normalized" is understood that when two weighted vectors are used
 
 \section{Linking approach}
 \label{approach:linking}
-
-\paragraph{INFUSA-TA.}
 \label{par: infusa}
-To study the correlation between user reviews and the outcomes of automated testing tools, \toolname\ assumes that the set of user feedbacks have been already classified in according to a a defined taxonomy and preprocessed.
+To study the correlation between user reviews and the outcomes of automated testing tools, \toolname\ assumes that the set of user feedback have been already classified in according to a a defined taxonomy and preprocessed.
 In this direction, an experimental tool called  \textbf{INFUSE-TA} (\textbf{IN}tegrator o\textbf{F} \textbf{US}er \textbf{FE}edback while Testing \textbf{A}pps) developed by a team at the Software Evolution and Architecture Lab, provides an automatic approach for the classification of a set of user reviews according to a defined taxonomy using some machine learning techniques. 
+\GIO{This is not super correct. In order to classify the user feedback according to a given taxonomy (and ad hoc preprocessed) we relied on the implementation done by Fabio Palomba and Adelina Ciurumelea in the paper that is also in the references. Use such paper as a reference when citing the such approach. The INFUSE-TA tools uses this approach in order to classify the reviews to link them to the logs}.
+
 Furthermore, it performs a systematic Information Retrieval (IR) preprocessing \cite{BaezaYates:1999} on both the user reviews and \textit{augmented} stack traces aimed at (i) correcting mistakes, (ii) expanding contractions (e.g., \textit{can’t} is replaced with \textit{can not}), (iii) filtering nouns and verbs, (iv) removing common words or programming language keywords, and (v) stemming words (e.g., \textit{aiming} is replaced with \textit{aim}). \\
 The text below depicts an example of Information Retrieval preprocessing applied on a user feedback: 
 \smallbreak
@@ -166,7 +171,7 @@ Following, the review is preprocessed applying the techniques described above.
 \paragraph{Linking between Crash Logs and Reviews}
 The last step of the approach consists of linking the information from the stack traces contained in the reports to the relevant user reviews. 
 However, linking the two sources of information is not at all obvious.
-This because, they come from different worlds; in fact, user reviews contain natural and crude language which describe the overall scenario that led to a failure \cite{mernik}, while the stack traces contain technical information about the exceptions raised during the execution of a certain test case. 
+This because, they come from different worlds: user reviews contain natural human language which describe the overall scenario that led to a failure \cite{mernik}, while the stack traces contain technical information about the exceptions raised during the execution of a certain test case. 
 To account for this aspect, the approach first removes all information that creates noise in the collected stack traces, only the name and cause of the raised exceptions are selected, \ie the first line of the stack trace (in the example \ref{lst: ringdroid} the \textit{line 4}). 
 The choice of considering only some specific parts of the stack traces was driven by experimental results. 
 These result illustrated how the linking accuracy was influenced by the presence/absence of this information. 

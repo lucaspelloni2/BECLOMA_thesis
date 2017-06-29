@@ -1,0 +1,73 @@
+\usepackage{enumitem}
+
+\setlist[enumerate,1]{%
+  label=\arabic*.,
+}
+
+\newlist{inlinelist}{enumerate*}{1}
+\setlist*[inlinelist,1]{%
+  label=(\roman*),
+}
+
+\usepackage{amssymb}
+\usepackage{ifthen}
+\usepackage{array}
+
+\makeatletter
+
+% this  is a easy way to add and highlight new text  ...
+% just comment in/out the \tnew macro ..
+\newcommand*{\rom}[1]{\expandafter\@slowromancap\romannumeral #1@}
+\newcommand{\tnew}[1]{{\bf { #1 }} }
+%\newcommand{\tnew}[1]{{ { #1 }} }
+
+% math and theorem definition
+
+\newcommand{\ndef}{\stackrel{\rm def}{=}}
+
+
+
+\pagenumbering{arabic}
+
+% nothing i.e., no-numbering final and camera ready
+
+%\pagestyle{empty}
+
+% personalized alignments with specified size for tables
+\newcolumntype{L}[1]{>{\raggedright\let\newline\\\arraybackslash\hspace{0pt}}m{#1}}
+\newcolumntype{C}[1]{>{\centering\let\newline\\\arraybackslash\hspace{0pt}}m{#1}}
+\newcolumntype{R}[1]{>{\raggedleft\let\newline\\\arraybackslash\hspace{0pt}}m{#1}}
+
+\newboolean{showcomments}
+
+
+\setboolean{showcomments}{true}
+
+% useful to avoid size increasing for textbf command (in order to preserve alignment in tables)
+\newsavebox\CBox
+\def\textBF#1{\sbox\CBox{#1}\resizebox{\wd\CBox}{\ht\CBox}{\textbf{#1}}}
+
+\ifthenelse{\boolean{showcomments}}
+  {\newcommand{\nb}[2]{
+    \fbox{\bfseries\sffamily\scriptsize#1}
+    {\sf\small$\blacktriangleright$\textit{#2}$\blacktriangleleft$}
+   }
+   \newcommand{\cvsversion}{\emph{\scriptsize$-$Id: macro.tex,v 1.9 2005/12/09 22:38:33 giulio Exp $}}
+  }
+  {\newcommand{\nb}[2]{}
+   \newcommand{\cvsversion}{}
+  }
+
+
+\newcommand\RQ[1]{\textbf{RQ$_#1$}}
+\newcommand\LUCAS[1]{\nb{LUCAS}{#1}}
+\newcommand\GIO[1]{\nb{GIO}{#1}}
+
+\newcommand\NEW[1]{\nb{NEW}{#1}}
+\newcommand\TODO[1]{\nb{TODO}{#1}}
+\newcommand\UPDATE[1]{\nb{TOUPDATE}{#1}}
+\newcommand\CIT[1]{\nb{Cit.}{#1}}
+
+
+
+

@@ -10,6 +10,7 @@
 \useunder{\uline}{\ul}{}
 \usepackage{url}
 \usepackage{amsmath,mathtools}
+\input{macro}
 
 % === Per gli snippet =====================================
 \lstset{
@@ -38,12 +39,11 @@
 }
 
 % ---------------------- INSERT CUSTOMIZED COMMENTS HERE ---------------------- 
-\newcommand{\toolname}{\textsc{BECLOMA}}
+\newcommand\toolname[0]{BECLOMA}
 \newcommand{\toolurl}{\url{https://github.com/lucaspelloni2/BA_PROJ}}
 \newcommand{\dynodroid}{\textsc{Dynodroid }}
 \newcommand{\monkey}{\textsc{Monkey }}
 \newcommand{\sapienz}{\textsc{Sapienz }}
-\newcommand\RQ[1]{\textbf{RQ$_#1$}}
 \newcommand{\SessionLauncher}{\textsc{SessionLauncher}}
 \newcommand{\FDroidCrawler}{\textsc{FDroidCrawler}}
 \newcommand{\AppTester}{\textsc{AppTester}}
