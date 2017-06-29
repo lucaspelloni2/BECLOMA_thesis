@@ -40,7 +40,7 @@ The experiment results published on \cite{sapienz} show that \sapienz is an out-
 
 \begin{table}[tb]
 \centering
-\caption{Statistics on found crashes from the \sapienz experiment published on \cite{sapienz}}
+\caption{Statistics on found crashes from the \sapienz experiment}
 \label{sapienz experiment results}
 \begin{tabular}{|c|c|c|c|l}
 \cline{1-4}
@@ -60,15 +60,37 @@ For example, \textit{SwiftHand} \cite{swift} uses a machine learning algorithm t
 \section{Usage of users reviews in Software maintenance activities}
 \label{section:review_usage}
 The concept of app store mining was first introduced by \textit{Harman} \etal
-\cite{appstoremining}. In this context, many researchers focused on the analysis of user reviews to support the maintenance and evolution of mobile applications \cite{Martin:tse2017}.
-Pagano \etal \cite{pagano} empirically analyzed the feedback content and their impact on the user community, while Khalid \etal \cite{Khalid:2015:IEEE} conducted a study on iOS apps discovering 12 types of user complaints posted in reviews. Several approaches have been proposed with the aim to classify useful reviews.
-\textsc{AR-Miner} \cite{Chen} represents the first  approach proposed in the literature able to discern  informative reviews. 
-In this direction, in a recent work Panichella \etal introduced a tool called \textsc{surf} (Summarizer of User Reviews Feedback), that is able to analyse the useful informations contained in app reviews and to performs a systematic summarisation of thousands of user reviews through the generation of an interactive agenda of recommended software changes \cite{DBLP:conf/sigsoft/SorboPASVCG16}. \\
-Finally, Palomba \etal \cite{Palomba2017} proposed \textsc{ChangeAdvisor}, a tool able to suggest the source code artifacts to maintain according to user feedback.
+\cite{appstoremining}. In this direction, they presented an empirical analyse of relationships between three main areas of interest in the context of user reviews: technical, customer-focussed and business. 
+Their approach consists of (i) extracting raw data from the app store (ii) parsing that data with the aim to retrieve all attributes concerning the price, the ratings and descriptions of the app itself (iii) using data mining to extract feature information from the above parsed descriptions and finally (iv) providing statistics about the above mentioned areas of interest.  
+
+In the context of app store mining, many researchers focused on the analysis of user reviews to support the maintenance and evolution of mobile applications \cite{Martin:tse2017}.
+Indeed, in the survey by \textit{Martin} \etal \cite{Martin:tse2017} is proposed a study which aims to define and group together different literature sources, demonstrating that actually exist a area of research in the field of "App Store Analysis".
+
+In this field, Pagano \etal \cite{pagano} empirically analyzed the feedback content and their impact on the user community. 
+Indeed, they proposed a study proposition where (i) they hypothesized that developers find user feedback a useful source of information for validating their software. Then, (ii) they assumed that the current practice about user involvement in the validation process brings with it several challenges, since it is unsystematic and there are some practical limitations concerning the quality, the content and the structure of such user feedback. 
+Finally, (iii) they believe that developers embrace tool support for dealing with a very large amount of user reviews, which allow them to validate their software according to its users. 
+
+In this direction, Khalid \etal \cite{Khalid:2015:IEEE} conducted a study on iOS apps discovering 12 types of user complaints posted in reviews. 
+In their findings, they found that the most frequent complaints are about functional errors, requests about a new feature and complaints about app crashes. With this study, they argue that the analyse of these complaints can further help developers to identify app bugs and develop new features according to its users requests. 
+Furthermore, they argue that based on their findings developers can better anticipate possible complaints and so prioritizing them a priori.   
+
+Several approaches have been proposed with the aim to classify useful reviews.
+\textsc{AR-Miner} \cite{Chen} represents the first approach proposed in the literature able to discern informative reviews. 
+In this approach, they aim to retrieve the most "informative" information which can be extracted from raw user reviews. They argue, that this kind of information can help developers in app markets to improve their applications. In this direction, \textit{AR-Miner} can be viewed as a "novel analytic framework" \cite{Chen}, which consists of a new ranking scheme that prioritizes these "informative" reviews. 
+
+In the context of the usage of users reviews in the validation process of a software, in a recent work Panichella \etal introduced a tool called \textsc{surf} (Summarizer of User Reviews Feedback), that is able to analyse the useful informations contained in app reviews and to performs a systematic summarisation of thousands of user reviews through the generation of an interactive agenda of recommended software changes 
+\cite{sorbo}. 
+
+Finally, Palomba \etal \cite{Palomba2017} proposed \textsc{ChangeAdvisor}, a tool able to suggest the source code artefacts to maintain according to user feedback.
+Indeed, this tool is able to analyse a very large amount of user reviews, by automatically (i) extracting these user reviews (ii) grouping them together using some bucketing techniques (iii) linking these source code components relevant to the currently investigated user review.
+% approfondire 
+
+
+
 
 %------------------ WHY SAPIENZ AND MONKEY ----------------
-\label{sec:choicetool}
 \section{Choice and motivation for the used automated testing tools}
+\label{sec:choicetool}
 For the implementation of \toolname, we have chosen to use the following two automated testing tools: 
 \begin{itemize}
 \item \monkey
