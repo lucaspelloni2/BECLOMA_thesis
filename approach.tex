@@ -1,5 +1,5 @@
 \label{chapter:approach}
-In this work, we aim to build an approach able to i) automatically test Android application with modern state-of-art tools, ii) automatically collect the arose errors (\ie stack traces), iii) detect the unique errors (\ie the ones that derive from the same bug), iv) link such stack traces with the user reviews that claim about the correspondent problems.           
+In this work, we aim to build an approach able to (i) automatically test Android application with modern state-of-art tools, (ii) automatically collect the arose errors (\ie stack traces), (iii) detect the unique errors (\ie the ones that derive from the same bug), (iv) link such stack traces with the user reviews that claim about the correspondent problems.           
 We called this approach \textbf{BECLOMA} (\textbf{B}ug \textbf{E}xtractor, \textbf{C}lassifier and \textbf{L}inker \textbf{O}f \textbf{M}obile \textbf{A}pps).
 Figure \ref{fig: becloma} depicts the main actions performed by this approach.
 For giving a cleaner and more understandable explanation of how \toolname\ works, we describe in the following chapter its key features (see figure \ref{fig: becloma}). Such features represent the three main processes that \toolname\ sequentially performs.
@@ -25,13 +25,21 @@ The first step in the overall approach basically relies on two of the most used 
 First of all, \toolname\ acts as crawler in order to download the set of desired \textit{APKs} from the \textit{FDroid} API. 
 Thus, it firstly reads a static structured file containing a set of android package names; then, it builds the necessary \textit{HTTP links} in order to download the correspondent \textit{APK} files. 
 Once the dataset has been built and some testing parameters have been specified, the testing session can be started. 
-\GIO{Which testing parameters?}
-The overall approach of \toolname\ consists of three testing cycles: \GIO{The explanation of these 3 cycles is not super clear. Try to rephrase}
+The set of parameters that must be specified are described in detail in the section \ref{usage: settings}.
+The overall approach of \toolname\ consists of three testing cycles: 
 \begin{enumerate}
-\item The cycle describing how long a single \textit{APK} is tested in according to its testing parameters;
-\item The cycle indicating all \textit{APKs} contained in the data set;
-\item The cycle characterizing a testing session, \ie how many times the entire dataset is tested. 
+\item The \textbf{single app} cycle concerning the testing of a single \textit{APK}. It represents the time frame for which each \textit{APK} in the dataset is tested. After that time frame, the approach starts with the testing of the next \textit{APK} indicated in the dataset. 
+\item The \textbf{dataset} cycle describing the time spent for testing the \textit{APKs} within the dataset exactly one time for that currently cycle. 
+\item The \textbf{session} cycle characterizing a testing session, \ie how many dataset cycles have to be performed. 
 \end{enumerate}
+The figure \ref{fig: testingapproach} explains the roles of these cycles in the testing approach. 
+\begin{figure}[tb]
+\centering 
+%	\vspace{-1.5mm} 
+\includegraphics[width=10cm,height=14cm]{diagrams/approach} 
+\caption{Testing cycles}
+\label{fig: testingapproach}
+\end{figure}
 The process behind the testing of a single \textit{APK} is illustrated in the figure \ref{fig: apkprocess}.
 It tests systemically each \textit{APK} according to its specifications and testing parameters. The former describes the number of random events that will be sent to the app under test, how long the testing of that \textit{APK} will last, the directory where the reports will be stored, etc. 
 
@@ -92,14 +100,18 @@ From this point, all the function calls underlying are part of the stack trace;
 \item \textit{Line 5} is considered the exact reason for the exception, \ie the trigger method within the source code that caused the crash;
 \item From \textit{line 6} moving gradually down until the end of the stack trace, there are other nested function calls which contain additional information about the cause of the exception. Usually, the most important ones for identifying the cause are in the first few lines. 
 \end{itemize}
-\GIO{Specify that we used a search based approach to identify the correct threshold to choose whether two logs are the same or not}
+%\GIO{Specify that we used a search based approach to identify the correct threshold to choose whether two logs are the same or not}
+In order to state whether two crash reports refer to the same bug or not, we used a search based approach to identify the correct threshold. 
+Indeed, we built an \textit{Oracle} which is in charge of comparing two crash logs and is able to answer the following question: \textit{Do they refer to the same bug?}. 
+For its answers it makes use of a similarity tolerance, which has been adapted on the base of our experimental results. 
+Indeed, we manually created the bucket of unique crash logs and consequently adapted the threshold in the oracle in order to enable it to rightly answer its questions and so reproduce the same bucket. 
 
 \paragraph{Preprocessing.}
 The first step of the clustering approach consists of \textit{preprocessing} the crash reports in order to prepare them to be compared to each other. 
 To achieve this, the approach follows a grammar-based tokenization technique implemented in the well-know \textbf{Apache Lucene} \cite{lucene} library.  
 %Indeed, all words contained in the crash reports are preprocessed using \textbf{Apache}. 
-The approach consists of collecting all words contained in the crash reports and preprocess them using a Lucene tokenizer, called \textit{StandardTokenizer}. 
-\GIO{Do not use too often ''the approach consists''! You can use 'it' or 'we'}
+In this direction, we collected all words contained in the crash reports and preprocessed them using a Lucene tokenizer, called \textit{StandardTokenizer}. 
+%\GIO{Do not use too often ''the approach consists''! You can use 'it' or 'we'}
 This tokenizer simply splits the word fields into lexical units using punctuation and whitespaces as split points. In addition, it removes unnecessary symbols (\eg \texttt{"//"}).
 \toolname\ converts all strings to lower-case and extends the tokenizer to a further regular expression. 
 This because, it is a worldwide convention that developers use CamelCase notation for writing programming words such as names of classes, names of functions or names of variables.
@@ -107,10 +119,11 @@ Since most of the words included in the crash logs are programming language keyw
 
 \paragraph{TF-IDF.} 
 Once all words inside the crash logs have been tokenized, we relied on some well know Information Retrieval techniques in order to link together the duplicated crashes.
-As features for such process, we relied on the computation of the the tf-idf values on the collected stack traces. 
-\UPDATE{In this direction, \toolname\ implements a \textit{tf-idf} algorithm \textit{(term frequency inverse document frequency)}, a well-know term-weighting scheme used in information retrieval or text mining \cite{tfidf}. Indeed, tf-idf is a way to measure the relevance, the weight of a term compared to its document or its entire document collection (in our case, the crash logs). The importance of a term is given by the number of times it occurs in a particular document, inversely proportional to its appearance in the entire documents collection \cite{campbell}.  \\}
-\GIO{The tfidf is not an algorithm. That's a statistics that measure the importance of a word in a set on document. Slightly modify this section changing a bit the terminology}
-Generally, a tf-idf algorithm consists in three main components \cite{tfidfsimilarity}: 
+As features for such process, we relied on the computation of the the \textit{tf-idf} \textit{(term frequency inverse document frequency)} values on the collected stack traces. 
+In this direction, \toolname\ computes tf-idf numerical statistics in order to find the relevance of a word in a collection of documents (in our case, the crash logs). Tf-idf is a well-know term-weighting scheme and usually is used in information retrieval or text mining \cite{tfidf}. %Indeed, tf-idf is a way to measure the relevance, the weight of a term compared to its document or its entire document collection (in our case, the crash logs). 
+The importance of a term is given by the number of times it occurs in a particular document, inversely proportional to its appearance in the entire documents collection \cite{campbell}. 
+%\GIO{The tfidf is not an algorithm. That's a statistics that measure the importance of a word in a set on document. Slightly modify this section changing a bit the terminology}
+Generally, a tf-idf scheme consists of three main components \cite{tfidfsimilarity}: 
 \begin{itemize}
 \item \textbf{TF (Term Frequency)}, \ie how many times a term appears in the currently scored document, where repeated terms indicate the topic of the document; A high TF means that the word in question has a high relevance for the document. The following simplified equation \cite{tfidf} describes a formula for calculating the term frequency:
 \begin{align*}
@@ -154,8 +167,9 @@ With the term "normalized" is understood that when two weighted vectors are used
 \label{approach:linking}
 \label{par: infusa}
 To study the correlation between user reviews and the outcomes of automated testing tools, \toolname\ assumes that the set of user feedback have been already classified in according to a a defined taxonomy and preprocessed.
-In this direction, an experimental tool called  \textbf{INFUSE-TA} (\textbf{IN}tegrator o\textbf{F} \textbf{US}er \textbf{FE}edback while Testing \textbf{A}pps) developed by a team at the Software Evolution and Architecture Lab, provides an automatic approach for the classification of a set of user reviews according to a defined taxonomy using some machine learning techniques. 
-\GIO{This is not super correct. In order to classify the user feedback according to a given taxonomy (and ad hoc preprocessed) we relied on the implementation done by Fabio Palomba and Adelina Ciurumelea in the paper that is also in the references. Use such paper as a reference when citing the such approach. The INFUSE-TA tools uses this approach in order to classify the reviews to link them to the logs}.
+In order to classify the user feedback according to a given taxonomy (and ad hoch preprocessed) we relied on an approach implemented by Palomba \etal \cite{Palomba2017}. 
+Indeed, they proposed some machine learning techniques for automatically classifying a set of user reviews according to a defined taxonomy. 
+%\GIO{This is not super correct. In order to classify the user feedback according to a given taxonomy (and ad hoc preprocessed) we relied on the implementation done by Fabio Palomba and Adelina Ciurumelea in the paper that is also in the references. Use such paper as a reference when citing the such approach. The INFUSE-TA tools uses this approach in order to classify the reviews to link them to the logs}.
 
 Furthermore, it performs a systematic Information Retrieval (IR) preprocessing \cite{BaezaYates:1999} on both the user reviews and \textit{augmented} stack traces aimed at (i) correcting mistakes, (ii) expanding contractions (e.g., \textit{can’t} is replaced with \textit{can not}), (iii) filtering nouns and verbs, (iv) removing common words or programming language keywords, and (v) stemming words (e.g., \textit{aiming} is replaced with \textit{aim}). \\
 The text below depicts an example of Information Retrieval preprocessing applied on a user feedback: 
@@ -167,6 +181,7 @@ Following, the review is preprocessed applying the techniques described above.
 \emph{\small``crash messag i would give 5 star crash everi time i tri access messag app i remov reinstal app  sign  even reformat phone but still crash i click messag  everi time without fail''}. 
 \smallbreak
 
+In this direction, another experimental called \textbf{INFUSE-TA} (\textbf{IN}tegrator o\textbf{F} \textbf{US}er \textbf{FE}edback while Testing \textbf{A}pps) developed by a team at the Software Evolution and Architecture Lab, used the approach proposed by Palomba \etal in order to classify the reviews to link them to the crash reports. 
 
 \paragraph{Linking between Crash Logs and Reviews}
 The last step of the approach consists of linking the information from the stack traces contained in the reports to the relevant user reviews. 
