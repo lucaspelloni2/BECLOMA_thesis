@@ -1,17 +1,16 @@
 \label{chapter:tool}
-This section presents \toolname, a \textit{java-based} tool aimed at helping further developers during the testing process of their Android mobile applications. \\
+This section presents \toolname, a \textit{java-based} tool aimed at helping  developers during the testing process of their Android mobile applications. The tool is composed by a set of sub-components that operate sequentially. The first one is the component that is charge to exercise the SUT, revealing and collecting crashes. The second component processes the gathered data, as explained in Section \ref{approach:clustering}. At the end, the tool is able to recommend traceability links between the stack traces and a set of mined user reviews for the same app under test. The chapter follows with a technical description of the implemented components, as well with the instructions to run the tool.
 
 
-
-\section{Testing}
+\section{Testing Component}
 \label{tool: testing}
 %----------------- FDROID CRAWLER --------------
-First of all, if no set of \textit{APKs} is available yet, \toolname\ can be exploited for downloading the needed mobile applications from the \textit{F-Droid API\footnote{https://f-droid.org/repo/}}. In this direction, as shown in the picture \ref{testing}, the component \FDroidCrawler, is first in charge of  parsing a static structured file (\textit{e.g.} a \textit{csv}-file format), which contains a set of android packages names. 
-The path of this file is given in the \textsc{configuration manager}, which contains a set of static properties that get elaborated by \toolname. Second, \textsc{fdroid crawler} searches and then extracts a set of \textit{HTTP links} for those android packages that have been found on the API. Afterwards, it builds the correct \textit{HTTP requests} and finally starts the downloading process, saving the returned \textit{APKs} in a given directory.
+First of all, if no set of \textit{APKs} is available yet, \toolname\ can be exploited for downloading the needed mobile applications from the \textit{F-Droid API\footnote{https://f-droid.org/repo/}}. In this direction, as shown in the picture \ref{testing}, the component \FDroidCrawler, is first in charge of  parsing a static structured file (\textit{e.g.} a \textit{csv} file) that contains a set of Android packages names that univocally represent a given app of the Google Play Store. 
+The path of this file is given in the \textsc{ConfigurationManager}, which contains a set of static properties that get elaborated by \toolname. Second, \textsc{FdroidCrawler} searches and then extracts a set of \textit{HTTP links} for those android packages that have been found on the API. Afterwards, it builds the correct \textit{HTTP requests} and finally starts the downloading process, saving the returned \textit{APKs} in a given directory.
 
 %-------------- CONFIGURATION ENVIRONMENT--------------
-The first step of the testing part was to build a set of \textit{APKs}, with which to perform the testing process. As said, this can be achieved using either \textsc{fdroid crawler} or can also be manually created. Now, the second step is to prepare and configure the testing environment. 
-All the parameters needed for starting a testing session have to be specified in the \textsc{configuration manager}. Figure \ref{lst: config}, shows an example of a simplified set of parameters which must be given a priori in order to launch a testing session. \newpage
+The first step of the testing part was to build a set of \textit{APKs}, with which to perform the testing process. As said, this can be achieved using either \textsc{FdroidCrawler} or can also be manually created. Now, the second step is to prepare and configure the testing environment. 
+All the parameters needed for starting a testing session have to be specified in the \textsc{ConfigurationManager}. Figure \ref{lst: config}, shows an example of a simplified set of parameters which must be given a priori in order to launch a testing session. \newpage
 \label{lst: config}
 \begin{lstlisting}[caption=Properties which get elaborated during the testing sessions,label={lst: config}]
 /**
@@ -56,10 +55,11 @@ GENERATION = 100
 CXPB = 0.7
 MUTPB = 0.3
 \end{lstlisting}
-The figure above represents a part of the \textsc{configuration manager}, where all the testing parameters for \monkey and \sapienz are specified (\textit{line 22-41}). An in-depth explanation about these parameters concering \monkey and \sapienz can be found on \cite{monkey}, respectively on \cite{sapienz}.\\
+The figure above represents a part of the \textsc{ConfigurationManager}, where all the testing parameters for \monkey and \sapienz are specified (\textit{line 22-41}). An in-depth explanation about these parameters concering \monkey and \sapienz can be found on \cite{monkey}, respectively on \cite{sapienz}.\\
 Furthermore, the directories containing the dataset must be specified. These include the location of the static structured file and the directory where the \textit{APKS} are going to be stored (\textit{line 4-5}).
 In addition to them, the directories on which the generated test logs are going to be saved (\textit{line 10-11}) as well as the specifications about the testing session (\textit{line 16-17}) must be given. 
-The properties about the testing session consist of two values: 
+
+The tool accept two parameters that tune the duration and the execution of the tests:
 \begin{itemize}
 \item \textsc{minutes\_per\_app}, specifies how many minutes an app will be tested. After that time frame, a time-out occurs and the testing process gets restarted with the next app. 
 Referring to the approach explained in the section \ref{approach:testing}, this value represents the  \textit{testing cycle} of a single \textit{APK}.
@@ -67,12 +67,13 @@ Referring to the approach explained in the section \ref{approach:testing}, this 
 This value, in turn, describes the \textit{testing cycle} involving an entire testing session.
 \end{itemize}
 
-According to the example \ref{config} above and assuming that the dataset consists in 10 apps, the total estimated testing time for an entire testing session would be: 
+According to the example \ref{lst: config} above and assuming that the dataset consists in 10 apps, the total estimated testing time for an entire testing session would be: 
 \begin{align*}
 30 \:min \: \frac{per}{app} * 10\: app * 5\: iterations = 1500 \:min. \:(25\: hours). 
 \end{align*}
 Once the testing environment has been configured, the automated tool with whom the testing is going to be performed must be made explicit. 
-Indeed, it has to be specified as parameter in \textsc{main} \textit{args} (as mentioned before in the section \ref{sec:choicetool}, the tool which can be selected is either \monkey or \textsc{Sapienz}).\\
+Indeed, it has to be specified as parameter in \textsc{main} \textit{args} (as mentioned before in the section \ref{sec:choicetool}, the tool which can be selected is either \monkey or \textsc{Sapienz}).
+
 The last configuration step is to define on which kind of device (\textit{i.e}, a real device, such as a \textit{tablet} or a virtual device, such as an \textit{emulator}) the testing is going to be performed. In addition to them, an additional argument that starts a timer for a better overview during the testing process can also be passed as main argument. \toolname\ supports different types of emulators or real devices running on different android API levels. However, in order to correctly execute \sapienz, the API level shall be \textit{Android 4.4, KitKat}. \\
 The listing below shows an example of a possible combination of parameters that could be given as main arguments. 
 
@@ -82,7 +83,7 @@ $ java -BECLOMA.jar -device -monkey -timer
 \end{lstlisting}
 
 %-----------LAUNCH A TESTING SESSION -----------
-\paragraph{Testing session.} Once the configuration phase is terminated, \toolname\ is able to start the testing process. 
+\paragraph{Testing session.} Once the configuration phase is terminated, \toolname\ is able to start concrete the testing process. 
 As shown in the picture \ref{testing}, it manages the component \SessionLauncher, which is in charge of translating the previously specified testing properties into "java readable code" and initializing the testing session. 
 Concretely, after \toolname\ invokes \SessionLauncher\ all attached devices respectively the chosen emulators get initialized, \ie they get rebooted and restarted as root, so that some important write-read-permissions are enabled during the testing session. 
 Whether the timer has been given as main argument, it gets also started. \\
@@ -177,9 +178,9 @@ After the automated tool has been detected, \Cmd\ is able to concretely start th
 This is actually achieved by the \textit{Runtime.getRuntime()} (\textit{line 34}). The next line concretely executes the passed command-line. 
 The returned code of the function call at \textit{line 35} consists of a new \textit{process} object. 
 The process actually contains the execution of the command line. 
-Assigning the execution of each single command-line to a new single separate process brings with it many advantages: 
+Assigning the execution of each single command-line to a new single separate process has advantages; In particular: 
 \begin{itemize}
-\item Processes are independent of each other. 
+\item Processes are independent to each other. 
 Whether the execution of a command-line fails, it can be interrupted without affecting the entire testing process; 
 \item Multithreading can be easily supported; Indeed, the component \Stream\ extends the \textit{Thread} java-class which implements the \textit{Runnable} java-interface. Each time a new process comes in, it starts a new thread in this class.
 \item Each process has it own timeout. It may be that some command-lines cannot properly terminate and need to be interrupted during their execution.  
@@ -328,7 +329,8 @@ public void generateCrashLog(File testLog) {
         CmdExecutor.writeToFile(crashLog, dest);
     }
 \end{lstlisting} 
-At this point, the \textit{APK} has been tested, reported, its test logs have been investigated and possible crashes have been extracted. %Figure~\ref{fig: apkprocess} summarizes the four components which characterizes the testing process of one application. 
+At this point, the \textit{APK} has been tested, reported, whether occurred, the relative crashes extracted.
+%Figure~\ref{fig: apkprocess} summarizes the four components which characterizes the testing process of one application. 
 %\begin{figure}[tb]
 %\centering 
 %\includegraphics[width=\columnwidth]{imgs/apkprocess} 
@@ -349,7 +351,7 @@ In addition, during each test iteration and at the end of the whole testing sess
 \section{Clustering}
 \label{tool: clustering}
 %-----Toool------
-Before the explanation of the Clustering process can start, a premise must be made. All the classes that will be discussed below, refer to the class diagram represented in the figure~\ref{clustering}. 
+Before the explanation of the Clustering process can start, a premise must be made. \GIO{What premise?} All the classes that will be discussed below, refer to the class diagram represented in the figure~\ref{clustering}. 
 
 
 %TODO aggiungere construttore in crash log passandogli gli argomenti
@@ -388,7 +390,7 @@ Crash {
 	 						  %CursorAdapter, AdapterView, AbsListView, ViewGroup, Handler, Looper, ActivityThread, 
 	 						  %Method, ZygoteInit]
 %augmented_stack_traces = [android, database, stale, attempted, access, cursor, closed, bulk, adaptor, count, wrapper , merge, widget, adapter]  
-As you can see in the listing above, the \Crash-object has assumed the same structure as the crash log file. Indeed, it analogously describes the \textit{package name} to which the crash belongs, the \textit{short} and the \textit{long} explanations about the exception, the \textit{trigger method}, etc.
+From the listing above we can observe how the \Crash-object has assumed the same structure as the crash log file. Indeed, it analogously describes the \textit{package name} to which the crash belongs, the \textit{short} and the \textit{long} explanations about the exception, the \textit{trigger method}, etc.
 In addition to them, the \Crash-object stores a list of Strings containing the log words, where each position of the array is occupied by a different line. 
 %-----------LUCENE------------
 \paragraph{Preprocessing.}
@@ -531,9 +533,9 @@ The  diagram \ref{fig: indexingprocess} illustrates the main components of the L
 \end{figure}
 
 \paragraph{Creating documents and adding fields.}
-The first step \toolname\ performs is to create a set of \textit{Lucene documents}. 
+As a first step, \toolname\ generates a set of \textit{Lucene documents}. 
 To do this, it goes through all previously created \Crash-objects and convert their preprocessed words into Lucene documents. Each document must contain its group of \textit{fields} in order to be indexed.
-Therefore, each time a new Lucene document is created, a set of fields must be set and enclosed inside it. 
+Therefore, when a new Lucene document is created, a set of fields must be set and enclosed inside it. 
 A field can be viewed as a section of a document which can be optionally stored in the index \cite{lucenefield}. 
 It has usually three components: \textit{name}, \textit{type} and \textit{content}. For each stored field, it is important to determine which type is best suited to the content that is going to be indexed. 
 For instance, \toolname\ indexes documents which enclose \textit{text fields}, since they are already stored, tokenized and indexed \cite{lucenetextfield}. 
@@ -643,9 +645,9 @@ Terms such as \textit{crash} or \textit{ringdroid} have a low tf-idf weight. In 
 
 \paragraph{Cosine similarity.} 
 In order to state whether two crash logs refer to the same bug, \ie they can belong to the same group in the bucket, \toolname\ follows the approach described in the section \ref{approach:clustering}. 
-Indeed, it computes a well-known similarity measure, \ie cosine similarity \cite{cosine} between different crash reports,
-However, in order for that to happen, when cosine similarity is computed among two vectors belonging to two different crash logs, they must first be \textit{normalized}. 
-The \textit{normalization} process described in the approach (section \ref{approach:clustering}) is illustrated in the example shown in the table \ref{tbl: beforenormal} and \ref{tbl: afternormal}.
+Indeed, it computes a well-known similarity measure, \ie cosine similarity \cite{cosine} between different crash reports.
+However, as a necessary preliminary step, the two vectors referring to the two different crash logs have first be \textit{normalized}. 
+The \textit{normalization} process described in the approach (section \ref{approach:clustering}) is reported in the example shown in the table \ref{tbl: beforenormal} and \ref{tbl: afternormal}.
 As illustrated, the vectors $A$ and $B$ after the normalization process have the same length and have been complemented with their missing words. 
 \begin{table}[tb]
 \centering
@@ -687,8 +689,8 @@ ringdroid                          & 1.00                               & ringdr
 
 
 \paragraph{Computing Cosine Similarity to create the bucket.}
-Once the vector terms have been normalized, the cosine similarity among crash reports can be computed. \\
-In this direction, \toolname\ defines a threshold in the class \Oracle\,  which represents the tolerance for evaluating the similarity between two crash reports. Indeed, if the calculated cosine similarity among them is greater than the given limit, the two crash logs are considered to describe the same bug, \ie they will belong to the same bug group in the bucket. \\
+Once the vector terms have been normalized, the cosine similarity among crash reports can be computed. In this direction, \toolname\ defines a threshold in the class \Oracle\,  which represents the tolerance for evaluating the similarity between two crash reports. Indeed, if the calculated cosine similarity among them is greater than the given limit, the two crash logs are considered to describe the same bug, \ie they will belong to the same bug group in the bucket. 
+
 Concretely, \toolname\ invokes the method \textit{fillCrashLogBucket()}, which is in charge of comparing the crash logs, classifying them with the aim of filling the bucket. 
 The bucket consists of a hash map, which has as keys a set of Strings which act as a labels for the entire bug group they represent. Each label, in turn, has its own list of \Crash-objects\, which have been considered by the \Oracle\ referring to the same bug.  \\
 The bucketing process iterates all crash reports and it concretely works as follows: 
@@ -743,9 +745,9 @@ The table \ref{tbl: reviewmap} depicts a shortened version of the architecture o
                                                               & Review object 2                       \\ \cline{2-2} 
                                                               & ...                                   \\ \cline{2-2} 
 \end{tabular}
-\end{table}\\
+\end{table}
 At this point, \toolname\ has at disposal two different sources information, \ie the set of \textit{\Crash-objects }collected and classified inside the previously constructed bucket and a set of preprocessed and categorized \textit{user reviews}. \\
-Before the full linking process can start, the set of preprocessed words belonging to each \Crash-object must be \textit{augmented} in according to the approach explained in the section \ref{approach:linking}. \\
+Before the beginning of the linking process, the set of preprocessed words belonging to each \Crash-object must be \textit{augmented} in according to the approach explained in the section \ref{approach:linking}. \\
 In this direction, \toolname\ firstly extracts each \Crash-object from the bucket and then invokes for each of them the method 
 \textit{augmentstackTrace()} in the \Crash\ class. 
 Concretely, the augmenting process works as follows: 
