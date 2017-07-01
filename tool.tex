@@ -55,16 +55,15 @@ GENERATION = 100
 CXPB = 0.7
 MUTPB = 0.3
 \end{lstlisting}
-The figure above represents a part of the \textsc{ConfigurationManager}, where all the testing parameters for \monkey and \sapienz are specified (\textit{line 22-41}). An in-depth explanation about these parameters concering \monkey and \sapienz can be found on \cite{monkey}, respectively on \cite{sapienz}.\\
+The figure above represents a part of the \textsc{ConfigurationManager}, where all the testing parameters for \monkey and \sapienz are specified (\textit{line 22-41}). An in-depth explanation about these parameters concering \monkey and \sapienz can be found in the section \ref{usage: settings}.
 Furthermore, the directories containing the dataset must be specified. These include the location of the static structured file and the directory where the \textit{APKS} are going to be stored (\textit{line 4-5}).
 In addition to them, the directories on which the generated test logs are going to be saved (\textit{line 10-11}) as well as the specifications about the testing session (\textit{line 16-17}) must be given. 
-
-The tool accept two parameters that tune the duration and the execution of the tests:
+The tool accepts two parameters that tune the duration and the execution of the tests:
 \begin{itemize}
 \item \textsc{minutes\_per\_app}, specifies how many minutes an app will be tested. After that time frame, a time-out occurs and the testing process gets restarted with the next app. 
-Referring to the approach explained in the section \ref{approach:testing}, this value represents the  \textit{testing cycle} of a single \textit{APK}.
+Referring to the approach explained in the section \ref{approach:testing}, this value represents the  \textit{single app} testing cycle.
 \item \textsc{nr\_of\_iterations}, specifies how many times the whole dataset will be tested.
-This value, in turn, describes the \textit{testing cycle} involving an entire testing session.
+This value, in turn, describes the \textit{session cycle}.
 \end{itemize}
 
 According to the example \ref{lst: config} above and assuming that the dataset consists in 10 apps, the total estimated testing time for an entire testing session would be: 
@@ -76,18 +75,17 @@ Indeed, it has to be specified as parameter in \textsc{main} \textit{args} (as m
 
 The last configuration step is to define on which kind of device (\textit{i.e}, a real device, such as a \textit{tablet} or a virtual device, such as an \textit{emulator}) the testing is going to be performed. In addition to them, an additional argument that starts a timer for a better overview during the testing process can also be passed as main argument. \toolname\ supports different types of emulators or real devices running on different android API levels. However, in order to correctly execute \sapienz, the API level shall be \textit{Android 4.4, KitKat}. \\
 The listing below shows an example of a possible combination of parameters that could be given as main arguments. 
-
-
-\begin{lstlisting}[caption=\toolname\ command line, language=bash]
-$ java -BECLOMA.jar -device -monkey -timer
+\begin{lstlisting}[caption=Possible \toolname\ command line, language=bash]
+$ java -jar BECLOMA.jar -device -monkey -timer
 \end{lstlisting}
+Section \ref{usage: settings} describes the full usage of \toolname. 
 
 %-----------LAUNCH A TESTING SESSION -----------
-\paragraph{Testing session.} Once the configuration phase is terminated, \toolname\ is able to start concrete the testing process. 
-As shown in the picture \ref{testing}, it manages the component \SessionLauncher, which is in charge of translating the previously specified testing properties into "java readable code" and initializing the testing session. 
+\paragraph{Session cycle.} Once the configuration phase is terminated, \toolname\ is able to start concrete the testing process. 
+As shown in the picture \ref{testing}, it manages the component \SessionLauncher, which is in charge of translating the previously specified testing properties into "java readable code" and initializing the \textit{session cycle} mentioned in the approach. 
 Concretely, after \toolname\ invokes \SessionLauncher\ all attached devices respectively the chosen emulators get initialized, \ie they get rebooted and restarted as root, so that some important write-read-permissions are enabled during the testing session. 
 Whether the timer has been given as main argument, it gets also started. \\
-Once the initialization step has been completed, \SessionLauncher\  invokes the \AppTester\ component which finally starts the testing session. The Listing~\ref{lst:startsession} gives a simplified code snippet about the beginning of the testing process. 
+Once the initialization step has been completed, \SessionLauncher\  invokes the \AppTester\ component which is in charge of starting the \textit{dataset cycle}. The Listing~\ref{lst:startsession} gives a simplified code snippet about the beginning of this testing cycle. 
 
 \begin{lstlisting}[caption=\SessionLauncher\ Code snippet for starting a testing session ,label={lst:startsession}]
 private appTester; 
@@ -113,12 +111,10 @@ public void startTestingSession() throws Exception {
 First of all, the total number of iterations specified in the \Config\ is read and stored into a constant of type int. After that, the specified device gets initialized, statically invoking the correspondent method (\textit{line 4-9}).  
 According to the boolean variable \textit{isTimer}, a timer may also be started (\textit{line 11-13}).
 Afterwards, a for-loop starts, where at each iteration the method \textit{testAllApp()} gets invoked. 
-The idea behind this, is that at each iteration a new object of type \AppTester\ is created, so that each created object represents exactly one testing loop of the entire dataset. 
-Referring to the approach exaplained in the section \ref{approach:testing}, this cycle corresponds to
-all \textit{APKs} contained in the dataset. 
+Referring to the approach explained in the section \ref{approach:testing}, at each iteration a new object of type \AppTester\ is created, which represents exactly one \textit{dataset cycle}. 
 As shown in the figure~\ref{testing}, the \SessionLauncher\ would be able to instantiate infinite times the class \AppTester. However, it must create at least one object of that type in order to start a testing session. 
 
-\paragraph{Testing the entire dataset.} 
+\paragraph{Dataset and single app cycles. } 
 \AppTester\ and \Cmd\ represent the core components of the whole testing process. Indeed, \AppTester\ can be viewed as brain of the process, since it tells step-by-step to the body, \ie the \Cmd\ component, which commands it has to execute and at what stage of the process it has to perform it. \\
 Listing~\ref{lst:apptester} shows a very simplified code snippet of the relation between the two above mentioned components. 
 \begin{lstlisting}[caption=Testing mechanism between \AppTester\ and \Cmd\, ,label={lst:apptester}]
@@ -174,7 +170,7 @@ The first if statement checks whether the file in question has an adequate exten
 After that, \AppTester\ uninstalls the concerned \textit{APK}, so that at each iteration of the testing it gets reinstalled. 
 This beacause, it may be that an \textit{APK} gets affected by some previously generated sequences (\eg a sequence of random events that led the app to an external website). \\
 Afterwards, \AppTester\ checks which automated tool has been chosen by the tester, so that it can tell to the \Cmd\ component, which command-line it has to execute. As stated before, \AppTester\ prepares the single testing components such as which \textit{APK}, which tool, which testing parameters, etc., while \Cmd\ executes them without any prior knowledge. \\
-After the automated tool has been detected, \Cmd\ is able to concretely start the testing, executing the passed command-line. This is represented in listing \ref{lst:apptester} by the method \textit{generateReport} (\textit{line 33}). Indeed, \Cmd\ uses a single instance of the java-class \textit{Runtime} that allows the application to interact with the environment in which the app is running \cite{runtime}. 
+After the automated tool has been detected, \Cmd\ is able to concretely start the \textit{single app cycle}, executing the passed command-line. This is represented in listing \ref{lst:apptester} by the method \textit{generateReport} (\textit{line 33}). Indeed, \Cmd\ uses a single instance of the java-class \textit{Runtime} that allows the application to interact with the environment in which the app is running \cite{runtime}. 
 This is actually achieved by the \textit{Runtime.getRuntime()} (\textit{line 34}). The next line concretely executes the passed command-line. 
 The returned code of the function call at \textit{line 35} consists of a new \textit{process} object. 
 The process actually contains the execution of the command line. 
@@ -270,7 +266,7 @@ Percentage of touch events: 1.0% (number of touch events: 30 of 3000 events)
 As shown in the figure above, the test logs do not only contain the test results of the tested app, but also the above mentioned meta-data for documenting and retracing the whole testing session.
 
 \paragraph{Investigating phase. }
-The testing phase in the "strict sense", \ie the stage where the \textit{APK} gets stressed with an automated tool is over. At this point, the logs must be investigated about the possibility that some apps have generated a crash during its testing time frame. In this sense, the last part of the method \textit{testAllApp()} illustrated in the listing ~\ref{lst:apptester}, is in charge of stating whether a test log contains a crash or not. The method for checking whether a test log has collected a crash inside it is quite intuitive. This because, the syntax used by \monkey and \sapienz in their report for indicating the presence of a crash is the same. As illustrated in the listing~\ref{lst:crashlog}, a crash can be delimited using the following two \textit{Strings}: 
+The \textit{single app cycle} in the "strict sense", \ie the stage where the \textit{APK} gets stressed with an automated tool is over. At this point, the logs must be investigated about the possibility that some apps have generated a crash during its testing time frame. In this sense, the last part of the method \textit{testAllApp()} illustrated in the listing ~\ref{lst:apptester}, is in charge of stating whether a test log contains a crash or not. The method for checking whether a test log has collected a crash inside it is quite intuitive. This because, the syntax used by \monkey and \sapienz in their report for indicating the presence of a crash is the same. As illustrated in the listing~\ref{lst:crashlog}, a crash can be delimited using the following two \textit{Strings}: 
 \begin{itemize}
 \item Crash beginning: \texttt{"// CRASH: "}
 \item Crash end: \texttt{"// "}
@@ -340,8 +336,9 @@ At this point, the \textit{APK} has been tested, reported, whether occurred, the
 
 
 
-\toolname\ can now repeat this entire process with the next application (\ie the next iteration in the loop inside the method \textit{testAllApp())}. 
+\toolname\ can now repeat this entire process with the next application (\ie the next iteration in the loop inside the method \textit{testAllApp())}. This scenario is represented by the "yes" answer of the question \textit{"are there still apps in the dataset which have not been tested in this dataset cycle?"} in the figure \ref{fig: testingapproach}.
 Once all the applications specified in the dataset have been tested exactly one time, \SessionLauncher\ can begin with the next iteration in its loop (listing ~\ref{lst:startsession}) and so start testing the whole dataset another time. 
+This scenario, in turn, is described by the "no" answer of the question above. Indeed, the diagram \ref{fig: testingapproach} consequently starts the \textit{dataset cycle} again. 
 This loop ends when the number of iterations reaches the one specified by the user. \\
 In addition, during each test iteration and at the end of the whole testing session useful statistics are computed and written into external excel files, using the components \textsc{OnGoingCalculator} and \textsc{FinalCalculator}. They use the pure Java library \textit{Apache POI}, for reading and writing files in Microsoft Office formats \cite{apachepoi}. 
 
@@ -351,7 +348,7 @@ In addition, during each test iteration and at the end of the whole testing sess
 \section{Clustering}
 \label{tool: clustering}
 %-----Toool------
-Before the explanation of the Clustering process can start, a premise must be made. \GIO{What premise?} All the classes that will be discussed below, refer to the class diagram represented in the figure~\ref{clustering}. 
+%Before the explanation of the Clustering process can start, a premise must be made. \GIO{What premise?} All the classes that will be discussed below, refer to the class diagram represented in the figure~\ref{clustering}. 
 
 
 %TODO aggiungere construttore in crash log passandogli gli argomenti
