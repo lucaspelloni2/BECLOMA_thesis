@@ -1,1 +1,42 @@
 \label{chapter:conclusion}
+In my thesis we investigated the importance of integrating user reviews in the validation process of mobile applications. 
+For this purpose, we introduced an approach called \toolname\ which is able to (i) test a set of apps and extract possible crashes, (ii) form a bucket of unique crash reports and 
+(iii) investigate the complementarity between crash-related user reviews and the bucketed stack traces. 
+With the aim to evaluate the performance of \toolname, we performed an empirical study 
+over a dataset containing different types of mobile applications. 
+First, we downloaded our sample of \textit{APKs} from the \textit{FDroid API} and we launched an experiment on them. 
+Afterwards, we reported its results, \ie the total number of crashes and unique crashes which occurred during the testing phase. 
+Then, we created a bucket of unique crash logs. For this purpose, we first manually built an oracle according to the crash reports we collected. 
+Afterwards, we adapted its threshold in order to reproduce that bucket. 
+Finally, we started our linking procedure by linking the crash-related user reviews and the stack traces we bucketed. 
+Again, we reported its results in the chapter \ref{chapter:results}. 
+ 
+ 
+We strongly believe, that our findings might convince other mobile developers to perform such an \textit{user-oriented testing} by validating the reliability of their mobile applications. 
+Indeed, despite \toolname\ still remains in an experimental stage, we argue that our results are quite promising. 
+However, we are conscious that we tested our approach with a small dataset and thus we may adapt both the clustering and the linking threshold whether \toolname\ would be used with another, maybe greater set of apps. 
+With a new set of apps, we believe that \toolname\ would require some manual effort for setting the correct threshold. 
+
+We are convinced that our findings and preliminary results lay the foundations for further research  into the field of \textit{integration of user feedback into the testing process}. 
+At this stage, \toolname\ operates with a relative small number of user reviews and mobile applications. It would be nice to test the effectiveness of its approach with a very large amount of both sources of information. \\
+
+There are different directions to investigate for future work. 
+First, it could be possible to introduce a new tool which would be able to (i) \textit{summarize} stack
+traces and user reviews linked together, supporting the activities performed by developers in their bug fixing sessions. 
+(ii) create a \textit{prioritisation scheme} for the generated failures taking into account the user reviews and finally (iii) \textit{generate} specific \textit{test cases} directly from user reviews. \\
+Furthermore, we plan to improve the \textit{augmenting process} of the stack traces implemented by \toolname. 
+Indeed, we are convinced that a better selection of the words which augment the stack traces would improve the linking scores between crash-related user and these stack traces. 
+For instance, we could consider not only the source code methods included in the stack traces but also the common classes among them. 
+This would imply a greater set of words for the stack traces which may results in a better linking score. 
+
+
+Finally, we could implement a further feature for \toolname\, which is in charge of additionally  filtering the reviews. 
+Indeed, our approach considers also these reviews which present a positive connotation, \ie those that not refer to any crash but just express a positive opinion about the given app. 
+For instance, we could try to conceive a filter function which analyses the reviews and discards, according to an external text file containing some stop words, those which express a position opinion about the app. 
+
+
+
+
+
+
+ 
