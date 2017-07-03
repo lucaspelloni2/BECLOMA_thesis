@@ -86,7 +86,7 @@ As shown in the picture \ref{testing}, it manages the component \SessionLauncher
 Concretely, after \toolname\ invokes \SessionLauncher\ all attached devices respectively the chosen emulators get initialized, \ie they get rebooted and restarted as root, so that some important write-read-permissions are enabled during the testing session. 
 Whether the timer has been given as main argument, it gets also started. \\
 Once the initialization step has been completed, \SessionLauncher\  invokes the \AppTester\ component which is in charge of starting the \textit{dataset cycle}. The Listing~\ref{lst:startsession} gives a simplified code snippet about the beginning of this testing cycle. 
-
+\clearpage
 \begin{lstlisting}[caption=\SessionLauncher\ Code snippet for starting a testing session ,label={lst:startsession}]
 private appTester; 
 public void startTestingSession() throws Exception {
@@ -117,6 +117,15 @@ As shown in the figure~\ref{testing}, the \SessionLauncher\ would be able to ins
 \paragraph{Dataset and single app cycles. } 
 \AppTester\ and \Cmd\ represent the core components of the whole testing process. Indeed, \AppTester\ can be viewed as brain of the process, since it tells step-by-step to the body, \ie the \Cmd\ component, which commands it has to execute and at what stage of the process it has to perform it. \\
 Listing~\ref{lst:apptester} shows a very simplified code snippet of the relation between the two above mentioned components. 
+
+
+First of all, \AppTester\ creates a for-loop in which it iterates each \textit{APK} file contained in the \textit{APKs} directory. Once again, this directory is specified in the \Config. 
+The first if statement checks whether the file in question has an adequate extension, \ie it is able to be installed on a android mobile device. 
+After that, \AppTester\ uninstalls the concerned \textit{APK}, so that at each iteration of the testing it gets reinstalled. 
+This beacause, it may be that an \textit{APK} gets affected by some previously generated sequences (\eg a sequence of random events that led the app to an external website). \\
+Afterwards, \AppTester\ checks which automated tool has been chosen by the tester, so that it can tell to the \Cmd\ component, which command-line it has to execute. As stated before, \AppTester\ prepares the single testing components such as which \textit{APK}, which tool, which testing parameters, etc., while \Cmd\ executes them without any prior knowledge. \\
+
+\clearpage
 \begin{lstlisting}[caption=Testing mechanism between \AppTester\ and \Cmd\, ,label={lst:apptester}]
 /**
 * @class: AppTester
@@ -163,14 +172,8 @@ public static File getCurrentLog() {
 }
     
 \end{lstlisting}
-
-
-First of all, \AppTester\ creates a for-loop in which it iterates each \textit{APK} file contained in the \textit{APKs} directory. Once again, this directory is specified in the \Config. 
-The first if statement checks whether the file in question has an adequate extension, \ie it is able to be installed on a android mobile device. 
-After that, \AppTester\ uninstalls the concerned \textit{APK}, so that at each iteration of the testing it gets reinstalled. 
-This beacause, it may be that an \textit{APK} gets affected by some previously generated sequences (\eg a sequence of random events that led the app to an external website). \\
-Afterwards, \AppTester\ checks which automated tool has been chosen by the tester, so that it can tell to the \Cmd\ component, which command-line it has to execute. As stated before, \AppTester\ prepares the single testing components such as which \textit{APK}, which tool, which testing parameters, etc., while \Cmd\ executes them without any prior knowledge. \\
-After the automated tool has been detected, \Cmd\ is able to concretely start the \textit{single app cycle}, executing the passed command-line. This is represented in listing \ref{lst:apptester} by the method \textit{generateReport} (\textit{line 33}). Indeed, \Cmd\ uses a single instance of the java-class \textit{Runtime} that allows the application to interact with the environment in which the app is running \cite{runtime}. 
+\clearpage 
+Once the automated tool has been detected, \Cmd\ is able to concretely start the \textit{single app cycle}, executing the passed command-line. This is represented in listing \ref{lst:apptester} by the method \textit{generateReport} (\textit{line 33}). Indeed, \Cmd\ uses a single instance of the java-class \textit{Runtime} that allows the application to interact with the environment in which the app is running \cite{runtime}. 
 This is actually achieved by the \textit{Runtime.getRuntime()} (\textit{line 34}). The next line concretely executes the passed command-line. 
 The returned code of the function call at \textit{line 35} consists of a new \textit{process} object. 
 The process actually contains the execution of the command line. 
@@ -758,7 +761,8 @@ After the preprocessing procedure has been completed, the line looks like the fo
 As you can see, the line has been already "stemmed and cleaned" using the method \textit{stemmAndCleanReports()} in the \textsc{Augmenter} class. 
 This method preprocesses the reports expoiting the information retrivial techniques used by \textbf{INFUSA-TA}, explained at the beginning of the section \ref{approach:linking}.
 Indeed, programming keywords such as "\textit{if}", "\textit{throw}" or "\textit{java}" and too short words such as "\textit{to}" or "\textit{at}" have been removed after the preprocessing procedure. 
-\item After cleaning the reports, the remaining text is augmented with the source code methods included in the stack trace. In this direction, \toolname\ firstly extracts all methods present in the stack trace. To achieve this, it goes through all log lines in the method \textit{augmentStackTrace()} and for each line it compiles the regular expression positioned at \textit{line 7}: 
+\item After cleaning the reports, the remaining text is augmented with the source code methods included in the stack trace. In this direction, \toolname\ firstly extracts all methods present in the stack trace. To achieve this, it goes through all log lines in the method \textit{augmentStackTrace()} and for each line it compiles the regular expression positioned at \textit{line 7} in the listing \ref{lst: augmentstack}. 
+\clearpage
 \begin{lstlisting}[caption=Regular expression for extracting all methods from a stack trace,label={lst: augmentstack}]
 /**
 * @class: CrashLog
@@ -844,6 +848,10 @@ Afterwards, \Linker\ invokes the method \textit{evaluateLinking()}, which refers
 Indeed, the \Facade\ component reproduces the design pattern \textit{Facade}, 
 which provides a simplified interface for evaluating the asymmetric Dice. 
 Figure \ref{lst: facade} shows how it concretely works. 
+\clearpage
+
+
+
 \begin{lstlisting}[caption=\Facade implementing the design pattern \textit{Facade},label={lst: facade}]
 /**
 * @class: SimilarityMetricsFacade
