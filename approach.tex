@@ -25,10 +25,11 @@ The first step in the overall approach basically relies on two of the most used 
 First of all, \toolname\ acts as crawler in order to download the set of desired \textit{APKs} from the \textit{FDroid} API. 
 Thus, it firstly reads a static structured file containing a set of android package names; then, it builds the necessary \textit{HTTP links} in order to download the correspondent \textit{APK} files. 
 Once the dataset has been built and some testing parameters have been specified, the testing session can be started. 
-The set of parameters that must be specified are described in detail in the section \ref{usage: settings}.
+The set of parameters that must be specified are described in detail in the Section \ref{usage: settings}.
 The overall approach of \toolname\ consists of three testing cycles: 
 \begin{enumerate}
-\item The \textbf{single app} cycle concerning the testing of a single \textit{APK}. It represents the time frame for which each \textit{APK} in the dataset is tested. After that time frame, the approach starts with the testing of the next \textit{APK} indicated in the dataset. 
+\item 
+The \textbf{single app} cycle concerning the testing of a single \textit{APK}. It represents the time frame for which each \textit{APK} in the dataset is tested. After that time frame, the approach starts with the testing of the next \textit{APK} indicated in the dataset. 
 \item The \textbf{dataset} cycle describing the time spent for testing the \textit{APKs} within the dataset exactly one time for that currently cycle. 
 \item The \textbf{session} cycle characterizing a testing session, \ie how many dataset cycles have to be performed. 
 \end{enumerate}
@@ -63,9 +64,9 @@ Once the reports of the test has been stored, we proceed to parse them looking f
 
 \section{Clustering of The Collected Traces}
 \label{approach:clustering}
-As we said before at the end of the testing phase all the stack traces that have been generated are stored in a specific directory. However, it is worth to notice that with an high change, most part of such failures would refer to the same bug (in other words, the traces are duplicates).
+As we said before at the end of the testing phase all the stack traces that have been generated are stored in a specific directory. However, it is worth to notice that with a high change, most part of such failures would refer to the same bug (in other words, the traces are duplicates).
 
-In order to identify the \textit{unique crashes}, the second step of our approaches performs an automatic clustering of the overall bunch of logs. Ideally, at the end of such phase, each cluster should contain logs that refers to the same bug.
+In order to identify the \textit{unique crashes}, the second step of our approach performs an automatic clustering of the overall bunch of logs. Ideally, at the end of such phase, each cluster should contain logs that refer to the same bug.
 For this task, we rely on classic Information Retrieval (IR) techniques, collecting features about the logs and comparing them using the \textit{cosine similarity} metrics (see Section \ref{sec:cosine_similarity}).
 Figure \ref{fig: clustering} shows the overall process for this task. 
 \begin{figure}[tb]
@@ -74,7 +75,7 @@ Figure \ref{fig: clustering} shows the overall process for this task.
 \caption{The idea behind the Clustering process}
 \label{fig: clustering}
 \end{figure}
-As said before, some track traces may be overlapping \ie refers to the same bug of be even duplicates. 
+As said before, some track traces may be overlapping \ie refer to the same bug of be even duplicates. 
 Despite the trigger method, \ie the method that raised to the exception, may be the same, there may be different sequences of function calls in the stack trace, the more the analysis goes deep. 
 However, they are hardly detectable and is difficult to affirm that two stack traces which have the same trigger method refer to different bugs. 
 Therefore, some reports may belong to two different bug groups in the bucket. 
