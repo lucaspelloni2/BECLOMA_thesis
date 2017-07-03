@@ -1,10 +1,10 @@
 \label{chapter:approach}
-In this work, we aim to build an approach able to (i) automatically test Android application with modern state-of-art tools, (ii) automatically collect the arose errors (\ie stack traces), (iii) detect the unique errors (\ie the ones that derive from the same bug), (iv) link such stack traces with the user reviews that claim about the correspondent problems.           
+In this work, we aim to build an approach able to (i) automatically test Android applications with modern state-of-art tools, (ii) automatically collect the arose errors (\ie stack traces), (iii) detect the unique errors (\ie the ones that derive from the same bug), (iv) link such stack traces with the user reviews that claim about the correspondent problems.           
 We called this approach \textbf{BECLOMA} (\textbf{B}ug \textbf{E}xtractor, \textbf{C}lassifier and \textbf{L}inker \textbf{O}f \textbf{M}obile \textbf{A}pps).
 Figure \ref{fig: becloma} depicts the main actions performed by this approach.
 For giving a cleaner and more understandable explanation of how \toolname\ works, we describe in the following chapter its key features (see figure \ref{fig: becloma}). Such features represent the three main processes that \toolname\ sequentially performs.
 \begin{enumerate}
-\item the \textsc{Testing} uses \monkey and \sapienz to test the \textit{APKs} under test, reporting their testing results and extracting possible \textit{crashes} from the before generated test logs; 
+\item the \textsc{Testing} part uses \monkey and \sapienz to test the \textit{APKs} under test, reporting their testing results and extracting possible \textit{crashes} from the before generated test logs; 
 
 \item the \textsc{Clustering} part investigates the similarity between the previous extracted crash logs, using different metrics and strategies, in order to collect them together and create a crash log \textit{bucket}, \ie a set of unique; 
 
