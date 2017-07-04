@@ -1,6 +1,6 @@
 % !TEX root =  ./lucas_thesis.tex
 \label{chapter:related}
-In the following two sections, I summarize the main related works on \textit{automated testing tools for Android apps} and on \textit{the broadly usage of user reviews from app store in Software maintenance activities}. 
+In the following two sections, I will summarize the main related works on \textit{automated testing tools for Android apps} and on \textit{the broadly usage of user reviews from app store in Software maintenance activities}. 
 An overview of the recent research in the field can be found in the survey by Martin \etal \cite{Martin:tse2017}. 
 \section{Automated tools for Android Testing}
 \label{sec:tools}
@@ -10,33 +10,33 @@ An overview of the recent research in the field can be found in the survey by Ma
 Depending on their exploration strategy, there are in general three approaches for creating a generation of user inputs on a mobile device \cite{areWeThereYet}: \textit{random testing} \cite{dynodroid, monkey}, \textit{systematic testing} \cite{evodroid} and \textit{model-based testing} \cite{mobiguitar, swift, mining}. 
 \subsubsection{Fuzz testing}
 When test automation does occur, it typically relies on Google's Android \monkey command-line \cite{monkey}. Since it comes directly integrated in Android Studio, the standard IDE for Android Development, it is regarded as the current state-of-practice \cite{evodroid}.
-This tool simply generates, for the specified Android applications, pseudo-random streams of user events into the system, with the goal to stress the \textit{AUT\footnote{Application Under Test}} \cite{monkey}.  
+This tool simply generates, for the specified Android applications, pseudo-random streams of user events into the system, with the goal of stressing the \textit{AUT\footnote{Application Under Test}} \cite{monkey}.  
 The effort required for using \monkey is very low \cite{areWeThereYet}. Users have to specify in the command-line the type and the number of the UI events they want to generate and in addition they can establish the verbosity level of the \monkey log. 
 The set of possible \monkey parameters can be found in the official \textit{User Guide} for \monkey on \cite{monkey}. \\
 The kind of testing implemented by \monkey follows a black-box approach. 
-Despite the robustness, the user friendliness \cite{areWeThereYet, dynodroid} and the capacity to find out new bugs outside the stated scenarios  \cite{monkey_2}, this tool may be inefficient if the \textit{AUT} would require some human intelligence (\textit{e.g.} a login field) for providing sensible inputs \cite{dynodroid}. \\
-For this reason, \monkey may cause highly redundant and senseless user events. Even though it would find out a new bug for a given app, the steps for reproducing it may be very difficult to follow, due also to the randomness in the testing strategy implemented by it \cite{monkey_2}. 
+Despite the robustness, the user friendliness \cite{areWeThereYet, dynodroid} and the capacity to find out new bugs outside the stated scenarios  \cite{monkey_2}, this tool may be inefficient if the \textit{AUT} requires some human intelligence (\textit{e.g.} a login field) for providing sensible inputs \cite{dynodroid}. \\
+For this reason, \monkey may cause highly redundant and senseless user events. Even though it would find out a new bug for a given app, the steps for reproducing it may be very difficult to follow, also due to the randomness in the testing strategy implemented by it \cite{monkey_2}. 
 
 
 \textsc{Dynodroid} \cite{dynodroid} is also a random-based testing approach. However, this tool has been discovered being more efficient than \monkey in the exploration process  \cite{areWeThereYet}. \\
 One of the reasons behind a better efficacy has been that \dynodroid is able to generate both \textit{UI events} and \textit{system events} (unlike \monkey, which can only generate UI events) \cite{areWeThereYet}. \\  
 Indeed, \dynodroid can simulate an incoming SMS message on a mobile device, a notification of another app or an request of use for available wifi networks in the neighborhood \cite{dynodroid}. All these events represent \textit{non-UI events} and they are often unpredictable and therefore difficult to simulate in a suitable context. 
-\dynodroid views the AUT as an event-driven program and follows a cyclical mechanism, also known as the \textit{observe-select-execute} cycle \cite{dynodroid}. First of all, it \textit{observes} which events are relevant to the AUT in the current state, grouping they together (an event must be considered relevant if it triggers a part of code which is part of the AUT). After that, it \textit{selects} one of the previously observed events with a randomized algorithm \cite{dynodroid, areWeThereYet} and finally \textit{executes} it. After the execution of that event the AUT reaches a new state and the cycle again stars again. \\
+\dynodroid views the AUT as an event-driven program and follows a cyclical mechanism, also known as the \textit{observe-select-execute} cycle \cite{dynodroid}. First of all, it \textit{observes} which events are relevant to the AUT in the current state, grouping they together (an event must be considered relevant if it triggers a part of code which is part of the AUT). After that, it \textit{selects} one of the previously observed events with a randomized algorithm \cite{dynodroid, areWeThereYet} and finally \textit{executes} it. After the execution of that event the AUT reaches a new state and the cycle stars again. \\
 Another advantage of \dynodroid compared to \monkey is that it allows users to interact in the testing process providing UI inputs. In doing so, \dynodroid is able to exploit the benefits of combining automated with manual testing \cite{dynodroid}.
 
 \subsubsection{Systematic testing}
 The tools using a systematic explorations strategy rely on more sophisticated techniques, such as symbolic execution and evolutionary algorithms \cite{areWeThereYet}. 
 
 
-\sapienz \cite{sapienz} introduced a new Pareto multi-objective search-based technique (the first one in Android testing) to simultaneously maximize coverage and fault revelation, while minimizing the sequence lengths. Its approach combines the above mentioned random-based techniques with a new systematic exploration. \sapienz starts its work-flow by instrumenting the AUT, which can be achieved using a \textit{white-box} approach, whether the source code is available. Otherwise the "instrumenting-process" follows a \textit{black-box} approach whether only the APK\footnote{Android Package Kit, extension used by Android OS for installing a mobile app on an android device} is given.  
+\sapienz \cite{sapienz} introduced a new Pareto multi-objective search-based technique (the first one in Android testing) to simultaneously maximize coverage and fault revelation, while minimizing the sequence lengths. Its approach combines the above mentioned random-based techniques with a new systematic exploration. \sapienz starts its work-flow by instrumenting the AUT, which can be achieved using a \textit{white-box} approach, if the source code is available. Otherwise the "instrumenting-process" follows a \textit{black-box} approach in case only the APK\footnote{Android Package Kit, extension used by Android OS for installing a mobile app on an android device} is given.  
 Afterwards, \sapienz extracts string constants after an accurate analysis of the APK. These strings are used as inputs for inserting realistic strings into the AUT, which has been demonstrated to improve the testing efficiency \cite{sapienz}. After that, UI events are generated and executed by an internal component called \textit{MotifCore}. 
 This component, as highlighted before, combines random-based testing approaches with systematic exploration strategies. When it gets invoked, it initialises an \textit{initial population} via \textit{MotifCore's Test Generator} and starts the genetic evolution process. 
-During this process, another component called \textit{Test Replayer} manages genetic individuals during the evaluation process of the individual fitness. After that, the individual test cases are translated into Android events by the \textit{Gene Interpreter}, which is in charge of communicate with the mobile device. 
+During this process, another component called \textit{Test Replayer} manages genetic individuals during the evaluation process of the individual fitness. After that, the individual test cases are translated into Android events by the \textit{Gene Interpreter}, which is in charge of communicating with the mobile device. 
 Another component called \textit{States Logger} checks whether the tests cases find some faults and produces statistics for another component, called \textit{Fitness Extractor}, which computes the fitness. \\
 Finally, reports containing data about testing results, such as code coverage, stack traces and "steps for reproducing the faults" are generated and stored at the end of the process.  
 
 
-The experiment results published on \cite{sapienz} show that \sapienz is an out-performer in the automated mobile testing area. The table \ref{tbl: sapienzresults} compares the above mentioned tools \monkey and \dynodroid with \sapienz, illustrating the strength of the \sapienz's approach. 
+The experiment results published on \cite{sapienz} show that \sapienz is an out-performer in the automated mobile testing area. The table \ref{tbl: sapienzresults} compares the above mentioned tools \monkey and \dynodroid with \sapienz, illustrating the strength of the \textsc{Sapienz} approach. 
 
 \begin{table}[tb]
 \centering
@@ -53,32 +53,32 @@ Nr. Total crashes    & 1'196           & 125                & 6'866             
 As illustrated in the table, \sapienz found from a set of 68 benchmark apps, 104 unique crashes (while \monkey 41 and \dynodroid 13).
 
 \subsubsection{Model-based testing}
-Model-based tools for testing Android applications are quite popular \cite{sapienz}. Most of these tools \cite{mobiguitar, mining, guiripper,swift} generate UI events from models, which are either manually designed or created from XML configuration files \cite{sapienz}. \\
+Model-based tools for testing Android applications are quite popular \cite{sapienz}. Most of these tools \cite{mobiguitar, mining, guiripper,swift} generate UI events from models which are either manually designed or created from XML configuration files \cite{sapienz}. \\
 For example, \textit{SwiftHand} \cite{swift} uses a machine learning algorithm to learn a model of the current \textit{AUT}. This final state machine model \cite{areWeThereYet} generates UI events and due their execution the app reaches new unexplored states. After that, it exploits the execution of these events to adapt and refine the model \cite{swift}. \textit{SwiftHand}, in a similar way to \monkey generates only touching and scrolling UI events and is not able to generate system events \cite{areWeThereYet}.
 
 % TODO: allargare questa sezione 
 \section{Usage of users reviews in Software maintenance activities}
 \label{section:review_usage}
 The concept of app store mining was first introduced by \textit{Harman} \etal
-\cite{appstoremining}. In this direction, they presented an empirical analyse of relationships between three main areas of interest in the context of user reviews: technical, customer-focussed and business. 
-Their approach consists of (i) extracting raw data from the app store (ii) parsing that data with the aim to retrieve all attributes concerning the price, the ratings and descriptions of the app itself (iii) using data mining to extract feature information from the above parsed descriptions and finally (iv) providing statistics about the above mentioned areas of interest.  
+\cite{appstoremining}. In this respect, they presented an empirical analysis of relationships between three main areas of interest in the context of user reviews: technical, customer-focussed and business. 
+Their approach consists in (i) extracting raw data from the app store (ii) parsing that data with the aim to retrieve all attributes concerning the price, the ratings and descriptions of the app itself (iii) using data mining to extract feature information from the above parsed descriptions and finally (iv) providing statistics about the above mentioned areas of interest.  
 
 In the context of app store mining, many researchers focused on the analysis of user reviews to support the maintenance and evolution of mobile applications \cite{Martin:tse2017}.
-Indeed, in the survey by \textit{Martin} \etal \cite{Martin:tse2017} is proposed a study which aims to define and group together different literature sources, demonstrating that actually exists a area of research in the field of "App Store Analysis".
+Indeed, the survey by \textit{Martin} \etal \cite{Martin:tse2017} proposes a study which aims at defining and grouping together different literature sources, demonstrating that an area of research in the field of "App Store Analysis" actually exists.
 
 In this field, Pagano \etal \cite{pagano} empirically analyzed the feedback content and their impact on the user community. 
-Indeed, they proposed a study proposition where (i) they hypothesized that developers find user feedback a useful source of information for validating their software. Then, (ii) they assumed that the current practice about user involvement in the validation process brings with it several challenges, since it is unsystematic and there are some practical limitations concerning the quality, the content and the structure of such user feedback. 
+Indeed, they proposed a study proposition where (i) they hypothesized that developers find user feedback a useful source of information for validating their software. Then, (ii) they assumed that the current practice of user involvement in the validation process brings with it several challenges, since it is unsystematic and there are some practical limitations concerning the quality, content and structure of such user feedback. 
 Finally, (iii) they believe that developers embrace tool support for dealing with a very large amount of user reviews, which allow them to validate their software according to its users. 
 
-In this direction, Khalid \etal \cite{Khalid:2015:IEEE} conducted a study on iOS apps discovering 12 types of user complaints posted in reviews. 
-In their findings, they found that the most frequent complaints are about functional errors, requests about a new feature and complaints about app crashes. With this study, they argue that the analyse of these complaints can further help developers to identify app bugs and develop new features according to its users requests. 
-Furthermore, they argue that based on their findings developers can better anticipate possible complaints and so prioritizing them a priori.   
+In this respect, Khalid \etal \cite{Khalid:2015:IEEE} conducted a study on iOS apps discovering 12 types of user complaints posted in reviews. 
+In their findings, they found that the most frequent regard functional errors, requests about a new feature and complaints about app crashes. With this study, they argue that the analysis of these complaints can further help developers to identify app bugs and develop new features according to their users requests. 
+Furthermore, they argue that based on their findings developers can better anticipate possible complaints and so prioritize them a priori.    
 
-Several approaches have been proposed with the aim to classify useful reviews.
+Several approaches have been proposed with the aim of classifying useful reviews.
 \textsc{AR-Miner} \cite{Chen} represents the first approach proposed in the literature able to discern informative reviews. 
-In this approach, they aim to retrieve the most "informative" information which can be extracted from raw user reviews. They argue, that this kind of information can help developers in app markets to improve their applications. In this direction, \textit{AR-Miner} can be viewed as a "novel analytic framework" \cite{Chen}, which consists of a new ranking scheme that prioritizes these "informative" reviews. 
+In this approach, they aim to retrieve the most "informative" information which can be extracted from raw user reviews. They argue, that this kind of information can help developers in app markets to improve their applications. In this sense, \textit{AR-Miner} can be viewed as a "novel analytic framework" \cite{Chen}, which consists of a new ranking scheme that prioritizes these "informative" reviews. 
 
-In the context of the usage of users reviews in the validation process of a software, in a recent work Panichella \etal introduced a tool called \textsc{surf} (Summarizer of User Reviews Feedback), that is able to analyse the useful informations contained in app reviews and to performs a systematic summarisation of thousands of user reviews through the generation of an interactive agenda of recommended software changes 
+In the context of the usage of users reviews in the validation process of a software, in a recent work Panichella \etal introduced a tool called \textsc{surf} (Summarizer of User Reviews Feedback), that is able to analyse the useful information contained in app reviews and to perform a systematic summarisation of thousands of user reviews through the generation of an interactive agenda of recommended software changes 
 \cite{sorbo}. 
 
 Finally, Palomba \etal \cite{Palomba2017} proposed \textsc{ChangeAdvisor}, a tool able to suggest the source code artefacts to maintain according to user feedback.
@@ -96,9 +96,9 @@ For the implementation of \toolname, we have chosen to use the following two aut
 \item \monkey
 \item \sapienz
 \end{itemize}
-The selection of \monkey is justified by the fact that (i) \monkey represents the current state-of-practice in the field of automated mobile testing \cite{evodroid} and therefore is well supported and documented by the community, (ii) the effort for using it is very low \cite{areWeThereYet}  and (iii) being it a command-line tool, it can easily be combined with the terminal and so be launched by and integrated into an external tool which provides and supports command-line functions.  
+The selection of \monkey is justified by the fact that (i) \monkey represents the current state-of-practice in the field of automated mobile testing \cite{evodroid} and therefore is well supported and documented by the community, (ii) the effort in using it is very low \cite{areWeThereYet}  and (iii) being a command-line tool, it can easily be combined with the terminal and so be launched by and integrated into an external tool which provides and supports command-line functions.  
 
-The aim of selecting \sapienz is driven by the fact that (i) \sapienz has been found to be (based on the experimental results presented on \cite{sapienz}) an out-performer in the automated mobile testing area. Indeed its approach has been discovered to be much more reliable and high-performing compared to other testing strategies such as those of \monkey or \textsc{Dynodroid}. (ii) The source code of \sapienz is readily accessible on \textit{GitHub} and therefore the whole source code can be integrated into another tool (iii) \sapienz can also be started using some command-lines. 
+The aim of selecting \sapienz is driven by the fact that (i) \sapienz has been found to be (based on the experimental results presented on \cite{sapienz}) an outperformer in the automated mobile testing area. Indeed its approach has been discovered to be much more reliable and high-performing compared to other testing strategies such as those of \monkey or \textsc{Dynodroid}. (ii) The source code of \sapienz is readily accessible on \textit{GitHub} and therefore the whole source code can be integrated into another tool (iii) \sapienz can also be started using some command-lines. 
 
 
 
