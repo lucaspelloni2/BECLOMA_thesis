@@ -61,8 +61,13 @@ Afterwards, if a crash occurred, its part relative to the stack trace from the w
 \clearpage
 \section{Clustering of the Collected Traces}
 \label{approach:clustering}
-As we said before, at the end of the testing phase all the stack traces that have been generated are stored in a specific directory. However, it is worth noticing that with a high change, most part of such failures would refer to the same bug (in other words, the traces are duplicates). \\
-In order to identify the \textit{unique crashes}, the second step of our approach performs an automatic clustering of the overall bunch of logs. Ideally, at the end of such phase, each cluster should contain logs that refers to the same bug.
+As we said before, at the end of the testing phase all the stack traces that have been generated are stored in a specific directory. However, it is worth noticing that with a high change, most part of such failures would refer to the same bug. %(in other words, the traces are duplicates). 
+\LUCAS{si capisce ora cosa sono gli unique crashes?}
+To make our explanation better understandable, we introduce a new term we call \textit{unique crashes}. 
+In this sense, a set of unique crashes indicates a group of duplicates in the cluster which belong to the same bug. In fact, each crash in that cluster is considered to be interchangeable.
+
+ 
+Indeed, in order to identify these unique crashes, the second step of our approach performs an automatic clustering of the overall bunch of logs. Ideally, at the end of such phase, each cluster should contain logs that refers to exactly the same bug.
 For this task, we rely on classic Information Retrieval (IR) techniques, collecting features about the logs and comparing them using the \textit{cosine similarity} metric.
 Figure \ref{fig: clustering} shows the overall process for this task. 
 \begin{figure}[tb]
@@ -103,10 +108,12 @@ For its answers it makes use of a similarity tolerance, which has been adapted o
 In fact, we manually created the bucket of unique crash logs and consequently adapted the threshold in the oracle in order to enable it to rightly answer its questions and so reproduce the same bucket. 
 
 \paragraph{Preprocessing.}
-The first step of the clustering approach consists in \textit{preprocessing} the crash reports in order to prepare them to be compared to each other. 
-To achieve this, the approach follows a grammar-based tokenization technique implemented in the well-know \textbf{Apache Lucene} \cite{lucene} library.  
+The first step of the clustering approach consists in \textit{preprocessing} the crash reports in order to prepare them to be compared to each other.
+\LUCAS{Seba: just explain why it is important to perform this preprocessing step}
+The preprocessing step is fundamental to be performed since (i) it removes possible noise from the logs (remove unless symbols or numbers), (ii) standardizes them making their contents consistent to each other and (iii) parses and converts them identifying different key elements. 
+To perform such phase, the approach follows a grammar-based tokenization technique implemented in the well-know \textbf{Apache Lucene} \cite{lucene} library.  
 %Indeed, all words contained in the crash reports are preprocessed using \textbf{Apache}. 
-In this respect, we collected all words contained in the crash reports and preprocessed them using a Lucene tokenizer, called \textit{Standard Tokenizer}. 
+In this respect, we collected all words contained in the crash reports and preprocessed them using a Lucene tokenizer, called \textit{Standard Tokenizer} \cite{lucenestandardanalyser}. 
 %\GIO{Do not use too often ''the approach consists''! You can use 'it' or 'we'}
 This tokenizer simply splits the word fields into lexical units using punctuation and whitespaces as split points. In addition, it removes unnecessary symbols (\eg \texttt{"//"}).
 \toolname\ extends the Lucene tokenizer to a further CamelCase regular expression.
@@ -136,7 +143,7 @@ idf_{x} = \frac{\mid D \mid}{\mid \{d: t_{i} \in d\} \mid}
 \end{align*}
 where $\mid D \mid$ is the number of documents in the collection, while $\mid \{d: t_{i} \in d\} \mid$ represents the number of documents which contains the term $t_i$
 
-\item \textbf{TF-IDF}, \ie the product of the two above terms. If it has a high value means that the currently scored term has a high relevance, otherwise if it returns a low value, the term has little relevance.
+\item tf-idf, \ie the product of the two above terms. If it has a high value means that the currently scored term has a high relevance, otherwise if it returns a low value, the term has little relevance.
 \begin{align*}
 tfidf_{x,y} = tf_{x,y}*idf_{x}
 \end{align*}

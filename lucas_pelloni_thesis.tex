@@ -21,6 +21,7 @@
 \usepackage{tikz}                  
 \usepackage{paralist}   
 \usepackage{booktabs}
+\usepackage{float}
 
 \input{macro}
 
@@ -76,7 +77,7 @@
 % ---------------------- HERE STARTS THE THESIS BODY ---------------------- 
 \thesisType{Bachelor Thesis}
 \date{\today}
-\title{GUI usability and testing of mobile applications}
+\title{Exploitation of User Feedback \vspace{0.25em} in the Automated Testing Process of \vspace{0.25em} Mobile Applications}
 \author{Lucas Pelloni}
 \home{18.03.1993, Zurich} % Geburtsort
 \country{Switzerland}
@@ -108,7 +109,8 @@ I would like to spend some words for those people, who have supported me during 
 \end{acknowledgements}
 
 \begin{abstract}
-In the last years, the massive distribution of mobile devices like smartphones, tablets and more recently wearables, has radically changed our social life. Since the introduction of the first modern smartphone, the iPhone in 2007, we have witnessed a gradual shift from the traditional paradigm in the use of technology, entering the so called \textit{post-pc} era. Nowadays, the mobile market attracts always more developers and software firms. To sustain this fierce competition, they need to build high quality apps and at the same time, reach the market as soon as possible. It comes naturally to note that testing plays an important role in this process. Research focused for decades on traditional testing, aiming at reaching its maximum automation. However, automated testing for mobile applications presents different challenges and limitations that still need to be properly investigated. This thesis work tries to shed some initial light into possible solutions for such problems. In particular, we focused our attention on the knowledge that can be gained from mobile stores. Indeed, such stores represent an enormous amount of data easily available, like user reviews, and are an unmatched opportunity for software engineering research. Our final aim is to demonstrate how such user feedback can be in some way exploited to integrate and complement the state of art Android automated testing tools. Our results show that a noticeable set of problems can be actually detected only through user feedback. Such observation put the first stone down for a new paradigm of \textit{user oriented testing}. 
+In the last years, the massive distribution of mobile devices like smartphones, tablets and more recently wearables, has radically changed our social life. Since the introduction of the first modern smartphone, the iPhone in 2007, we have witnessed a gradual shift from the traditional paradigm in the use of technology, entering the so called \textit{post-pc} era. Nowadays, the mobile market attracts always more developers and software firms. To sustain this fierce competition, they need to build high quality apps and at the same time, reach the market as soon as possible. It comes naturally to note that testing plays an important role in this process. Research focused for decades on traditional testing, aiming at reaching its maximum automation. However, automated testing for mobile applications presents different challenges and limitations that still need to be properly investigated. This thesis work tries to shed some initial light into possible solutions for such problems. In particular, we focused our attention on the knowledge that can be gained from mobile stores. Indeed, such stores represent an enormous amount of data easily available, like user reviews, and are an unmatched opportunity for software engineering research. Our final aim is to demonstrate how such user feedback can be in some way exploited to integrate and complement the state of art Android automated testing tools. Our results show that a noticeable set of problems can be actually detected only through user feedback. Such observation put the first stone down for a new paradigm of \textit{user oriented testing}, a new testing typology which allows the user to interact with the entire testing process. 
+\LUCAS{GIO, cosa si può aggiungere ancora qui? Commento Seba: Maybe elaborate a bit what do you mean for "user oriented testing" here..}
 \end{abstract}
 
 \begin{zusammenfassung}
@@ -134,7 +136,7 @@ Unsere Ergebnisse zeigen beeindruckend auf, dass eine beachtliche Menge von Prob
 \label{sec:approach}
 \input{approach}
 
-\chapter{\toolname}
+\chapter{\textbf{B}ug \textbf{E}xtractor, \textbf{C}lassifier and \textbf{L}inker \textbf{O}f \textbf{M}obile \textbf{A}pps}
 \input{tool}
 
 \chapter{Results and Discussion}

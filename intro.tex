@@ -9,7 +9,11 @@ Chapter \ref{chapter:related} presents the recent literature in two areas of int
 
 Chapter \ref{chapter:approach} describes the approach we developed in order to investigate our main goal.
 
-Chapter \ref{chapter:tool} presents \toolname, a tool that firstly relies on \monkey and \sapienz in order to test a set of Android applications, collecting crash logs (\ie stack traces). Secondly, exploiting classic Information Retrieval (IR) techniques, the tool is able to cluster the logs that refer to the same bugs. Finally, it relies on a novel approach for linking such clusters of crash logs with the users reviews that refer to the bug revealed by them. 
+Chapter \ref{chapter:tool} presents our experimental tool, which firstly uses some automated testing tools in order to test a set of mobile applications. Secondly, it clusters possible generated logs which refer to the same bugs. Finally, it integrates user feedback into the testing process, linking them to clustered crash reports.  \LUCAS{Va bene cosi o è ancora troppo low level?}
+
+
+
+%that firstly relies on \monkey and \sapienz in order to test a set of Android applications, collecting crash logs (\ie stack traces). Secondly, exploiting classic Information Retrieval (IR) techniques, the tool is able to cluster the logs that refer to the same bugs. Finally, it relies on a novel approach for linking such clusters of crash logs with the users reviews that refer to the bug revealed by them. 
 %The tool enables developers to link natural language contained inside user feedbacks and pieces of source code, such as names of classes, methods, functions, etc. 
 
 Chapter \ref{chapter:results} describes the empirical study we conducted in order to evaluate the aforementioned approach on a set of 3 mobile apps (available on \textit{FDroid \footnote{\url{https://f-droid.org}}}) with their correspondent reviews crawled from the Google Play Store\footnote{\url{https://play.google.com/}}. 
@@ -67,12 +71,18 @@ For this purpose, with the aim to support developers in building high-quality ap
 These techniques consist of automatically creating test cases through the generation of UI and system events, which are transmitted to the application under test, with the aim to cause some crashes. Afterwards, if an exception occurred, these tools usually save in log files the correspondent stack traces, along with the sequence of events that led to the exceptions \cite{muccini}. 
 However, despite a strong evidence for automated testing approaches in verifying GUI application and revealing bugs, these state-of-art tools cannot always achieve a high code coverage \cite{Nagappan2015}. 
 One reason is that current approaches are not suited for generating inputs that require human intelligence (e.g. \textit{"inputs to text boxes that expect valid passwords, or playing and winning a game with a strategy"}) \cite{dynodroid}. This inability to replicate the human behaviour, often leaving feature and crash bugs undetected until they are encountered by the users.
-Furthermore, current solutions generate redundant/random causing incredibly long sequences of events needed to replicate a crash, while most of such inputs could be avoided. 
+Furthermore, current solutions generate redundant/random inputs causing incredibly long sequences of events needed to replicate a crash, while most of such inputs could be avoided. 
 In addition, the crash reports that they generate usually lack of contextual information and are difficult to understand and analyze \cite{Chen, Joorabchi}. 
-For such reasons, sometimes a time-consuming manual intervention may be needed for testing appropriately an application \cite{Nagappan2015}. 
+For such reasons, sometimes a time-consuming manual intervention may be needed for testing appropriately an application \cite{Nagappan2015}. \\
+\LUCAS{va bene così o manca qualcosa? (aggiunto in base agli inputs di seba)}
+It is worth noting that, some approaches \cite{sapienz, dynodroid} have proposed new solutions to improve the current automated testing tools, with the aim of making GUI-testing less random. 
+In this respect, MacHiry \etal \cite{dynodroid} elaborated a novel tool called \dynodroid (see Section \ref{sec:tools}), which sensibly selects the most relevant events to the AUT at a precise state and consequently executes them. 
+On the other hand, Mao \etal \cite{sapienz} proposed a multi-objective tool which exploits the cycles of an  evolutionary algorithm to improve the testing process. 
+However, none of the above mentioned approaches have integrated user feedback in the testing process of mobile apps, not exploiting the huge advantage, compared to traditional testing, of having a huge amount of information available from mobile stores, which have been introduced as a new selling paradigm for mobile applications.
+
 
 % ------------- REVIEWS PER AIUTARE GLI SVILUPPATORI NELLA FASE DI TESTING -----------------
-Despite these limitations and challenges, the mobile developing environment has the huge advantage, compared to the traditional one, of having a huge amount of information available from mobile stores, which have been introduced as a new selling paradigm for mobile applications. Indeed, the exponential growth of the mobile stores offers an enormous amount of information and feedbacks from users that researchers and partitioner can use to develop better applications. In fact, these users feedback are playing more and more a paramount role in the development and maintenance of mobile applications. Indeed, recent research focused on how such knowledge might be successfully exploited (Section \ref{section:review_usage}). 
+Indeed, the exponential growth of the mobile stores offers an enormous amount of information and feedbacks from users that researchers and partitioner can use to develop better applications. In fact, these users feedback are playing more and more a paramount role in the development and maintenance of mobile applications. Indeed, recent research focused on how such knowledge might be successfully exploited (Section \ref{section:review_usage}). 
 We argue that also the GUI testing could take profit in some way of this information. That is why, in this thesis work we shed some initial lights into the integration of feedbacks extracted from user reviews in the automated testing for mobile applications.
 In detail, we hypothesize that such integration can be exploited to overcome the aforementioned limitations of state-of-the-art tools for automated testing of mobile apps in the following ways \cite{cristal}: 
 \begin{enumerate}

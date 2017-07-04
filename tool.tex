@@ -127,6 +127,8 @@ The first if statement checks whether the file in question has an adequate exten
 After that, \AppTester\ uninstalls the concerned \textit{APK}, so that at each iteration of the testing it gets reinstalled. 
 This because, it may be that an \textit{APK} gets affected by some previously generated sequences (\eg a sequence of random events that led the app to an external website). \\
 Afterwards, \AppTester\ checks which automated tool has been chosen by the tester, so that it can tell to the \Cmd\ component, which command-line it has to execute. As stated before, \AppTester\ prepares the single testing components such as which \textit{APK}, which tool, which testing parameters, etc., while \Cmd\ executes them without any prior knowledge. \\
+Once the automated tool has been detected, \Cmd\ is able to concretely start the \textit{single app cycle}, executing the passed command-line. This is represented in Listing \ref{lst:apptester} by the method \textit{generateReport()} (\textit{line 33}). Indeed, \Cmd\ uses a single instance of the java-class \textit{Runtime} that allows the application to interact with the environment in which the app is running \cite{runtime}. 
+This is actually achieved by the \textit{Runtime.getRuntime()} (\textit{line 34}). The next line concretely executes the passed command-line. 
 
 \clearpage
 \begin{lstlisting}[caption=Testing mechanism between \AppTester\ and \Cmd\, ,label={lst:apptester}]
@@ -176,9 +178,8 @@ public static File getCurrentLog() {
     
 \end{lstlisting}
 \clearpage 
-Once the automated tool has been detected, \Cmd\ is able to concretely start the \textit{single app cycle}, executing the passed command-line. This is represented in listing \ref{lst:apptester} by the method \textit{generateReport} (\textit{line 33}). Indeed, \Cmd\ uses a single instance of the java-class \textit{Runtime} that allows the application to interact with the environment in which the app is running \cite{runtime}. 
-This is actually achieved by the \textit{Runtime.getRuntime()} (\textit{line 34}). The next line concretely executes the passed command-line. 
-The returned code of the function call at \textit{line 35} consists of a new \textit{process} object. 
+
+\hspace{-1.5em}The returned code of the function call at \textit{line 35} consists of a new \textit{process} object. 
 The process actually contains the execution of the command line. 
 Assigning the execution of each single command-line to a new single separate process has advantages; In particular: 
 \begin{itemize}
@@ -222,9 +223,10 @@ public void run() {
 }
 \end{lstlisting}
 
-Listing~\ref{lst:testinglog} shows a short version of a test log of the app \textit{com.danvelazsco.fbwrapper} that has been generated after the execution of \monkey. 
+\clearpage
+\hspace{-1.5em}Listing~\ref{lst:testinglog} shows a short version of a test log of the app \textit{com.danvelazsco.fbwrapper} that has been generated after the execution of \monkey. 
 
-\begin{lstlisting}[caption=Test log of com.danvelazco.fbwrapper, basicstyle=\fontsize{7}{8}\ttfamily,label={lst:testinglog}]
+\begin{lstlisting}[caption=Test log of com.danvelazco.fbwrapper, basicstyle=\fontsize{6}{8}\ttfamily,label={lst:testinglog}]
 /**
  * Meta-data
  */
@@ -261,9 +263,6 @@ Percentage of touch events: 1.0% (number of touch events: 30 of 3000 events)
     // Allowing start of Intent { act=android.intent.action.MAIN cat=[android.intent.category.LAUNCHER]
 :Sending Trackball (ACTION_MOVE): 0:(4.0,4.0)
 :Sending Trackball (ACTION_MOVE): 0:(4.0,-3.0)
-:Sending Trackball (ACTION_MOVE): 0:(2.0,-1.0)
-:Sending Trackball (ACTION_MOVE): 0:(-5.0,2.0)
-:Sending Trackball (ACTION_MOVE): 0:(-5.0,3.0)
     //[calendar_time:2017-05-05 09:48:23.894  system_uptime:717348]
     // Sending event #100
 ...
@@ -280,7 +279,6 @@ The \textit{single app cycle} in the "strict sense", \ie the stage where the \te
 
 \begin{lstlisting}[caption=Crash log of com.danvelazco.fbwrapper illustrated within its test log, basicstyle=\fontsize{6}{8}\ttfamily,label={lst:crashlog}]
 ...
-:Sending Trackball (ACTION_MOVE): 0:(3.0,3.0)
 :Sending Trackball (ACTION_MOVE): 0:(-4.0,-3.0)
 :Sending Trackball (ACTION_MOVE): 0:(3.0,-1.0)
 // CRASH: com.danvelazco.fbwrapper (pid 4302)
@@ -303,7 +301,6 @@ The \textit{single app cycle} in the "strict sense", \ie the stage where the \te
 //
 :Sending Touch (ACTION_DOWN): 0:(215.0,683.0)
 :Sending Touch (ACTION_UP): 0:(163.15541,597.4464)
-:Sending Touch (ACTION_DOWN): 0:(243.0,812.0)
 ...
 
 \end{lstlisting} 
@@ -331,7 +328,7 @@ public void generateCrashLog(File testLog) {
         CmdExecutor.writeToFile(crashLog, dest);
     }
 \end{lstlisting} 
-At this point, the \textit{APK} has been tested, reported, if they occurred, the relative crashes extracted.
+%
 %Figure~\ref{fig: apkprocess} summarizes the four components which characterizes the testing process of one application. 
 %\begin{figure}[tb]
 %\centering 
@@ -342,13 +339,21 @@ At this point, the \textit{APK} has been tested, reported, if they occurred, the
 
 
 
+\hspace{-1.8em} At this point, the \textit{APK} has been tested, reported, if they occurred, the relative crashes extracted.
 \toolname\ can now repeat this entire process with the next application (\ie the next iteration in the loop inside the method \textit{testAllApp())}. This scenario is represented by the "yes" answer of the question \textit{"are there still apps in the dataset which have not been tested in this dataset cycle?"} in the figure \ref{fig: testingapproach}.
 Once all the applications specified in the dataset have been tested exactly one time, \SessionLauncher\ can begin with the next iteration in its loop (listing ~\ref{lst:startsession}) and so start testing the whole dataset another time. 
 This scenario, in turn, is described by the "no" answer of the question above. Indeed, the diagram \ref{fig: testingapproach} consequently starts the \textit{dataset cycle} again. 
 This loop ends when the number of iterations reaches the one specified by the user. \\
 In addition, during each test iteration and at the end of the whole testing session useful statistics are computed and written into external excel files, using the components \textsc{OnGoingCalculator} and \textsc{FinalCalculator}. They use the pure Java library \textit{Apache POI}, for reading and writing files in Microsoft Office formats \cite{apachepoi}. 
 
-
+\begin{figure}[H]
+\centering 
+%	\vspace{-1.5mm} 
+\includegraphics[width=\columnwidth]{diagrams/testing.pdf} 
+\caption{Class Diagram of the testing part of the tool }
+\label{testing}
+\vspace{-3mm} 
+\end{figure}
 
 
 \section{Clustering}
@@ -366,7 +371,7 @@ As shown in Listing~\ref{lst: extractor}, \toolname\ loops all the crashes conta
 * @class: Main
 */
 CrashLogExtractor extractor = new CrashLogExtractor();
-final String CRASH_CONTAINER = ConfigurationManager.getCrashContainerDirectory();
+final String CRASH_CONTAINER = ConfigurationManager.getCrashContainerDir();
 File[] crash_container = new File(CRASH_CONTAINER).listFiles();
 for (File crash : crash_container) {
 	extractor.extractCrashLog(crash);
@@ -399,6 +404,8 @@ In addition to them, the \Crash-object stores a list of Strings containing the l
 \paragraph{Preprocessing.}
 In according to the approach explained in Section \ref{approach:clustering}, the words of the crash reports must be preprocessed (\textit{tokenized}) in order to prepare them to be compared to each other. 
 In this sense, the \Crash\ class statically invokes the method \textit{tokenizeLine()} in the \Lucene\ class for each line contained in the crash log. Listing~\ref{lst: tokenizeline} shows how it concretely works. 
+\clearpage
+
 \begin{lstlisting}[caption=Each line inside the crash report is tokenized using \Lucene,label={lst: tokenizeline}]
 /**
 * @class: CrashLog
@@ -407,7 +414,7 @@ for (String line : this.logLines) {
 	LuceneTokenizer.tokenizeLine(line);
 }
 \end{lstlisting} 
-To provide a concrete example, the following line, extracted from the crash report in listing~\ref{lst: ringdroid} is passed as argument to the method \textit{tokenizeLine()}: \vspace{-0.8cm}
+To provide a concrete example, the following line, extracted from the crash report in Listing~\ref{lst: ringdroid} is passed as argument to the method \textit{tokenizeLine()}: \vspace{-0.8cm}
 \begin{center}
 \framebox[1\width]{{\fontsize{6.5}{6}{ \texttt{
 //\hspace*{0.6cm}at android.database.BulkCursorToCursorAdaptor.throwIfCursorIsClosed(BulkCursorToCursorAdaptor.java:64)}
@@ -537,12 +544,16 @@ Diagram \ref{fig: indexingprocess} illustrates the main components of the Lucene
 
 \paragraph{Creating documents and adding fields.}
 As a first step, \toolname\ generates a set of \textit{Lucene documents}. 
-To do this, it goes through all previously created \Crash-objects and converts their preprocessed words into Lucene documents. Each document must contain its group of \textit{fields} in order to be indexed.
-Therefore, when a new Lucene document is created, a set of fields must be set and enclosed inside it. 
-A field can be viewed as a section of a document which can be optionally stored in the index \cite{lucenefield}. 
-It has usually three components: \textit{name}, \textit{type} and \textit{content}. For each stored field, it is important to determine which type is best suited to the content that is going to be indexed. 
-For instance, \toolname\ indexes documents which enclose \textit{text fields}, since they are already stored, tokenized and indexed \cite{lucenetextfield}. 
-In order to be able to compute TF-IDF values for the indexed Lucene documents, \toolname\ must enable the property that they can have \textit{term vectors}, \ie they can store "a list of the document's terms and their number of occurrences in that document" \cite{lucenetermvector}. \\
+To do this, it goes through all previously created \Crash-objects and converts their preprocessed words into Lucene documents. 
+Each document must contain its group of \textit{fields} in order to be indexed.
+Therefore, when a new Lucene document is created, a set of fields 
+must be set and enclosed inside it. 
+%A field can be viewed as a section of a document which can be optionally stored in the index \cite{lucenefield}. 
+%It has usually three components: \textit{name}, \textit{type} and \textit{content}. For each stored field, it is important to determine which type is best suited to the content that is going to be indexed. 
+\toolname\ indexes documents which enclose \textit{text fields}, since they are already stored, tokenized and indexed. 
+An in-depth explanation about fields and their types can be found on \cite{lucenefield,lucenetextfield}. 
+In order to be able to compute TF-IDF values for the indexed Lucene documents, \toolname\ must enable the property that they can have \textit{term vectors} \cite{lucenetermvector}.
+%, \ie they can store "a list of the document's terms and their number of occurrences in that document" \cite{lucenetermvector}. \\
 The first steps of the Lucene indexing process can be summarized by the following code snippet, which is a simplified version of the \textit{createIndex()} method, illustrated in the diagram~\ref{clustering}.
 
 \begin{lstlisting}[caption=\TFIDF\ describing the Lucene indexing process,label={lst: indexing}]
@@ -576,8 +587,8 @@ Finally, the entire field is added to the document.
 At the end of the loop an additional field is added and used as ID for the document (in our case, the crash log path acts as unique attribute in the index). 
 
 \paragraph{Creating IndexWriter and adding documents.}
-In order to index Lucene documents, \toolname\ must generate an \textit{IndexWriter}. This because this object acts as a core component for creating and updating indexes. 
-First of all, \toolname\ creates an object of type \textit{IndexWriter}. However, the instantiating process of this class requires some supplementary configurations that must be passed to the constructor in order to create a new object of that type. 
+In order to index Lucene documents, \toolname\ must generate an \textit{IndexWriter} \cite{luceneindexwriter}. %This because this object acts as a core component for creating and updating indexes. 
+To achieve this, it creates an object of that type. However, the instantiating process of this class requires some supplementary configurations that must be passed to the constructor in order to create a new object of that type. 
 These two pieces of information consist in (i) the directory where the index should point at and (ii) the Lucene \textit{Analyser} which is in charge of analysing the indexed documents. 
 After the specification of these two information, a new object of type \textit{IndexWriter} can be created. 
 Once created, all documents can be added to the index. At the end of the indexing process the writer must be closed.\\
@@ -610,9 +621,10 @@ private void createIndex (List<CrashLog> crashLogs) throws IOException {
 }
     
 \end{lstlisting} 
-As illustrated in the example above, the location where the index should point at can be inserted using the Lucene class \textit{FSDirectory} (\textit{line 6}). It is a base class for Directory implementations that store index files in the file system \cite{lucenefsdir}. 
-Next line of code, the analyser which is used for analysing the Lucene documents is defined. 
-This can be made using the Lucene class \textit{IndexWriterConfig}, which holds all the configuration that is used to create an \textit{IndexWriter} (\textit{line 8}). \toolname\ defines again a \textit{StandardAnalyser}, the same used for preprocessing the crash logs.
+As illustrated in the example above, the location where the index should point at can be inserted using the Lucene class \textit{FSDirectory} \cite{lucenefsdir} (\textit{line 6}). %It is a base class for Directory implementations that store index files in the file system . 
+In the next line of code, the analyser which is used for analysing the Lucene documents is defined. 
+This can be made using a \textit{IndexWriterConfig} \cite{luceneindexwriterconfig}, which holds all the configuration that is used to create an IndexWriter (\textit{line 8}). 
+\toolname\ defines again a \textit{Standard Analyser} \cite{lucenestandardanalyser}, the same used for preprocessing the crash logs.
 Finally, a new \textit{IndexWriter} can be constructed per the previously configured settings. 
 Once an \textit{IndexWriter} is created, all Lucene documents can be added to the index using a simple method called \textit{addDocument()}. At the end of the indexing process all preprocessed words contained inside the \Crash-objects have been converted into Lucene documents and have been indexed.
 
@@ -642,7 +654,7 @@ Table~\ref{tbl: scoremap} shows the structure of the hash map, taking as a refer
 \end{tabular}
 \end{table}
 
-As shown in table~\ref{tbl: scoremap}, the terms which have the highest tf-idf relevance are \textit{accessibility} and \textit{view}. Indeed, they have a high term frequency in the currently scored crash log and a low document frequency in the entire collection. 
+As shown in Table~\ref{tbl: scoremap}, the terms which have the highest tf-idf relevance are \textit{accessibility} and \textit{view}. Indeed, they have a high term frequency in the currently scored crash log and a low document frequency in the entire collection. 
 Terms such as \textit{crash} or \textit{ringdroid} have a low tf-idf weight. In fact, they are generic and irrelevant terms, since they don't give any useful information about the topic of the document. \\
 %\toolname\ computes tf-idf scores for all vector terms of all crash logs. Once this processed is completed, the similarity between the set of crash logs stored inside the hash map can be computed.
 
@@ -705,6 +717,7 @@ Otherwise, in the event that there is at least one computed similarity which is 
 In doing so, it gets added into the group which "resemble it more". 
 \end{enumerate}
 Diagram \ref{bucketing} shows and summarizes the above mentioned bucketing process provided by \toolname. \\
+\clearpage 
 
 \begin{figure}[tb]
 \centering 
@@ -714,10 +727,31 @@ Diagram \ref{bucketing} shows and summarizes the above mentioned bucketing proce
 \label{bucketing}
 \end{figure}
 
-At the end of the clustering phase, all crash logs collected in the testing phase have been systematically classified inside the bucket. 
+\hspace{-1.75em} At the end of the clustering phase, all crash logs collected in the testing phase have been systematically classified inside the bucket. 
 
 %At the end of the bucketing process, \toolname\ saves the bucket and print it out. The clustering process is now completed. 
 %conclusioni fare meglio
+\clearpage
+
+\begin{figure}[H]
+\centering 
+%	\vspace{-1.5mm} 
+\includegraphics[width=\columnwidth]{diagrams/clustering} 
+\caption{Class diagram of the clustering part of the tool }
+\label{linking}
+%\vspace{-3mm} 
+\end{figure}
+
+
+
+
+
+
+
+
+
+
+
 
 
 \section{Linking}
@@ -762,10 +796,10 @@ After the preprocessing procedure has been completed, the line looks like the fo
 \emph{\small android, database, stale, attempted, access, cursor closed, bulk, adaptor, count }. 
 \end{center} 
 As you can see, the line has been already "stemmed and cleaned" using the method \textit{stemmAndCleanReports()} in the \textsc{Augmenter} class. 
-This method preprocesses the reports expoiting the information retrivial techniques used by \textbf{INFUSA-TA}, explained at the beginning of Section \ref{approach:linking}.
+This method preprocesses the reports exploiting the information retrieval techniques explained at the beginning of Section \ref{approach:linking}.
 Indeed, programming keywords such as "\textit{if}", "\textit{throw}" or "\textit{java}" and too short words such as "\textit{to}" or "\textit{at}" have been removed after the preprocessing procedure. 
 \item After cleaning the reports, the remaining text is augmented with the source code methods included in the stack trace. In this direction, \toolname\ firstly extracts all methods present in the stack trace. To achieve this, it goes through all log lines in the method \textit{augmentStackTrace()} and for each line it compiles the regular expression positioned at \textit{line 7} in Listing \ref{lst: augmentstack}. 
-\clearpage
+
 \begin{lstlisting}[caption=Regular expression for extracting all methods from a stack trace,label={lst: augmentstack}]
 /**
 * @class: CrashLog
@@ -855,7 +889,7 @@ Figure \ref{lst: facade} shows how it concretely works.
 
 
 
-\begin{lstlisting}[caption=\Facade implementing the design pattern \textit{Facade},label={lst: facade}]
+\begin{lstlisting}[caption=\Facade\ implementing the design pattern \textit{Facade},label={lst: facade}]
 /**
 * @class: SimilarityMetricsFacade
 * @return a double value representing the similarity between the given texts
@@ -882,9 +916,9 @@ public void performLinking() {
 			 	 double diceIndex = SimilarityMetricsFacade.evaluateAsimmetricDiceIndex(preProcessedReview, augmentedStackTrace);
 			 	 if (diceIndex >= DICE_THRESHOLD) {	 
 			 	 String content +=	"review_id:   " + review.getId() + ", "
-	                                  + "\n preprocessed_review:   " + preProcessedReview.toString() + ", "
-	                                  + "\n augmented_stack_trace:  " + augmentedStackTrace.toString() + ", "
-	                                  + "\n dice score:    " + diceIndex + "\n\n";                     
+	             + "\n pReview:   " + preProcessedReview.toString() + ", "
+	             + "\n aStackTrace:  " + augmentedStackTrace.toString() + ", "
+	             + "\n DiceScore:    " + diceIndex + "\n";                     
 			 	}
 			}
 		}
@@ -902,36 +936,17 @@ If this is the case, the \textit{content} String (\textit{line 13}) is updated w
 the \textit{review id}, the set of words indicating the preprocessed review and finally the augmented stack trace. 
 At the end of the entire linking procedure (\textit{line 21}), the \textit{content} String is written into an external file located at the specified \textit{path}.
 
-\begin{figure}[tb]
-\centering 
-%	\vspace{-1.5mm} 
-\includegraphics[width=\columnwidth]{diagrams/testing.pdf} 
-\caption{Class Diagram of the testing part of the tool }
-\label{testing}
-\vspace{-3mm} 
-\end{figure}
-
-
-\begin{figure}[t]
-\centering 
-%	\vspace{-1.5mm} 
-\includegraphics[width=\columnwidth]{diagrams/clustering.pdf} 
-\caption{Class Diagram of the clustering part of the tool }
-\label{clustering}
-\vspace{-3mm} 
-\end{figure}
-
-
 \begin{figure}[t]
 \centering 
 %	\vspace{-1.5mm} 
 \includegraphics[width=\columnwidth]{diagrams/linking.pdf} 
-\caption{Class Diagram of the linking part of the tool }
+\caption{Class diagram of the linking part of the tool }
 \label{linking}
 \vspace{-3mm} 
 \end{figure}
 
 
+\clearpage
 \section{Installation and usage of \toolname}
 \input{startbecloma}
 
