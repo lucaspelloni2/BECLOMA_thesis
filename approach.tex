@@ -2,9 +2,9 @@
 In this work, we aim to build an approach able to (i) automatically test Android applications with modern state-of-art tools, (ii) automatically collect the arising errors (\ie stack traces), (iii) detect the unique errors (\ie the ones that derive from the same bug), (iv) link such stack traces with the user reviews that claim about the correspondent problems.           
 We called this approach \textbf{BECLOMA} (\textbf{B}ug \textbf{E}xtractor, \textbf{C}lassifier and \textbf{L}inker \textbf{O}f \textbf{M}obile \textbf{A}pps).
 Figure \ref{fig: becloma} depicts the main actions performed by this approach.
-To give a clearer and more understandable explanation of how \toolname\ works, we will describe in the following chapter its key features (see figure \ref{fig: becloma}). Such features represent the three main processes that \toolname\ sequentially performs.
+To give a clearer and more understandable explanation of how \toolname\ works, we will describe in the following Chapter its key features (see figure \ref{fig: becloma}). Such features represent the three main processes that \toolname\ sequentially performs.
 \begin{enumerate}
-\item the \textsc{Testing} part uses \monkey and \sapienz to test the \textit{APKs} under test, reporting their testing results and extracting possible \textit{crashes} from the before generated test logs; 
+\item the \textsc{Testing} part uses \monkey and \sapienz to test the APKs under test, reporting their testing results and extracting possible \textit{crashes} from the before generated test logs; 
 
 \item the \textsc{Clustering} part investigates the similarity between the previous extracted crash logs, using different metrics and strategies, in order to collect them together and create a crash log \textit{bucket}, \ie a set of unique; 
 
@@ -22,19 +22,19 @@ To give a clearer and more understandable explanation of how \toolname\ works, w
 \section{Testing and Traces Collection}
 \label{approach:testing}
 The first step in the overall approach basically relies on two of the most used Android testing tools, in order to exercise the SUT under tests and collect as many failures as possible. 
-First of all, \toolname\ acts as crawler in order to download the set of desired \textit{APKs} from the \textit{FDroid} API. 
-Thus, it firstly reads a static structured file containing a set of android package names; then, it builds the necessary \textit{HTTP links} in order to download the corresponding \textit{APK} files. 
+First of all, \toolname\ acts as crawler in order to download the set of desired APKs from the \textit{FDroid} API. 
+Thus, it firstly reads a static structured file containing a set of android package names; then, it builds the necessary \textit{HTTP links} in order to download the corresponding APK files. 
 Once the dataset has been built and some testing parameters have been specified, the testing session can be started. 
 The set of parameters that must be specified are described in detail in Section \ref{usage: settings}.
 The overall approach of \toolname\ consists in three testing cycles: 
 \begin{enumerate}
 \item 
-The \textbf{single app} cycle concerning the testing of a single \textit{APK}. It represents the time frame for which each \textit{APK} in the dataset is tested. After that time frame, the approach starts with the testing of the next \textit{APK} indicated in the dataset. 
-\item The \textbf{dataset} cycle describing the time spent for testing the \textit{APKs} within the dataset exactly one time for that currently cycle. 
+The \textbf{single app} cycle concerning the testing of a single APK. It represents the time frame for which each APK in the dataset is tested. After that time frame, the approach starts with the testing of the next APK indicated in the dataset. 
+\item The \textbf{dataset} cycle describing the time spent for testing the APKs within the dataset exactly one time for that currently cycle. 
 \item The \textbf{session} cycle characterizing a testing session, \ie how many dataset cycles have to be performed. 
 \end{enumerate}
 Figure \ref{fig: testingapproach} shows the roles of these cycles in the testing approach, while figure \ref{fig: apkprocess} illustrates the process in detail behind the \textit{single app cycle}. 
-First, during this cycle the \textit{APK} is systematically \textit{tested} according to its specifications and testing parameters. 
+First, during this cycle the APK is systematically \textit{tested} according to its specifications and testing parameters. 
 Once the test is finished, the \textit{reporting} phase starts. 
 This step consists of saving the generated reports in a given directory. 
 Once the logs have been stored, they are ready to be \textit{investigated}. This means, that the reports are parsed with the intention to find eventually crashes inside them. 
@@ -73,15 +73,15 @@ Figure \ref{fig: clustering} shows the overall process for this task.
 \begin{figure}[tb]
 \centering 
 \includegraphics[width=\columnwidth]{imgs/clusteringidea} 
-\caption{The idea behind the Clustering process}
+\caption{The idea behind the clustering process}
 \label{fig: clustering}
 \end{figure}
 As said before, some track traces may be overlapping \ie refers to the same bug of be even duplicates. 
 Despite the trigger method, \ie the method that raised to the exception, may be the same, there may be different sequences of function calls in the stack trace, the more the analysis goes deep. 
 However, they are hardly detectable and is difficult to affirm that two stack traces which have the same trigger method refer to different bugs. 
 Therefore, some reports may belong to two different bug groups in the bucket. 
-In order to understand better the Clustering approach, a clarification of how a crash log is structured must be done. 
-For this purpose, the real structure of a crash report is illustrated in listing~\ref{lst: ringdroid}. 
+In order to understand better the clustering approach, a clarification of how a crash log is structured must be done. 
+For this purpose, the real structure of a crash report is illustrated in Listing~\ref{lst: ringdroid}. 
 \begin{lstlisting}[caption=Structure of a crash log, basicstyle=\fontsize{6}{8}\ttfamily,label={lst: ringdroid}]
 // CRASH: com.ringdroid (pid 6207)
 // Short Msg: android.database.StaleDataException
@@ -122,12 +122,12 @@ Since most of the words included in the crash logs are programming language keyw
 
 \paragraph{TF-IDF.} 
 Once all words inside the crash logs have been tokenized, we relied on some well know Information Retrieval techniques in order to link together the duplicated crashes.
-As features for such process, we relied on the computation of the \textit{tf-idf} \textit{(term frequency inverse document frequency)} values on the collected stack traces. 
-In this direction, \toolname\ computes \textit{tf-idf} numerical statistics in order to find the relevance of a word in a collection of documents (in our case, the crash logs). 
-\textit{Tf-idf} is a well-know term-weighting scheme and usually is used in information retrieval or text mining \cite{tfidf}. %Indeed, tf-idf is a way to measure the relevance, the weight of a term compared to its document or its entire document collection (in our case, the crash logs). 
+As features for such process, we relied on the computation of the tf-idf \textit{(term frequency inverse document frequency)} values on the collected stack traces. 
+In this direction, \toolname\ computes tf-idf numerical statistics in order to find the relevance of a word in a collection of documents (in our case, the crash logs). 
+Tf-idf is a well-know term-weighting scheme and usually is used in Information Retrieval or text mining \cite{tfidf}. %Indeed, tf-idf is a way to measure the relevance, the weight of a term compared to its document or its entire document collection (in our case, the crash logs). 
 The importance of a term is given by the number of times it occurs in a particular document, inversely proportional to its appearance in the entire documents collection \cite{campbell}. 
 %\GIO{The tfidf is not an algorithm. That's a statistics that measure the importance of a word in a set on document. Slightly modify this section changing a bit the terminology}
-Generally, a \textit{tf-idf} scheme consists of three main components \cite{tfidfsimilarity}: 
+Generally, a tf-idf scheme consists of three main components \cite{tfidfsimilarity}: 
 \begin{itemize}
 \item \textbf{TF (Term Frequency)}, \ie how many times a term appears in the currently scored document, where repeated terms indicate the topic of the document; A high \textit{tf} means that the word in question has a high relevance for the document. The following simplified equation \cite{tfidf} describes a formula for calculating it:
 \begin{align*}
@@ -143,24 +143,24 @@ idf_{x} = \frac{\mid D \mid}{\mid \{d: t_{i} \in d\} \mid}
 \end{align*}
 where $\mid D \mid$ is the number of documents in the collection, while $\mid \{d: t_{i} \in d\} \mid$ represents the number of documents which contains the term $t_i$
 
-\item tf-idf, \ie the product of the two above terms. If it has a high value means that the currently scored term has a high relevance, otherwise if it returns a low value, the term has little relevance.
+\item TF-IDF, \ie the product of the two above terms. If it has a high value means that the currently scored term has a high relevance, otherwise if it returns a low value, the term has little relevance.
 \begin{align*}
 tfidf_{x,y} = tf_{x,y}*idf_{x}
 \end{align*}
 
 \end{itemize}
 The \textit{idf} metric actually measures how important a term is. 
-This because a term which appears very often in a single document will have a high \textit{tf} score but if this term rarely occurs in the other ones it will also have have a high \textit{idf} score and so a low \textit{tf-idf} value. 
+This because a term which appears very often in a single document will have a high \textit{tf} score but if this term rarely occurs in the other ones it will also have have a high \textit{idf} score and so a low tf-idf value. 
 This would imply that it shall not have a high relevance. 
-Otherwise, if a word occurs very often both in a single document and in the entire collection it has a high \textit{tf} score and a low \textit{idf} value, which results in a high \textit{tf-idf} score. \\
-At the end of this phase, \toolname\ has created for each crash log its correspondent vector space model, \ie a weighted vector term, where each term indicates a new dimension in the vector and is associated with its correspondent \textit{tf-idf} value. 
+Otherwise, if a word occurs very often both in a single document and in the entire collection it has a high \textit{tf} score and a low \textit{idf} value, which results in a high tf-idf score. \\
+At the end of this phase, \toolname\ has created for each crash log its correspondent vector space model, \ie a weighted vector term, where each term indicates a new dimension in the vector and is associated with its correspondent tf-idf value. 
 
 
 \paragraph{Cosine Similarity.}
 \label{sec:cosine_similarity}
 To state whether two crash reports refer to the same bug, the approach computes cosine similarity between their previously created vectors space model. 
 The cosine similarity is just a measure of similarity between two vectors \cite{cosine} (in our case, two normalized weighted vectors consisting of their tf-idf scores).
-Usually, the resulting similarity ranges from -1 to 1, but in the case of information retrieval, since the frequency of the terms are always positive, the returned values range from 0 to 1, where 0 indicates that two documents are completely decorrelated, while 1 means that the words contained inside them are exactly the same.  
+Usually, the resulting similarity ranges from -1 to 1, but in the case of Information Retrieval, since the frequency of the terms are always positive, the returned values range from 0 to 1, where 0 indicates that two documents are completely decorrelated, while 1 means that the words contained inside them are exactly the same.  
 The equation describing the cosine similarity between two vectors is as follows: 
 \begin{align*}
 cosine\:similarity = \cos({\theta}) = \frac{A\cdot{B}}{||A||\:||B||}

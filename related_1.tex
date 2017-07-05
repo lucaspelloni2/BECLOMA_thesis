@@ -1,6 +1,6 @@
 % !TEX root =  ./lucas_thesis.tex
 \label{chapter:related}
-In the following two sections, I will summarize the main related works on \textit{automated testing tools for Android apps} and on \textit{the broadly usage of user reviews from app store in Software maintenance activities}. 
+In the following two Sections, I will summarize the main related works on \textit{automated testing tools for Android apps} and on \textit{the broadly usage of user reviews from app store in Software maintenance activities}. 
 An overview of the recent research in the field can be found in the survey by Martin \etal \cite{Martin:tse2017}. 
 \section{Automated tools for Android Testing}
 \label{sec:tools}
@@ -36,7 +36,7 @@ Another component called \textit{States Logger} checks whether the tests cases f
 Finally, reports containing data about testing results, such as code coverage, stack traces and "steps for reproducing the faults" are generated and stored at the end of the process.  
 
 
-The experiment results published on \cite{sapienz} show that \sapienz is an out-performer in the automated mobile testing area. The table \ref{tbl: sapienzresults} compares the above mentioned tools \monkey and \dynodroid with \sapienz, illustrating the strength of the \textsc{Sapienz} approach. 
+The experiment results published on \cite{sapienz} show that \sapienz is an out-performer in the automated mobile testing area. Table \ref{tbl: sapienzresults} compares the above mentioned tools \monkey and \dynodroid with \sapienz, illustrating the strength of the \textsc{Sapienz} approach. 
 
 \begin{table}[tb]
 \centering
@@ -50,7 +50,7 @@ Nr. Unique crashes   & 41              & 13                 & 104              &
 Nr. Total crashes    & 1'196           & 125                & 6'866             &  \\ \cline{1-4}
 \end{tabular}
 \end{table}
-As illustrated in the table, \sapienz found from a set of 68 benchmark apps, 104 unique crashes (while \monkey 41 and \dynodroid 13).
+As illustrated in Table \ref{tbl: sapienzresults}, \sapienz found from a set of 68 benchmark apps, 104 unique crashes (while \monkey 41 and \dynodroid 13).
 
 \subsubsection{Model-based testing}
 Model-based tools for testing Android applications are quite popular \cite{sapienz}. Most of these tools \cite{mobiguitar, mining, guiripper,swift} generate UI events from models which are either manually designed or created from XML configuration files \cite{sapienz}. \\

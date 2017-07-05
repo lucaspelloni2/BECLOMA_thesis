@@ -1,21 +1,21 @@
 \label{chapter:tool}
-This section presents \toolname, a \textit{Java-based} tool aimed at helping  developers during the testing process of their Android mobile applications. The tool is composed by a set of sub-components that operate sequentially. The first one is the component that is charge of exercising the SUT, revealing and collecting crashes. The second component processes the gathered data, as explained in Section \ref{approach:clustering}. At the end, the tool is able to recommend traceability links between the stack traces and a set of mined user reviews for the same app under test. Chapter continues with a technical description of the implemented components, as well with the instructions to run the tool.
+This Section presents \toolname, a \textit{Java-based} tool aimed at helping  developers during the testing process of their Android mobile applications. The tool is composed by a set of sub-components that operate sequentially. The first one is the component that is charge of exercising the SUT, revealing and collecting crashes. The second component processes the gathered data, as explained in Section \ref{approach:clustering}. At the end, the tool is able to recommend traceability links between the stack traces and a set of mined user reviews for the same app under test. Chapter continues with a technical description of the implemented components, as well with the instructions to run the tool.
 
 
 \section{Testing Component}
 \label{tool: testing}
 %----------------- FDROID CRAWLER --------------
-First of all, if no set of \textit{APKs} is available yet, \toolname\ can be exploited for downloading the needed mobile applications from the \textit{F-Droid API\footnote{\url{https://f-droid.org/repo/}}}. In this respect, as shown in the picture \ref{testing}, the component \FDroidCrawler, is first in charge of  parsing a static structured file (\textit{e.g.} a \textit{csv} file) that contains a set of Android packages names that univocally represent a given app of the Google Play Store. 
+First of all, if no set of APKs is available yet, \toolname\ can be exploited for downloading the needed mobile applications from the \textit{F-Droid API\footnote{\url{https://f-droid.org/repo/}}}. In this respect, as shown in the picture \ref{testing}, the component \FDroidCrawler, is first in charge of  parsing a static structured file (\textit{e.g.} a \textit{csv} file) that contains a set of Android packages names that univocally represent a given app of the Google Play Store. 
 The path of this file is given in the \textsc{ConfigurationManager}, which contains a set of static properties that get elaborated by \toolname. \\
-Second, \textsc{FdroidCrawler} searches and then extracts a set of \textit{HTTP links} for those android packages that have been found on the API. Afterwards, it builds the correct \textit{HTTP requests} and finally starts the downloading process, saving the returned \textit{APKs} in a given directory.
+Second, \textsc{FdroidCrawler} searches and then extracts a set of \textit{HTTP links} for those android packages that have been found on the API. Afterwards, it builds the correct \textit{HTTP requests} and finally starts the downloading process, saving the returned APKs in a given directory.
 
 %-------------- CONFIGURATION ENVIRONMENT--------------
-The first step of the testing part was to build a set of \textit{APKs}, with which to perform the testing process. As said, this can be achieved using either \textsc{FdroidCrawler} or can also be manually created. Now, the second step is to prepare and configure the testing environment. 
+The first step of the testing part was to build a set of APKs, with which to perform the testing process. As said, this can be achieved using either \textsc{FdroidCrawler} or can also be manually created. Now, the second step is to prepare and configure the testing environment. 
 %All parameters needed for starting a testing session have to be specified in the \textsc{ConfigurationManager}. 
 In this direction, figure \ref{lst: config} shows an example of a simplified set of parameters which must be given a priori in the \Config\ file in order to launch a testing session. 
 Indeed, \textit{lines 22-41} illustrate how the testing parameters concerning \monkey and \sapienz are specified.
 Furthermore, in this file the directories containing the dataset must be also inserted. 
-These include the location of the static structured file and the directory where the \textit{APKs} are going to be stored (\textit{lines 4-5}).
+These include the location of the static structured file and the directory where the APKs are going to be stored (\textit{lines 4-5}).
 In addition to them, the directories on which the generated test logs are going to be saved (\textit{lines 10-11}) must be given. \\
 An in-depth explanation about the specifications in the \Config\ can be found in Section \ref{usage: settings}.
 \newpage
@@ -84,7 +84,7 @@ Section \ref{usage: settings} describes the full usage of \toolname.
 
 %-----------LAUNCH A TESTING SESSION -----------
 \paragraph{Session cycle.} Once the configuration phase is terminated, \toolname\ is able to start concrete the testing process. 
-As shown in the picture \ref{testing}, it manages the component \SessionLauncher, which is in charge of translating the previously specified testing properties into "java readable code" and initializing the \textit{session cycle} mentioned in the approach. 
+As shown in the picture \ref{testing}, it manages the component \SessionLauncher, which is in charge of translating the previously specified testing properties into "Java readable code" and initializing the \textit{session cycle} mentioned in the approach. 
 Concretely, after \toolname\ invokes \SessionLauncher\ all attached devices respectively the chosen emulators get initialized, \ie they get rebooted and restarted as root, so that some important write-read-permissions are enabled during the testing session. 
 Whether the timer has been given as main argument, it gets also started. \\
 Once the initialization step has been completed, \SessionLauncher\  invokes the \AppTester\ component which is in charge of starting the \textit{dataset cycle}. Listing~\ref{lst:startsession} shows a simplified code snippet about the beginning of this testing cycle. \\
@@ -122,12 +122,12 @@ public void startTestingSession() throws Exception {
 Listing~\ref{lst:apptester} shows a very simplified code snippet of the relation between the two above mentioned components. 
 
 
-First of all, \AppTester\ creates a for-loop in which it iterates each \textit{APK} file contained in the \textit{APKs} directory. Once again, this directory is specified in the \Config. 
+First of all, \AppTester\ creates a for-loop in which it iterates each APK file contained in the APKs directory. Once again, this directory is specified in the \Config. 
 The first if statement checks whether the file in question has an adequate extension, \ie it is able to be installed on a android mobile device. 
-After that, \AppTester\ uninstalls the concerned \textit{APK}, so that at each iteration of the testing it gets reinstalled. 
-This because, it may be that an \textit{APK} gets affected by some previously generated sequences (\eg a sequence of random events that led the app to an external website). \\
-Afterwards, \AppTester\ checks which automated tool has been chosen by the tester, so that it can tell to the \Cmd\ component, which command-line it has to execute. As stated before, \AppTester\ prepares the single testing components such as which \textit{APK}, which tool, which testing parameters, etc., while \Cmd\ executes them without any prior knowledge. \\
-Once the automated tool has been detected, \Cmd\ is able to concretely start the \textit{single app cycle}, executing the passed command-line. This is represented in Listing \ref{lst:apptester} by the method \textit{generateReport()} (\textit{line 33}). Indeed, \Cmd\ uses a single instance of the java-class \textit{Runtime} that allows the application to interact with the environment in which the app is running \cite{runtime}. 
+After that, \AppTester\ uninstalls the concerned APK, so that at each iteration of the testing it gets reinstalled. 
+This because, it may be that an APK gets affected by some previously generated sequences (\eg a sequence of random events that led the app to an external website). \\
+Afterwards, \AppTester\ checks which automated tool has been chosen by the tester, so that it can tell to the \Cmd\ component, which command-line it has to execute. As stated before, \AppTester\ prepares the single testing components such as which APK, which tool, which testing parameters, etc., while \Cmd\ executes them without any prior knowledge. \\
+Once the automated tool has been detected, \Cmd\ is able to concretely start the \textit{single app cycle}, executing the passed command-line. This is represented in Listing \ref{lst:apptester} by the method \textit{generateReport()} (\textit{line 33}). Indeed, \Cmd\ uses a single instance of the Java-class \textit{Runtime} that allows the application to interact with the environment in which the app is running \cite{runtime}. 
 This is actually achieved by the \textit{Runtime.getRuntime()} (\textit{line 34}). The next line concretely executes the passed command-line. 
 
 \clearpage
@@ -185,12 +185,12 @@ Assigning the execution of each single command-line to a new single separate pro
 \begin{itemize}
 \item Processes are independent from each other. 
 If the execution of a command-line fails, it can be interrupted without affecting the entire testing process; 
-\item Multithreading can be easily supported; Indeed, the component \Stream\ extends the \textit{Thread} java-class which implements the \textit{Runnable} java-interface. Each time a new process comes in, it starts a new thread in this class.
+\item Multithreading can be easily supported; Indeed, the component \Stream\ extends the \textit{Thread} Java-class which implements the \textit{Runnable} Java-interface. Each time a new process comes in, it starts a new thread in this class.
 \item Each process has it own timeout. It may be that some command-lines cannot properly terminate and need to be interrupted during their execution.  
 \end{itemize}
 \paragraph{Reporting phase.}
 \Stream, in turn, is in charge of writing the test report. Each time its constructor gets instantiated in the \textit{generateReport()} method in the \Cmd\ class, it starts a new thread and begins in parallel the writing phase of the log. 
-As shown in listing~\ref{lst:gobbler}, the method \textit{run()} overrides the method located in the \textit{Runnable} interface. 
+As shown in Listing~\ref{lst:gobbler}, the method \textit{run()} overrides the method located in the \textit{Runnable} interface. 
 Indeed, it gets automatically invoked when in the \textit{generateReport()} method an object of type \textit{StreamGobbler} calls the function \textit{start()}  (\textit{line 37}). 
 Once it gets called, the \textit{reporting} phase begins. This phase uses a \textit{PrintWriter} as well as classic \textit{Reader} for writing text on a file.
 Before the test log is written, the metadata about the testing environments are appended to the writer. At the end of the process the writer is closed and the thread can terminate. Once the thread is finished, the method \textit{writeTestingEndTime()} (\textit{line 38}) can be executed.  
@@ -271,7 +271,7 @@ Percentage of touch events: 1.0% (number of touch events: 30 of 3000 events)
 As shown in the figure above, the test logs do not only contain the test results of the tested app, but also the above mentioned meta-data for documenting and retracing the whole testing session.
 
 \paragraph{Investigating phase. }
-The \textit{single app cycle} in the "strict sense", \ie the stage where the \textit{APK} gets stressed with an automated tool is over. At this point, the logs must be investigated about the possibility that some apps have generated a crash during its testing time frame. In this sense, the last part of the method \textit{testAllApp()} illustrated in Listing ~\ref{lst:apptester}, is in charge of stating whether a test log contains a crash or not. The method for checking whether a test log has collected a crash inside it is quite intuitive. This because, the syntax used by \monkey and \sapienz in their report for indicating the presence of a crash is the same. As illustrated in Listing~\ref{lst:crashlog}, a crash can be delimited using the following two \textit{Strings}: 
+The \textit{single app cycle} in the "strict sense", \ie the stage where the APK gets stressed with an automated tool is over. At this point, the logs must be investigated about the possibility that some apps have generated a crash during its testing time frame. In this sense, the last part of the method \textit{testAllApp()} illustrated in Listing ~\ref{lst:apptester}, is in charge of stating whether a test log contains a crash or not. The method for checking whether a test log has collected a crash inside it is quite intuitive. This because, the syntax used by \monkey and \sapienz in their report for indicating the presence of a crash is the same. As illustrated in Listing~\ref{lst:crashlog}, a crash can be delimited using the following two \textit{Strings}: 
 \begin{itemize}
 \item Crash beginning: \texttt{"// CRASH: "}
 \item Crash end: \texttt{"// "}
@@ -339,10 +339,10 @@ public void generateCrashLog(File testLog) {
 
 
 
-\hspace{-1.8em} At this point, the \textit{APK} has been tested, reported, if they occurred, the relative crashes extracted.
+\hspace{-1.8em} At this point, the APK has been tested, reported, if they occurred, the relative crashes extracted.
 \toolname\ can now repeat this entire process with the next application (\ie the next iteration in the loop inside the method \textit{testAllApp())}. This scenario is represented by the "yes" answer of the question \textit{"are there still apps in the dataset which have not been tested in this dataset cycle?"} in the figure \ref{fig: testingapproach}.
-Once all the applications specified in the dataset have been tested exactly one time, \SessionLauncher\ can begin with the next iteration in its loop (listing ~\ref{lst:startsession}) and so start testing the whole dataset another time. 
-This scenario, in turn, is described by the "no" answer of the question above. Indeed, the diagram \ref{fig: testingapproach} consequently starts the \textit{dataset cycle} again. 
+Once all the applications specified in the dataset have been tested exactly one time, \SessionLauncher\ can begin with the next iteration in its loop (Listing~\ref{lst:startsession}) and so start testing the whole dataset another time. 
+This scenario, in turn, is described by the "no" answer of the question above. Indeed, diagram \ref{fig: testingapproach} consequently starts the \textit{dataset cycle} again. 
 This loop ends when the number of iterations reaches the one specified by the user. \\
 In addition, during each test iteration and at the end of the whole testing session useful statistics are computed and written into external excel files, using the components \textsc{OnGoingCalculator} and \textsc{FinalCalculator}. They use the pure Java library \textit{Apache POI}, for reading and writing files in Microsoft Office formats \cite{apachepoi}. 
 
@@ -350,7 +350,7 @@ In addition, during each test iteration and at the end of the whole testing sess
 \centering 
 %	\vspace{-1.5mm} 
 \includegraphics[width=\columnwidth]{diagrams/testing.pdf} 
-\caption{Class Diagram of the testing part of the tool }
+\caption{Class diagram of the testing part of the tool }
 \label{testing}
 \vspace{-3mm} 
 \end{figure}
@@ -525,10 +525,10 @@ The following two boxes show the various tokenization steps that are performed b
 \framebox[\width]{{\fontsize{6.5}{6}{ \texttt{64}
 }}} 
 \end{enumerate}
-As shown above, the crash log line gets firstly preprocessed using the \textit{StandardTokenizer} provided by \textbf{Lucene}.
+As shown above, the crash log line gets firstly preprocessed using the \textit{StandardTokenizer} provided by Lucene. 
 Afterwards, \toolname\ for the reasons explained in Section \ref{approach:clustering} performs a further tokenization step, tokenizing the lines using an additional \textit{CamelCase tokenizer}. 
 Finally, it uses a simply tokenizer to make the words lower case. 
-This tokenization process is repeated for all lines of all crash reports stored in the directory. At the end of this process, each \Crash-object has its own set of preprocessed log lines (in the class diagram \ref{clustering}, represented by the list of Strings \textit{crashLogWords})
+This tokenization process is repeated for all lines of all crash reports stored in the directory. At the end of this process, each \Crash-object has its own set of preprocessed log lines (in class diagram \ref{clustering}, represented by the list of Strings \textit{crashLogWords})
 
 \paragraph{TF-IDF}
 In order to follow the clustering approach described in Section \ref{approach:clustering}, \toolname\ creates for each crash log its correspondent vector space model. 
@@ -552,9 +552,9 @@ must be set and enclosed inside it.
 %It has usually three components: \textit{name}, \textit{type} and \textit{content}. For each stored field, it is important to determine which type is best suited to the content that is going to be indexed. 
 \toolname\ indexes documents which enclose \textit{text fields}, since they are already stored, tokenized and indexed. 
 An in-depth explanation about fields and their types can be found on \cite{lucenefield,lucenetextfield}. 
-In order to be able to compute TF-IDF values for the indexed Lucene documents, \toolname\ must enable the property that they can have \textit{term vectors} \cite{lucenetermvector}.
+In order to be able to compute tf-idf values for the indexed Lucene documents, \toolname\ must enable the property that they can have \textit{term vectors} \cite{lucenetermvector}.
 %, \ie they can store "a list of the document's terms and their number of occurrences in that document" \cite{lucenetermvector}. \\
-The first steps of the Lucene indexing process can be summarized by the following code snippet, which is a simplified version of the \textit{createIndex()} method, illustrated in the diagram~\ref{clustering}.
+The first steps of the Lucene indexing process can be summarized by the following code snippet, which is a simplified version of the \textit{createIndex()} method, illustrated in diagram~\ref{clustering}.
 
 \begin{lstlisting}[caption=\TFIDF\ describing the Lucene indexing process,label={lst: indexing}]
 /**
@@ -631,10 +631,10 @@ Once an \textit{IndexWriter} is created, all Lucene documents can be added to th
 
 \paragraph{Computing TF-IDF scores.} 
 At this point, the index has been created and each document has the possibility of storing its vector of terms. 
-Thus, TF-IDF values can now be computed for each word of each vector of each crash report. 
+Thus, tf-idf values can now be computed for each word of each vector of each crash report. 
 In this direction, \toolname\ invokes the \textit{computeScoreMap()} method in the \TFIDF\ class, which returns a hash map object. 
 This hash map has as keys the unique locations of the crash logs, each one of them is associated with another hash map which contains the correspondent term vector.
-Table~\ref{tbl: scoremap} shows the structure of the hash map, taking as a reference the crash log presented in listing~\ref{lst: ringdroid}. 
+Table~\ref{tbl: scoremap} shows the structure of the hash map, taking as a reference the crash log presented in Listing~\ref{lst: ringdroid}. 
 \begin{table}[tb]
 \centering
 \caption{Structure of the hash map containing its term vector}
@@ -662,7 +662,7 @@ Terms such as \textit{crash} or \textit{ringdroid} have a low tf-idf weight. In 
 In order to state whether two crash logs refer to the same bug, \ie they can belong to the same group in the bucket, \toolname\ follows the approach described in Section \ref{approach:clustering}. 
 Indeed, it computes a well-known similarity measure, \ie cosine similarity \cite{cosine} between different crash reports.
 However, as a necessary preliminary step, the two vectors referring to the two different crash logs have first be \textit{normalized}. 
-The \textit{normalization} process described in the approach (Section \ref{approach:clustering}) is reported in the example shown in tables \ref{tbl: beforenormal} and \ref{tbl: afternormal}.
+The \textit{normalization} process described in the approach (Section \ref{approach:clustering}) is reported in the example shown in Tables \ref{tbl: beforenormal} and \ref{tbl: afternormal}.
 As illustrated, the vectors $A$ and $B$ after the normalization process have the same length and have been complemented with their missing words. 
 \begin{table}[tb]
 \centering
@@ -738,7 +738,7 @@ Diagram \ref{bucketing} shows and summarizes the above mentioned bucketing proce
 %	\vspace{-1.5mm} 
 \includegraphics[width=\columnwidth]{diagrams/clustering} 
 \caption{Class diagram of the clustering part of the tool }
-\label{linking}
+\label{clustering}
 %\vspace{-3mm} 
 \end{figure}
 
@@ -762,7 +762,7 @@ As mentioned in the introduction of Chapter \ref{chapter:approach}, the linking 
 
 \paragraph{Extracting user reviews.} 
 The first step in the linking phase performed by \toolname\, is to read the dataset location, which contains the set of preprocessed and classified user reviews, specified in \Config.
-Afterwards, \toolname\ uses the \ReviewC\ component illustrated in the diagram~\ref{linking}, in order to convert all user feedbacks located in the dataset to a set of Java-objects. 
+Afterwards, \toolname\ uses the \ReviewC\ component illustrated in diagram~\ref{linking}, in order to convert all user feedbacks located in the dataset to a set of Java-objects. 
 To achieve this, each time \toolname\ finds a new review in the dataset, it instantiates the class \Review, creating a new object of that type. 
 Afterwards, this object gets systematically inserted into a \textit{ReviewMap}, located in the \ReviewC\ class. 
 This hash map has as keys a set of labels indicating the names of the packages for which the reviews have been submitted. Thus, each label is associated with its own list of \Review-objects. 
@@ -796,7 +796,7 @@ After the preprocessing procedure has been completed, the line looks like the fo
 \emph{\small android, database, stale, attempted, access, cursor closed, bulk, adaptor, count }. 
 \end{center} 
 As you can see, the line has been already "stemmed and cleaned" using the method \textit{stemmAndCleanReports()} in the \textsc{Augmenter} class. 
-This method preprocesses the reports exploiting the information retrieval techniques explained at the beginning of Section \ref{approach:linking}.
+This method preprocesses the reports exploiting the Information Retrieval techniques explained at the beginning of Section \ref{approach:linking}.
 Indeed, programming keywords such as "\textit{if}", "\textit{throw}" or "\textit{java}" and too short words such as "\textit{to}" or "\textit{at}" have been removed after the preprocessing procedure. 
 \item After cleaning the reports, the remaining text is augmented with the source code methods included in the stack trace. In this direction, \toolname\ firstly extracts all methods present in the stack trace. To achieve this, it goes through all log lines in the method \textit{augmentStackTrace()} and for each line it compiles the regular expression positioned at \textit{line 7} in Listing \ref{lst: augmentstack}. 
 
@@ -898,7 +898,7 @@ public static double evaluateAsimmetricDiceIndex(List<String> pReview, List<Stri
         return AsimmetricDiceIndex.computeAsimmetricDiceIndex(pReview, augmentedLog);
 }
 \end{lstlisting}
-After defining how the Dice coefficient is computed, \toolname\ must just go through all \Crash-objects, extracts for each of them its \textit{augmentedStackTrace} variable mentioned above. Then, iterates the whole set of \textit{preprocessed reviews} stored in the \textit{ReviewMap} illustrated in the table \ref{tbl: reviewmap}, and computes for each review the Dice coefficient among it and the \textit{augmentedStackTrace} variable. 
+After defining how the Dice coefficient is computed, \toolname\ must just go through all \Crash-objects, extracts for each of them its \textit{augmentedStackTrace} variable mentioned above. Then, iterates the whole set of \textit{preprocessed reviews} stored in the \textit{ReviewMap} illustrated in Table \ref{tbl: reviewmap}, and computes for each review the Dice coefficient among it and the \textit{augmentedStackTrace} variable. 
 Finally, if the Dice score results greater than the threshold (in our case, 0.5), \toolname\ writes the correspondent \textit{review ID} with its set of preprocessed words and the set of words representing the augmented stack trace of the current crash log into an external \textit{csv}-File. To achieve this, it uses the component \Writer\, located in the package \textit{Utilities}. 
 At the end of the entire linking process, \toolname\ writes some metadata into the \textit{csv}-File such as the date, the number of linked reviews, etc. 
 The figure~\ref{lst: linkingprocess} shows a simplified code snippet representing the linking procedure described above. 
