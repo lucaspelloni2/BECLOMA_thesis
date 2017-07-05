@@ -62,7 +62,7 @@ Afterwards, if a crash occurred, its part relative to the stack trace from the w
 \section{Clustering of the Collected Traces}
 \label{approach:clustering}
 As we said before, at the end of the testing phase all the stack traces that have been generated are stored in a specific directory. However, it is worth noticing that with a high change, most part of such failures would refer to the same bug. %(in other words, the traces are duplicates). 
-\LUCAS{si capisce ora cosa sono gli unique crashes?}
+%\LUCAS{si capisce ora cosa sono gli unique crashes?}
 To make our explanation better understandable, we introduce a new term we call \textit{unique crashes}. 
 In this sense, a set of unique crashes indicates a group of duplicates in the cluster which belong to the same bug. In fact, each crash in that cluster is considered to be interchangeable.
 
@@ -109,7 +109,7 @@ In fact, we manually created the bucket of unique crash logs and consequently ad
 
 \paragraph{Preprocessing.}
 The first step of the clustering approach consists in \textit{preprocessing} the crash reports in order to prepare them to be compared to each other.
-\LUCAS{Seba: just explain why it is important to perform this preprocessing step}
+%\LUCAS{Seba: just explain why it is important to perform this preprocessing step}
 The preprocessing step is fundamental to be performed since (i) it removes possible noise from the logs (remove unless symbols or numbers), (ii) standardizes them making their contents consistent to each other and (iii) parses and converts them identifying different key elements. 
 To perform such phase, the approach follows a grammar-based tokenization technique implemented in the well-know \textbf{Apache Lucene} \cite{lucene} library.  
 %Indeed, all words contained in the crash reports are preprocessed using \textbf{Apache}. 

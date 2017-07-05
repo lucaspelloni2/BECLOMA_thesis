@@ -9,7 +9,7 @@ Chapter \ref{chapter:related} presents the recent literature in two areas of int
 
 Chapter \ref{chapter:approach} describes the approach we developed in order to investigate our main goal.
 
-Chapter \ref{chapter:tool} presents our experimental tool, which firstly uses some automated testing tools in order to test a set of mobile applications. Secondly, it clusters possible generated logs which refer to the same bugs. Finally, it integrates user feedback into the testing process, linking them to clustered crash reports.  \LUCAS{Va bene cosi o è ancora troppo low level?}
+Chapter \ref{chapter:tool} presents our experimental tool, which firstly uses some automated testing tools in order to test a set of mobile applications. Secondly, it clusters possible generated logs which refer to the same bugs. Finally, it integrates user feedback into the testing process, linking them to clustered crash reports.  %\LUCAS{Va bene cosi o è ancora troppo low level?}
 
 
 
@@ -74,7 +74,7 @@ One reason is that current approaches are not suited for generating inputs that 
 Furthermore, current solutions generate redundant/random inputs causing incredibly long sequences of events needed to replicate a crash, while most of such inputs could be avoided. 
 In addition, the crash reports that they generate usually lack of contextual information and are difficult to understand and analyze \cite{Chen, Joorabchi}. 
 For such reasons, sometimes a time-consuming manual intervention may be needed for testing appropriately an application \cite{Nagappan2015}. \\
-\LUCAS{va bene così o manca qualcosa? (aggiunto in base agli inputs di seba)}
+%\LUCAS{va bene così o manca qualcosa? (aggiunto in base agli inputs di seba)}
 It is worth noting that, some approaches \cite{sapienz, dynodroid} have proposed new solutions to improve the current automated testing tools, with the aim of making GUI-testing less random. 
 In this respect, MacHiry \etal \cite{dynodroid} elaborated a novel tool called \dynodroid (see Section \ref{sec:tools}), which sensibly selects the most relevant events to the AUT at a precise state and consequently executes them. 
 On the other hand, Mao \etal \cite{sapienz} proposed a multi-objective tool which exploits the cycles of an  evolutionary algorithm to improve the testing process. 
