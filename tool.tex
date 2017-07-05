@@ -99,14 +99,14 @@ private appTester;
 public void startTestingSession() throws Exception {
         final int NUMBER_ITERATIONS = ConfigurationManager.getNumberOfIterations();
         if (IS_EMULATOR) {
-        	   SessionLauncher.initialiseEmulator();
+        		SessionLauncher.initialiseEmulator();
         }
         else {
-       	   SessionLauncher.initialiseDevices();
+        		SessionLauncher.initialiseDevices();
         }
        
         if (isTimer) {
-            SessionLauncher.initializeTimer();
+        		SessionLauncher.initializeTimer();
         }
         for (int i = 0; i < NUMBER_ITERATIONS; i++) {
             System.out.println("Iteration number " + (i+1));
